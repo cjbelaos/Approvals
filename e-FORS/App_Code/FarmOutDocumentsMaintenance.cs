@@ -69,29 +69,6 @@ public class FarmOutDocumentsMaintenance
         return ds;
     }
 
-    public DataTable CheckAuthorization(string APO)
-    {
-        SqlCommand cmd = new SqlCommand("CheckAuthorization", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@APO", APO);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataTable dt = new DataTable();
-
-        if (conn.State == ConnectionState.Open)
-        {
-            da.Fill(dt);
-            conn.Close();
-        }
-        else
-        {
-            conn.Open();
-            da.Fill(dt);
-            conn.Close();
-        }
-
-        return dt;
-    }
     public DataTable GetEPPIAuthorizedSignatory()
     {
         SqlCommand cmd = new SqlCommand("GetEPPIAuthorizedSignatory", conn);

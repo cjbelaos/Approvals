@@ -25,18 +25,18 @@ public partial class EPPIAuthorizedSignatory : System.Web.UI.Page
 
         UserID = Session["UserID"].ToString();
         UserName = Session["UserName"].ToString();
-        AddUserInfo();
+        //AddUserInfo();
     }
 
-    private void AddUserInfo()
-    {
-        DataSet ds = new DataSet();
-        ds = maint.GetUserInformation(UserID);
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-        }
-    }
+    //private void AddUserInfo()
+    //{
+    //    DataSet ds = new DataSet();
+    //    ds = maint.GetUserInformation(UserID);
+    //    if (ds.Tables[0].DefaultView.Count > 0)
+    //    {
+    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
+    //    }
+    //}
 
     [WebMethod]
     public static string GetEmployeeName(string APO)

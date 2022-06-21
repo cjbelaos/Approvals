@@ -28,7 +28,7 @@ public partial class AllTasks : System.Web.UI.Page
 
         if (!Page.IsPostBack)
         {
-            AddUserInfo();
+            //AddUserInfo();
             GetAllTasks();
         }
 
@@ -37,15 +37,15 @@ public partial class AllTasks : System.Web.UI.Page
         gvAllTasks.HeaderRow.TableSection = TableRowSection.TableHeader;
     }
 
-    private void AddUserInfo()
-    {
-        DataSet ds = new DataSet();
-        ds = maint.GetUserInformation(UserID);
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-        }
-    }
+    //private void AddUserInfo()
+    //{
+    //    DataSet ds = new DataSet();
+    //    ds = maint.GetUserInformation(UserID);
+    //    if (ds.Tables[0].DefaultView.Count > 0)
+    //    {
+    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
+    //    }
+    //}
 
     private void GetAllTasks()
     {

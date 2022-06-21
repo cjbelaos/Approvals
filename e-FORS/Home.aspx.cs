@@ -23,23 +23,13 @@ public partial class Home : System.Web.UI.Page
 
         UserID = Session["UserID"].ToString();
         UserName = Session["UserName"].ToString();
-        AddUserInfo();
     }
 
-    private void AddUserInfo()
-    {
-        DataSet ds = new DataSet();
-        ds = maint.GetUserInformation(UserID);
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-        }
-    }
 
-    [WebMethod]
-    public static string GetMyTasksCount()
-    {
-        return maint.GetMyTasksCount(UserID);
-    }
+    //[WebMethod]
+    //public static string GetMyTasksCount()
+    //{
+    //    return maint.GetMyTasksCount(UserID);
+    //}
 
 }

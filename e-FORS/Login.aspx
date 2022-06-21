@@ -101,13 +101,40 @@
             $('#tbUsername').focus();
         });
         function LoginFailed() {
-            toastr.error('Login failed, please check your username and password.')
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'error',
+                title: 'Login failed, please check your username and password.'
+            })
         }
         function InputUsername() {
-            toastr.error('Login failed, please put username.')
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'error',
+                title: 'Login failed, please put your username.'
+            })
         }
         function InputPassword() {
-            toastr.error('Login failed, please put your password.')
+             var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'error',
+                title: 'Login failed, please put your password.'
+            })
         }
 
         function UserAndPassIsEmpty() {

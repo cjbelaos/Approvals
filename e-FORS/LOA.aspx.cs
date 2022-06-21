@@ -29,18 +29,18 @@ public partial class LOA : System.Web.UI.Page
 
             AddSupplierName();
             GetLOA();
-            AddUserInfo();
+            //AddUserInfo();
         }
     }
-    private void AddUserInfo()
-    {
-        DataSet ds = new DataSet();
-        ds = maint.GetUserInformation(UserID);
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-        }
-    }
+    //private void AddUserInfo()
+    //{
+    //    DataSet ds = new DataSet();
+    //    ds = maint.GetUserInformation(UserID);
+    //    if (ds.Tables[0].DefaultView.Count > 0)
+    //    {
+    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
+    //    }
+    //}
 
     protected void BtnSearch_OnClick(object sender, EventArgs e)
     {

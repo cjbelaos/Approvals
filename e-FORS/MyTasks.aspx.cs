@@ -41,7 +41,7 @@ public partial class MyTasks : System.Web.UI.Page
 
         if (!Page.IsPostBack)
         {
-            AddUserInfo();
+            //AddUserInfo();
             GetMyTasks();
         }
 
@@ -76,13 +76,13 @@ public partial class MyTasks : System.Web.UI.Page
         Response.Redirect(lbl.Text + "?controlno=" + lnk.Text);
     }
 
-    private void AddUserInfo()
-    {
-        DataSet ds = new DataSet();
-        ds = maint.GetUserInformation(UserID);
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-        }
-    }
+    //private void AddUserInfo()
+    //{
+    //    DataSet ds = new DataSet();
+    //    ds = maint.GetUserInformation(UserID);
+    //    if (ds.Tables[0].DefaultView.Count > 0)
+    //    {
+    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
+    //    }
+    //}
 }

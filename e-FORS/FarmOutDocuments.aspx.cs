@@ -25,57 +25,59 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["UserID"] == null && Session["UserName"] == null)
+        if (Session["UserID"] == null)
         {
             Response.Redirect("Login.aspx");
         }
-
-        UserID = Session["UserID"].ToString();
-        UserName = Session["UserName"].ToString();
-
-        if (!Page.IsPostBack)
+        else
         {
-            AddUserInfo();
-            GetDocumentFormattobeUsed();
-            GetLOAType();
-            GetEPPIAuthorizedSignatory();
-            GetPreparedby();
-
-
-            tbPEZAExaminerSignatory.Text = "MS. TERESA ELAINE LAYLO / MS. PAMELA ROSE DEL RIO";
-            tbPEZAOICSignatory.Text = "MR. JOSE MA. GEREMI T. MANAS";
-
-            if (Request.QueryString["controlno"] != null)
+            if (!Page.IsPostBack)
             {
-                BtnSave.Enabled = true;
-                tbFarmOutControlNo.Text = Request.QueryString["controlno"].ToString();
+                UserID = Session["UserID"].ToString();
+                UserName = Session["UserName"].ToString();
 
-                if (fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text) == true)
+                //AddUserInfo();
+                GetDocumentFormattobeUsed();
+                GetLOAType();
+                GetEPPIAuthorizedSignatory();
+                GetPreparedby();
+
+
+                tbPEZAExaminerSignatory.Text = "MS. TERESA ELAINE LAYLO / MS. PAMELA ROSE DEL RIO";
+                tbPEZAOICSignatory.Text = "MR. JOSE MA. GEREMI T. MANAS";
+
+                if (Request.QueryString["controlno"] != null)
                 {
-                    GetFarmOutDocument();
+                    BtnSave.Enabled = true;
+                    tbFarmOutControlNo.Text = Request.QueryString["controlno"].ToString();
+
+                    if (fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text) == true)
+                    {
+                        GetFarmOutDocument();
+                    }
+                    ddlPreparedby.SelectedValue = UserID;
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
                 }
-                ddlPreparedby.SelectedValue = UserID;
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
+                else
+                {
+                    ddlPreparedby.SelectedValue = UserID;
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
+                }
             }
-            else
-            {
-                ddlPreparedby.SelectedValue = UserID;
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
-            }
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
+            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "AddDesign();", true);
         }
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
-        ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "AddDesign();", true);
     }
 
-    private void AddUserInfo()
-    {
-        DataSet ds = new DataSet();
-        ds = maint.GetUserInformation(UserID);
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-        }
-    }
+    //private void AddUserInfo()
+    //{
+    //    DataSet ds = new DataSet();
+    //    ds = maint.GetUserInformation(UserID);
+    //    if (ds.Tables[0].DefaultView.Count > 0)
+    //    {
+    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
+    //    }
+    //}
 
     protected void ddlDocumentFormattobeUsed_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -515,20 +517,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         BtnConfirm1.Enabled = false;
         BtnConfirm2.Enabled = false;
         BtnSave.Enabled = false;
-    }
-
-    private bool Authorization()
-    {
-
-        DataTable dt = fodm.CheckAuthorization(UserID);
-        if (dt.Rows.Count > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     protected void GrvPrint_RowDataBound(object sender, GridViewRowEventArgs e)

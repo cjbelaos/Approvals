@@ -1,144 +1,5 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
-</asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="sidebar" runat="Server">
-
-    <div class="sidebar">
-        <!-- Sidebar user (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <%--<img src="AdminLTE-3.2.0/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">--%>
-            </div>
-            <div class="info">
-                <a href="#" class="d-block">
-                    <asp:Label runat="server" ID="lblUserName"></asp:Label></a>
-
-            </div>
-        </div>
-
-        <!-- SidebarSearch Form -->
-        <div class="form-inline">
-            <div class="input-group" data-widget="sidebar-search">
-                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                <div class="input-group-append">
-                    <button class="btn btn-sidebar">
-                        <i class="fas fa-search fa-fw"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-                <li class="nav-item menu-open">
-                    <a href="#" class="nav-link active">
-                        <i class="nav-icon fas fa-edit"></i>
-                        <p>
-                            Forms
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="FarmOutRequestForm.aspx" class="nav-link active">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Farm-out Request Form</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="FarmOutDocuments.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Farm-out Documents</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-tasks"></i>
-                        <p>
-                            Tasks
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="MyTasks.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>My Tasks</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="AllTasks.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Tasks</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-file-alt"></i>
-                        <p>
-                            Reports
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="Gatepass.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Gatepass</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="FarmOut.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Farm-Out</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="LOA.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>LOA</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-tools"></i>
-                        <p>
-                            Maintenance
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="Supplier.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Supplier</p>
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="EPPIAuthorizedSignatory.aspx" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>EPPI Authorized Signatory</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
-    </div>
-</asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="Server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
     <asp:UpdatePanel ID="upTable" runat="server">
@@ -703,7 +564,6 @@
             </section>
         </ContentTemplate>
         <Triggers>
-            <%--<asp:AsyncPostBackTrigger ControlID="BtnUpload" />--%>
             <asp:AsyncPostBackTrigger ControlID="ddlSupplierName" EventName="SelectedIndexChanged" />
         </Triggers>
     </asp:UpdatePanel>
@@ -726,6 +586,7 @@
                                     <div class="form-group">
                                         <label for="tbItemNo">Item/Part Code/Serial No.</label>
                                         <asp:TextBox runat="server" ID="tbItemNo" CssClass="form-control" name="itemno"></asp:TextBox>
+                                        <small id="ItemNoHelpBlock" class="form-text text-danger" <% Response.Write(ItemNoHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -734,6 +595,7 @@
                                     <div class="form-group">
                                         <label for="tbItemDescription">Item Description</label>
                                         <asp:TextBox runat="server" ID="tbItemDescription" CssClass="form-control" name="itemdescription"></asp:TextBox>
+                                        <small id="ItemDescriptionHelpBlock" class="form-text text-danger" <% Response.Write(ItemDescriptionHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -746,6 +608,7 @@
                                     <div class="form-group">
                                         <label for="tbQuantity">Quantity</label>
                                         <asp:TextBox runat="server" ID="tbQuantity" CssClass="form-control" name="quantity" onkeypress="return isNumberKey(event)"></asp:TextBox>
+                                        <small id="QuantityHelpBlock" class="form-text text-danger" <% Response.Write(QuantityHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -754,6 +617,7 @@
                                     <div class="form-group">
                                         <label for="tbUnitofMeasurement">Unit of Measurement</label>
                                         <asp:TextBox runat="server" ID="tbUnitofMeasurement" CssClass="form-control" name="unitofmeasurement"></asp:TextBox>
+                                        <small id="UnitofMeasurementHelpBlock" class="form-text text-danger" <% Response.Write(UnitofMeasurementHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>

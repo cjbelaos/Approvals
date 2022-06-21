@@ -647,7 +647,7 @@ public class Maintenance
         return JsonConvert.SerializeObject(ds.Tables[1]);
     }
 
-    public string GetMyTasksCount(string APOAccount)
+    public DataTable GetMyTasksCount(string APOAccount)
     {
         SqlCommand cmd = new SqlCommand("GetMyTasksCount", conn);
         cmd.CommandType = CommandType.StoredProcedure;
@@ -662,7 +662,38 @@ public class Maintenance
 
         conn.Close();
 
-        return JsonConvert.SerializeObject(ds.Tables[1]);
+        return ds.Tables[1];
+    }
+
+    public Boolean CheckAuthorization(string APO)
+    {
+        SqlCommand cmd = new SqlCommand("CheckAuthorization", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@APO", APO);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        if (conn.State == ConnectionState.Open)
+        {
+            da.Fill(dt);
+            conn.Close();
+        }
+        else
+        {
+            conn.Open();
+            da.Fill(dt);
+            conn.Close();
+        }
+
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 }

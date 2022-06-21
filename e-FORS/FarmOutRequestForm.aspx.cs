@@ -14,6 +14,11 @@ public partial class Default : System.Web.UI.Page
     public static string UserID;
     public static string UserName;
 
+    public static string ItemNoHelpBlock;
+    public static string ItemDescriptionHelpBlock;
+    public static string QuantityHelpBlock;
+    public static string UnitofMeasurementHelpBlock;
+
     public static string ToTitleCase(string title)
     {
         return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
@@ -21,43 +26,19 @@ public partial class Default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        UserID = Session["UserID"].ToString();
-        UserName = Session["UserName"].ToString();
-
-        if (!Page.IsPostBack)
+        if (Session["UserID"] == null)
         {
-            Page.Form.Enctype = "multipart/form-data";
+            Response.Redirect("Login.aspx");
+        }
+        else
+        {
+            UserID = Session["UserID"].ToString();
+            UserName = Session["UserName"].ToString();
 
-            AddUserInfo();
-            AddDivision();
-            AddNatureofItem();
-            AddTransferto();
-            AddTypeofItem();
-            AddClassificationofItem();
-            AddPurposeofItem();
-            AddPackagingUsed();
-            AddSupplierName();
-            AddModeofTransfer();
-            AddTypeofTransfer();
-            GetRequesteddby();
-            GetCheckedby();
-            GetApprovedby();
-            GetItems();
-
-            if (Request.QueryString["CONTROLNO"] != null)
+            if (!Page.IsPostBack)
             {
+                //Page.Form.Enctype = "multipart/form-data";
 
-                tbControlNo.Text = Request.QueryString["controlno"].ToString();
-                GetFarmOut();
-                if (tbControlNo.Text != "[AUTOMATIC]")
-                {
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "HideControlNoHelpBlock()", true);
-                }
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
-            }
-            else
-            {
-                tbControlNo.Text = "[AUTOMATIC]";
                 AddUserInfo();
                 AddDivision();
                 AddNatureofItem();
@@ -69,14 +50,44 @@ public partial class Default : System.Web.UI.Page
                 AddSupplierName();
                 AddModeofTransfer();
                 AddTypeofTransfer();
+                GetRequesteddby();
                 GetCheckedby();
                 GetApprovedby();
                 GetItems();
 
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
+                if (Request.QueryString["CONTROLNO"] != null)
+                {
+
+                    tbControlNo.Text = Request.QueryString["controlno"].ToString();
+                    GetFarmOut();
+                    if (tbControlNo.Text != "[AUTOMATIC]")
+                    {
+                        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "HideControlNoHelpBlock()", true);
+                    }
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
+                }
+                else
+                {
+                    tbControlNo.Text = "[AUTOMATIC]";
+                    AddUserInfo();
+                    AddDivision();
+                    AddNatureofItem();
+                    AddTransferto();
+                    AddTypeofItem();
+                    AddClassificationofItem();
+                    AddPurposeofItem();
+                    AddPackagingUsed();
+                    AddSupplierName();
+                    AddModeofTransfer();
+                    AddTypeofTransfer();
+                    GetCheckedby();
+                    GetApprovedby();
+                    GetItems();
+
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
+                }
             }
         }
-
     }
 
     private void GetItems()
@@ -290,8 +301,10 @@ public partial class Default : System.Web.UI.Page
 
             else
             {
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+                //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('hide');$('body').removeClass('modal-backdrop')", true);
                 ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "AddItemsFailedAlert();", true);
+                //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
             }
         }
 
@@ -343,8 +356,6 @@ public partial class Default : System.Web.UI.Page
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowApprovedbyHelpBlock()", true);
         }
 
-        if(ddlSupplierName.SelectedValue != "" && ddlDestinationAddress.SelectedValue !="")
-        {
             if (ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "")
             {
                 Maintenance maint = new Maintenance();
@@ -407,10 +418,6 @@ public partial class Default : System.Web.UI.Page
             {
                 ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutFailedAlert();", true);
             }
-        }
-        else
-        { }
-        
     }
 
     protected void GrvItems_RowCommand(object sender, GridViewCommandEventArgs g)
@@ -461,7 +468,7 @@ public partial class Default : System.Web.UI.Page
         ds = maint.GetUserInformation(UserID);
         if (ds.Tables[0].DefaultView.Count > 0)
         {
-            lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
+            //lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
             tbEmployeeName.Text = ds.Tables[0].DefaultView[0]["FullName"].ToString();
             tbEmployeeNo.Text = ds.Tables[0].DefaultView[0]["EmployeeNo"].ToString();
             tbSection.Text = ds.Tables[0].DefaultView[0]["SectionName"].ToString();
