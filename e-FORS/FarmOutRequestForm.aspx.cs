@@ -14,6 +14,8 @@ public partial class Default : System.Web.UI.Page
     public static string UserID;
     public static string UserName;
 
+    public static string Message;
+
     public static string ItemNoHelpBlock;
     public static string ItemDescriptionHelpBlock;
     public static string QuantityHelpBlock;
@@ -278,33 +280,40 @@ public partial class Default : System.Web.UI.Page
     {
         if (string.IsNullOrEmpty(tbID.Text))
         {
-            items.ControlNo = tbControlNo.Text;
-            items.ItemCode = tbItemNo.Text;
-            items.ItemDescription = tbItemDescription.Text;
-            items.Quantity = tbQuantity.Text;
-            items.UnitOfMeasurement = tbUnitofMeasurement.Text;
-            items.Amount = tbAmount.Text;
-            items.AssetNo = tbAssetNo.Text;
-            items.ODNo = tbOD.Text;
-            items.ContainerNo = tbContainer.Text;
-            items.PEZASeal = tbPEZASeal.Text;
-            items.DSRDRNo = tbDSRDRNo.Text;
-            string Message = maint.SaveItem(items, UserID);
-            GetItems();
-            ClearItemDetails();
-
-            if (Message == "")
+            if (tbItemNo.Text == "" && tbItemDescription.Text == "" && tbQuantity.Text == "" && tbUnitofMeasurement.Text == "")
             {
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsSuccessAlert();", true);
+                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
             }
-
             else
             {
-                //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('hide');$('body').removeClass('modal-backdrop')", true);
-                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "AddItemsFailedAlert();", true);
-                //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
+                items.ControlNo = tbControlNo.Text;
+                items.ItemCode = tbItemNo.Text;
+                items.ItemDescription = tbItemDescription.Text;
+                items.Quantity = tbQuantity.Text;
+                items.UnitOfMeasurement = tbUnitofMeasurement.Text;
+                items.Amount = tbAmount.Text;
+                items.AssetNo = tbAssetNo.Text;
+                items.ODNo = tbOD.Text;
+                items.ContainerNo = tbContainer.Text;
+                items.PEZASeal = tbPEZASeal.Text;
+                items.DSRDRNo = tbDSRDRNo.Text;
+                Message = maint.SaveItem(items, UserID);
+                GetItems();
+                ClearItemDetails();
+
+                if (Message == "")
+                {
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsSuccessAlert();", true);
+                }
+                else
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
+                }
             }
         }
 

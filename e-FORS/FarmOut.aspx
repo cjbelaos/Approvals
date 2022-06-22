@@ -1,88 +1,90 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOut.aspx.cs" Inherits="FarmOut" %>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="server">
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Reports</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                        <li class="breadcrumb-item active">Reports</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-        <!-- /.container-fluid -->
-    </section>
+    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+    <asp:UpdatePanel ID="upTable" runat="server">
+        <ContentTemplate>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-
-            <div class="card card-success">
-                <div class="card-header">
-                    <h3 class="card-title">Gatepass</h3>
-                </div>
-                <!-- /.card-header -->
-
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <!-- /.form-group -->
-                            <div class="form-group">
-                                <label for="tbSection">Section</label>
-                                <asp:TextBox runat="server" ID="tbSection" CssClass="form-control"></asp:TextBox>
-                            </div>
-                            <!-- /.form-group -->
-                            <div class="form-group">
-                                <label>Supplier</label>
-                                <asp:DropDownList runat="server" ID="ddlSupplier" CssClass="form-control select2" Width="100%" name="supplier"></asp:DropDownList>
-                            </div>
-                            <!-- /.form-group -->
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1>Reports</h1>
                         </div>
-                        <!-- /.col -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Date From</label>
-                                <div class="input-group date" id="DateFrom" data-target-input="nearest">
-                                    <asp:TextBox runat="server" ID="tbDateFrom" CssClass="form-control datetimepicker-input" data-target="#DateFrom" name="datefrom"></asp:TextBox>
-                                    <div class="input-group-append" data-target="#DateFrom" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.form-group -->
-                            <div class="form-group">
-                                <label>Date To</label>
-                                <div class="input-group date" id="DateTo" data-target-input="nearest">
-                                    <asp:TextBox runat="server" ID="tbDateTo" CssClass="form-control datetimepicker-input" data-target="#DateTo" name="dateto"></asp:TextBox>
-                                    <div class="input-group-append" data-target="#DateTo" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.form-group -->
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                    <!-- /.row -->
-
-                    <div class="row">
-                        <div class="col">
-                            <asp:Button runat="server" ID="BtnSearch" Text="Search" class="btn btn-primary" Width="110px" OnClick="BtnSearch_OnClick" />
-                            <asp:Button runat="server" ID="BtnClear" Text="Clear" class="btn btn-warning" Width="110px" OnClick="BtnClear_OnClick" />
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
+                                <li class="breadcrumb-item active">Reports</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
-                <!-- /.card-body -->
+                <!-- /.container-fluid -->
+            </section>
 
-                <div class="card-body">
-                    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-                    <asp:UpdatePanel ID="upTable" runat="server">
-                        <ContentTemplate>
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+
+                    <div class="card card-success">
+                        <div class="card-header">
+                            <h3 class="card-title">Gatepass</h3>
+                        </div>
+                        <!-- /.card-header -->
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <!-- /.form-group -->
+                                    <div class="form-group">
+                                        <label for="tbSection">Section</label>
+                                        <asp:TextBox runat="server" ID="tbSection" CssClass="form-control"></asp:TextBox>
+                                    </div>
+                                    <!-- /.form-group -->
+                                    <div class="form-group">
+                                        <label>Supplier</label>
+                                        <asp:DropDownList runat="server" ID="ddlSupplier" CssClass="form-control select2" Width="100%" name="supplier"></asp:DropDownList>
+                                    </div>
+                                    <!-- /.form-group -->
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Date From</label>
+                                        <div class="input-group date" id="DateFrom" data-target-input="nearest">
+                                            <asp:TextBox runat="server" ID="tbDateFrom" CssClass="form-control datetimepicker-input" data-target="#DateFrom" name="datefrom"></asp:TextBox>
+                                            <div class="input-group-append" data-target="#DateFrom" data-toggle="datetimepicker">
+                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.form-group -->
+                                    <div class="form-group">
+                                        <label>Date To</label>
+                                        <div class="input-group date" id="DateTo" data-target-input="nearest">
+                                            <asp:TextBox runat="server" ID="tbDateTo" CssClass="form-control datetimepicker-input" data-target="#DateTo" name="dateto"></asp:TextBox>
+                                            <div class="input-group-append" data-target="#DateTo" data-toggle="datetimepicker">
+                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.form-group -->
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+
+                            <div class="row">
+                                <div class="col">
+                                    <asp:Button runat="server" ID="BtnSearch" Text="Search" class="btn btn-primary" Width="110px" OnClick="BtnSearch_OnClick" />
+                                    <asp:Button runat="server" ID="BtnClear" Text="Clear" class="btn btn-warning" Width="110px" OnClick="BtnClear_OnClick" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-body">
+
                             <div class="row">
                                 <div class="table-responsive">
                                     <asp:GridView runat="server" ID="gvFarmout" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false">
@@ -182,18 +184,22 @@
                                     </asp:GridView>
                                 </div>
                             </div>
-                        </ContentTemplate>
-                    </asp:UpdatePanel>
-                </div>
-                <!-- /.card-body -->
+                        </div>
+                        <!-- /.card-body -->
 
-                <div class="card-footer">
+                        <div class="card-footer">
+                        </div>
+                    </div>
+                    <!-- /.card -->
                 </div>
-            </div>
-            <!-- /.card -->
-        </div>
-    </section>
+            </section>
 
+        </ContentTemplate>
+        <Triggers>
+            <asp:AsyncPostBackTrigger ControlID="BtnSearch" EventName="Click" />
+            <asp:AsyncPostBackTrigger ControlID="BtnClear" EventName="Click" />
+        </Triggers>
+    </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
@@ -253,7 +259,6 @@
                 });
             }
         })
-
     </script>
 </asp:Content>
 

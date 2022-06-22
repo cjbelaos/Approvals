@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.IO;
-using CrystalDecisions.CrystalReports.Engine;
-using CrystalDecisions.Shared;
-using CrystalDecisions.Web;
 
 public partial class FarmOutDocuments : System.Web.UI.Page
 {
@@ -17,11 +9,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     private static readonly Maintenance maint = new Maintenance();
     public static string UserID;
     public static string UserName;
-
-    public static string ToTitleCase(string title)
-    {
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -36,7 +23,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
 
-                //AddUserInfo();
                 GetDocumentFormattobeUsed();
                 GetLOAType();
                 GetEPPIAuthorizedSignatory();
@@ -521,17 +507,17 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void GrvPrint_RowDataBound(object sender, GridViewRowEventArgs e)
     {
-        //if (e.Row.RowType == DataControlRowType.Header || e.Row.RowType == DataControlRowType.DataRow)
-        //{
-        //    e.Row.Cells[0].Visible = false;
-        //    for (int colIndex = 1; colIndex < e.Row.Cells.Count; colIndex++)
-        //    {
-        //        string cellText = HttpUtility.HtmlDecode(e.Row.Cells[colIndex].Text).Trim();
-        //        if (string.IsNullOrEmpty(cellText))
-        //        {
-        //            e.Row.Visible = false;
-        //        }
-        //    }
-        //}
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            Button button = (Button)e.Row.FindControl("BtnPrint");
+            if (maint.CheckAuthorization(Session["UserID"].ToString()) == false)
+            {
+                button.Enabled = false;
+            }
+            else
+            {
+                button.Enabled = true;
+            }
+        }
     }
 }

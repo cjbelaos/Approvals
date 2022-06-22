@@ -26,7 +26,7 @@
             <section class="content">
                 <div class="container-fluid">
 
-                    <div class="card card-success">
+                    <div class="card card-info">
                         <div class="card-header">
                             <h3 class="card-title">Farm-out Request Form</h3>
                             <asp:TextBox runat="server" ID="inputUserID" CssClass="form-control" Visible="false"></asp:TextBox>
@@ -207,7 +207,7 @@
 
                         <div class="card-body">
                             <div class="row mb-1">
-                                <asp:Button runat="server" ID="BtnAdd" Text="Add" class="btn btn-primary BtnAdd" OnClick="BtnAdd_OnClick" Width="110px" />
+                                <asp:Button runat="server" ID="BtnAdd" Text="Add" class="btn btn-info BtnAdd" OnClick="BtnAdd_OnClick" Width="110px" />
                             </div>
                             <div class="row">
                                 <div class="table-responsive">
@@ -318,7 +318,7 @@
                                                 <label class="custom-file-label" for="fuChooseFile">Choose file</label>
                                             </div>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnUpload" CssClass="btn btn-outline-secondary" Text="Upload" OnClick="BtnUpload_Click" />
+                                                <asp:Button runat="server" ID="BtnUpload" CssClass="btn btn-info" Text="Upload" OnClick="BtnUpload_Click" />
                                             </div>
                                         </div>
                                         <div class="card">
@@ -440,7 +440,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlRequestedby" CssClass="form-control select2" Enabled="false"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-outline-secondary" Text="Confirm" OnClick="BtnConfirm1_OnClick" Enabled="false" />
+                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-info" Text="Confirm" OnClick="BtnConfirm1_OnClick" Enabled="false" />
                                             </div>
                                         </div>
                                     </div>
@@ -479,7 +479,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlCheckedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-outline-secondary" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
                                             </div>
                                         </div>
                                         <small id="CheckedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
@@ -519,7 +519,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm3" CssClass="btn btn-outline-secondary" Text="Confirm" Enabled="false" OnClick="BtnConfirm3_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm3" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm3_OnClick" />
                                             </div>
                                         </div>
                                         <small id="ApprovedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
@@ -556,7 +556,7 @@
                         <!-- /.card-body -->
 
                         <div class="card-footer">
-                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-success BtnSave" Text="Save" OnClick="BtnSave_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-info BtnSave" Text="Save" OnClick="BtnSave_OnClick" Width="110px" />
                         </div>
                     </div>
                     <!-- /.card -->
@@ -585,8 +585,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbItemNo">Item/Part Code/Serial No.</label>
+                                        <span style="color:#ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbItemNo" CssClass="form-control" name="itemno"></asp:TextBox>
-                                        <small id="ItemNoHelpBlock" class="form-text text-danger" <% Response.Write(ItemNoHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -594,8 +594,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbItemDescription">Item Description</label>
+                                        <span style="color:#ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbItemDescription" CssClass="form-control" name="itemdescription"></asp:TextBox>
-                                        <small id="ItemDescriptionHelpBlock" class="form-text text-danger" <% Response.Write(ItemDescriptionHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -607,8 +607,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbQuantity">Quantity</label>
+                                        <span style="color:#ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbQuantity" CssClass="form-control" name="quantity" onkeypress="return isNumberKey(event)"></asp:TextBox>
-                                        <small id="QuantityHelpBlock" class="form-text text-danger" <% Response.Write(QuantityHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -616,8 +616,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbUnitofMeasurement">Unit of Measurement</label>
+                                        <span style="color:#ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbUnitofMeasurement" CssClass="form-control" name="unitofmeasurement"></asp:TextBox>
-                                        <small id="UnitofMeasurementHelpBlock" class="form-text text-danger" <% Response.Write(UnitofMeasurementHelpBlock); %>>Required.</small>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -687,7 +687,7 @@
                         </div>
                         <div class="modal-footer justify-content-between">
                             <button type="button" id="btnClose" class="btn btn-danger" data-dismiss="modal" style="width: 100px">Close</button>
-                            <asp:Button runat="server" ID="BtnSubmit" CssClass="btn btn-primary" Text="Submit" OnClick="BtnSubmit_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSubmit" CssClass="btn btn-info" Text="Submit" OnClick="BtnSubmit_OnClick" Width="110px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -729,8 +729,8 @@
                             <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-success btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
-                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
+                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-info btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
+                            <button type="button" class="btn btn-info btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
                             <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-info btn-sm" OnClick="BtnRequestChange_OnClick" Width="110px" />
                             <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-info btn-sm" OnClick="BtnReassignTask_OnClick" Width="110px" />
                         </div>
@@ -778,8 +778,8 @@
                             <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-success btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="110px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -830,8 +830,8 @@
 
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-success btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="110px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -1097,10 +1097,12 @@
                 timer: 3000
             });
             Toast.fire({
-                icon: 'error',
-                title: 'Please try again.'
+                icon: 'warning',
+                title: '<% Response.Write(Message); %>'
             })
         }
+
+        
 
         function UpdateItemsSuccessAlert() {
             var Toast = Swal.mixin({

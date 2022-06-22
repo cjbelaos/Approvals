@@ -264,7 +264,7 @@ public class Maintenance
                 conn.Close();
             }
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Message = ex.Message.ToString();
             conn.Close();
@@ -291,10 +291,17 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@DSRDRNo", i.DSRDRNo);
             cmd.Parameters.AddWithValue("@UpdatedBy", strUsername);
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
-
-            conn.Close();
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                conn.Close();
+            }
         }
     }
 
@@ -656,13 +663,17 @@ public class Maintenance
         SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataSet ds = new DataSet();
 
-        conn.Open();
-
-        da.Fill(ds);
-
-        conn.Close();
-
-        return ds.Tables[1];
+        try
+        {
+            conn.Open();
+            da.Fill(ds);
+            conn.Close();
+            return ds.Tables[1];
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
     }
 
     public Boolean CheckAuthorization(string APO)
@@ -694,6 +705,23 @@ public class Maintenance
         {
             return false;
         }
+    }
+
+    public string GetGatepassJS()
+    {
+        SqlCommand cmd = new SqlCommand("GetGatepassJS", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        conn.Open();
+
+        da.Fill(dt);
+
+        conn.Close();
+
+        return JsonConvert.SerializeObject(dt);
     }
 
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
@@ -10,6 +11,7 @@ using System.Web.UI.WebControls;
 public partial class MasterPage2 : System.Web.UI.MasterPage
 {
     private static readonly Maintenance maint = new Maintenance();
+
     public static string UserID;
 
     public string serviceName;
@@ -40,7 +42,12 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
     public string Maintenance = "";
     public string Supplier = "";
     public string EPPIAuthorizedSignatory = "";
-    
+
+    public static string ToTitleCase(string title)
+    {
+        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
+    }
+
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -54,7 +61,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         {
             if (!this.Page.IsPostBack)
             {
-                lblUserName.Text = Session["UserName"].ToString();
+                lblUserName.Text = ToTitleCase(Session["UserName"].ToString());
                 UserID = Session["UserID"].ToString();
                 
             }

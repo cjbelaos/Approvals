@@ -9,10 +9,7 @@ public partial class Gatepass : System.Web.UI.Page
     private static readonly Maintenance maint = new Maintenance();
     public static string UserID;
     public static string UserName;
-    public static string ToTitleCase(string title)
-    {
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!Page.IsPostBack)
@@ -27,21 +24,11 @@ public partial class Gatepass : System.Web.UI.Page
 
             AddSupplierName();
             GetGatepass();
-            //AddUserInfo();
         }
 
         gvGatepass.UseAccessibleHeader = true;
         gvGatepass.HeaderRow.TableSection = TableRowSection.TableHeader;
     }
-    //private void AddUserInfo()
-    //{
-    //    DataSet ds = new DataSet();
-    //    ds = maint.GetUserInformation(UserID);
-    //    if (ds.Tables[0].DefaultView.Count > 0)
-    //    {
-    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-    //    }
-    //}
 
     protected void BtnSearch_OnClick(object sender, EventArgs e)
     {

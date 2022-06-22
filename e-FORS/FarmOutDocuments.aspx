@@ -10,7 +10,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                        <li class="breadcrumb-item active">Forms</li>
+                        <li class="breadcrumb-item active">Farm-out Documents</li>
                     </ol>
                 </div>
             </div>
@@ -24,7 +24,7 @@
         <ContentTemplate>
             <section class="content">
                 <div class="container-fluid">
-                    <div class="card card-success">
+                    <div class="card card-info">
                         <div class="card-header">
                             <h3 class="card-title">Farm-out Documents</h3>
                         </div>
@@ -170,7 +170,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlPreparedby" CssClass="form-control select2" Enabled="false"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-outline-secondary" Text="Confirm" Enabled="false" OnClick="BtnConfirm1_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm1_OnClick" />
                                             </div>
                                         </div>
                                     </div>
@@ -204,7 +204,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-outline-secondary" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
                                             </div>
                                         </div>
                                         <small id="ApprovedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
@@ -242,7 +242,7 @@
 
 
                         <div class="card-footer">
-                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-success" Text="Save" Width="110px" Enabled="false" OnClick="BtnSave_OnClick" />
+                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-info" Text="Save" Width="110px" Enabled="false" OnClick="BtnSave_OnClick" />
                         </div>
                     </div>
 
@@ -285,8 +285,8 @@
                             <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-success btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
-                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
+                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-info btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
+                            <button type="button" class="btn btn-info btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
                             <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-info btn-sm" OnClick="BtnRequestChange_OnClick" Width="110px" />
                             <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-info btn-sm" OnClick="BtnReassignTask_OnClick" Width="110px" />
                         </div>
@@ -334,8 +334,8 @@
                             <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-success btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="110px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -387,8 +387,8 @@
 
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-success btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="110px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
