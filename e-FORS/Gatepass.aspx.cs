@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -12,18 +11,20 @@ public partial class Gatepass : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!Page.IsPostBack)
+        if (Session["UserID"] == null && Session["UserName"] == null)
         {
-            if (Session["UserID"] == null && Session["UserName"] == null)
+            Response.Redirect("Login.aspx");
+        }
+        else
+        {
+            if (!Page.IsPostBack)
             {
-                Response.Redirect("Login.aspx");
+                UserID = Session["UserID"].ToString();
+                UserName = Session["UserName"].ToString();
+
+                AddSupplierName();
+                GetGatepass();
             }
-
-            UserID = Session["UserID"].ToString();
-            UserName = Session["UserName"].ToString();
-
-            AddSupplierName();
-            GetGatepass();
         }
 
         gvGatepass.UseAccessibleHeader = true;
@@ -50,7 +51,6 @@ public partial class Gatepass : System.Web.UI.Page
         ddlSupplier.SelectedIndex = 0;
         tbDateFrom.Text = "";
         tbDateTo.Text = "";
-        GetGatepass();
     }
 
     private void AddSupplierName()
@@ -74,5 +74,8 @@ public partial class Gatepass : System.Web.UI.Page
 
         gvGatepass.DataSource = dt;
         gvGatepass.DataBind();
+
+        gvGatepass.UseAccessibleHeader = true;
+        gvGatepass.HeaderRow.TableSection = TableRowSection.TableHeader;
     }
 }

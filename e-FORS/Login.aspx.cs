@@ -11,6 +11,7 @@ public partial class _Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         tbUsername.Focus();
+
         if (!this.Page.IsPostBack)
         {
             if (Request.Cookies["Username"] != null && Request.Cookies["Password"] != null)
@@ -61,20 +62,7 @@ public partial class _Default : System.Web.UI.Page
         Response.Cookies["Username"].Value = tbUsername.Text.Trim();
         Response.Cookies["Password"].Value = tbUsername.Text.Trim();
 
-        //if(tbUsername.Text == null && tbPassword.Text == null)
-        //{
-        //    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "LoginFailed();", true);
-        //}
 
-        //if (tbUsername.Text == null && tbPassword.Text != null)
-        //{
-        //    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "InputPassword();", true);
-        //}
-
-        //if (tbUsername.Text != null && tbPassword.Text == null)
-        //{
-        //    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "InputUsername();", true);
-        //}
 
         if (tbUsername.Text != "" && tbPassword.Text != "")
         {
@@ -160,7 +148,6 @@ public partial class _Default : System.Web.UI.Page
         }
         else
         {
-            //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "LoginFailed();", true);
             ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "UserAndPassIsEmpty();", true);
         }
 

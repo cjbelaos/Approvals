@@ -67,15 +67,15 @@ public class FarmOutRequestFormMaintenance
         return dt;
     }
 
-    public void SaveFiles(string ControlNo, string FileName, string FilePath, string FileType, string UserName)
+    public void SaveFiles(FileDetails fd)
     {
-        SqlCommand cmd = new SqlCommand("SaveFiles", conn);
+        SqlCommand cmd = new SqlCommand("SaveFile", conn);
         cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-        cmd.Parameters.AddWithValue("@FileName", FileName);
-        cmd.Parameters.AddWithValue("@FilePath", FilePath);
-        cmd.Parameters.AddWithValue("@FileType", FileType);
-        cmd.Parameters.AddWithValue("@UserName", UserName);
+        cmd.Parameters.AddWithValue("@ControlNo", fd.ControlNo);
+        cmd.Parameters.AddWithValue("@FileName", fd.FileName);
+        cmd.Parameters.AddWithValue("@FilePath", fd.FilePath);
+        cmd.Parameters.AddWithValue("@FileType", fd.FileType);
+        cmd.Parameters.AddWithValue("@UserID", fd.UserID);
 
         conn.Open();
         cmd.ExecuteNonQuery();
@@ -112,5 +112,35 @@ public class FarmOutRequestFormMaintenance
         conn.Close();
 
         return dt;
+    }
+
+    public Boolean FarmOutRequestFormApprovalChecking(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("FarmOutRequestFormApprovalChecking", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            conn.Open();
+            da.Fill(dt);
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

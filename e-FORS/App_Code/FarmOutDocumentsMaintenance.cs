@@ -16,6 +16,28 @@ public class FarmOutDocumentsMaintenance
         conn = new SqlConnection(EFORS);
     }
 
+    public DataSet GetPEZASignatory()
+    {
+        SqlCommand cmd = new SqlCommand("GetPEZASignatory", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataSet ds = new DataSet();
+
+        if (conn.State == ConnectionState.Open)
+        {
+            da.Fill(ds);
+            conn.Close();
+        }
+        else
+        {
+            conn.Open();
+            da.Fill(ds);
+            conn.Close();
+        }
+        return ds;
+    }
+
     public DataSet GetPreparedby()
     {
         SqlCommand cmd = new SqlCommand("GetPreparedby", conn);

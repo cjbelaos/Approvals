@@ -97,7 +97,7 @@ public partial class GatepassPrint : System.Web.UI.Page
             }
         }
 
-        crystalReport.Load(Server.MapPath("~/crGatepass1.rpt"));
+        crystalReport.Load(Server.MapPath("~/crGatepass.rpt"));
 
         crystalReport.SetDataSource(dg);
         CrystalReportViewer1.ReportSource = crystalReport;

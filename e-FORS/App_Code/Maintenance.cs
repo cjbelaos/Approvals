@@ -665,9 +665,17 @@ public class Maintenance
 
         try
         {
-            conn.Open();
-            da.Fill(ds);
-            conn.Close();
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(ds);
+                conn.Close();
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(ds);
+                conn.Close();
+            }
             return ds.Tables[1];
         }
         catch (SqlException sqlex)

@@ -11,6 +11,7 @@ public partial class Default : System.Web.UI.Page
     private static readonly FarmOutRequestFormMaintenance frfm = new FarmOutRequestFormMaintenance();
     private static readonly Maintenance maint = new Maintenance();
     private static readonly Items items = new Items();
+    private static readonly FarmOutDetails fod = new FarmOutDetails();
     public static string UserID;
     public static string UserName;
 
@@ -21,13 +22,10 @@ public partial class Default : System.Web.UI.Page
     public static string QuantityHelpBlock;
     public static string UnitofMeasurementHelpBlock;
 
-    public static string ToTitleCase(string title)
-    {
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
-
     protected void Page_Load(object sender, EventArgs e)
     {
+        //this.Page.Form.Enctype = "multipart/form-data";
+
         if (Session["UserID"] == null)
         {
             Response.Redirect("Login.aspx");
@@ -39,9 +37,7 @@ public partial class Default : System.Web.UI.Page
 
             if (!Page.IsPostBack)
             {
-                //Page.Form.Enctype = "multipart/form-data";
-
-                AddUserInfo();
+                GetUserInfo();
                 AddDivision();
                 AddNatureofItem();
                 AddTransferto();
@@ -59,9 +55,15 @@ public partial class Default : System.Web.UI.Page
 
                 if (Request.QueryString["CONTROLNO"] != null)
                 {
-
-                    tbControlNo.Text = Request.QueryString["controlno"].ToString();
                     GetFarmOut();
+                    if (frfm.FarmOutRequestFormApprovalChecking(tbControlNo.Text) == false)
+                    {
+                        LnkBtnBack.Visible = false;
+                    }
+                    else
+                    {
+                        LnkBtnBack.Visible = true;
+                    }
                     if (tbControlNo.Text != "[AUTOMATIC]")
                     {
                         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "HideControlNoHelpBlock()", true);
@@ -70,8 +72,9 @@ public partial class Default : System.Web.UI.Page
                 }
                 else
                 {
+                    LnkBtnBack.Visible = false;
                     tbControlNo.Text = "[AUTOMATIC]";
-                    AddUserInfo();
+                    GetUserInfo();
                     AddDivision();
                     AddNatureofItem();
                     AddTransferto();
@@ -82,6 +85,7 @@ public partial class Default : System.Web.UI.Page
                     AddSupplierName();
                     AddModeofTransfer();
                     AddTypeofTransfer();
+                    GetRequesteddby();
                     GetCheckedby();
                     GetApprovedby();
                     GetItems();
@@ -113,25 +117,27 @@ public partial class Default : System.Web.UI.Page
         }
         else
         {
-            string ControlNo = tbControlNo.Text;
+            FileDetails fd = new FileDetails();
+            fd.UserID = UserID;
+            fd.ControlNo = tbControlNo.Text;
             if (fuChooseFile.HasFile)
             {
                 foreach (HttpPostedFile postedFile in fuChooseFile.PostedFiles)
                 {
-                    string FileName = Path.GetFileName(postedFile.FileName);
-                    string FileType = Path.GetExtension(postedFile.FileName).ToLower();
-                    string FilePath = Server.MapPath(Path.Combine("~/RelatedDocu/", ControlNo));
+                    fd.FileName = Path.GetFileName(postedFile.FileName);
+                    fd.FileType = Path.GetExtension(postedFile.FileName).ToLower();
+                    fd.FilePath = Server.MapPath(Path.Combine("~/RelatedDocu/", fd.ControlNo));
 
-                    Directory.CreateDirectory(FilePath);
+                    Directory.CreateDirectory(fd.FilePath);
 
-                    if (!Directory.Exists(FilePath))
+                    if (!Directory.Exists(fd.FilePath))
                     {
-                        Directory.CreateDirectory(FilePath);
+                        Directory.CreateDirectory(fd.FilePath);
                     }
 
-                    postedFile.SaveAs(FilePath + "/" + FileName);
+                    postedFile.SaveAs(fd.FilePath + "/" + fd.FileName);
 
-                    frfm.SaveFiles(ControlNo, FileName, FilePath, FileType, UserName);
+                    frfm.SaveFiles(fd);
                     GetFiles();
                 }
             }
@@ -185,7 +191,6 @@ public partial class Default : System.Web.UI.Page
 
     protected void BtnConfirm2_OnClick(object sender, EventArgs e)
     {
-        //DisableControl();
         tbWorkFlowID.Text = "1";
         tbApproverID.Text = "2";
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
@@ -231,7 +236,6 @@ public partial class Default : System.Web.UI.Page
         maint.RequestChange(a);
         DisableControl();
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "DisableForm()", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeFarmOutSuccessAlert();", true);
     }
     protected void BtnCancelRequestChange_OnClick(object sender, EventArgs e)
@@ -471,13 +475,12 @@ public partial class Default : System.Web.UI.Page
         }
     }
 
-    private void AddUserInfo()
+    private void GetUserInfo()
     {
         DataSet ds = new DataSet();
         ds = maint.GetUserInformation(UserID);
         if (ds.Tables[0].DefaultView.Count > 0)
         {
-            //lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
             tbEmployeeName.Text = ds.Tables[0].DefaultView[0]["FullName"].ToString();
             tbEmployeeNo.Text = ds.Tables[0].DefaultView[0]["EmployeeNo"].ToString();
             tbSection.Text = ds.Tables[0].DefaultView[0]["SectionName"].ToString();
@@ -662,13 +665,14 @@ public partial class Default : System.Web.UI.Page
         DataSet ds = new DataSet();
         FarmOutDetails fo = new FarmOutDetails();
         FarmOutRequestFormMaintenance fom = new FarmOutRequestFormMaintenance();
-        fo.ControlNo = tbControlNo.Text;
-        GetItems();
-        GetFiles();
+        fo.ControlNo = Request.QueryString["controlno"].ToString();
         ds = fom.GetFarmOut(fo);
 
         if (ds.Tables[0].DefaultView.Count > 0)
         {
+            tbControlNo.Text = ds.Tables[0].DefaultView[0]["ControlNo"].ToString();
+            GetItems();
+            GetFiles();
             ddlDivision.SelectedValue = ds.Tables[0].DefaultView[0]["Division"].ToString();
             ddlNatureofItem.SelectedValue = ds.Tables[0].DefaultView[0]["NatureOfItem"].ToString();
             ddlTransferto.SelectedValue = ds.Tables[0].DefaultView[0]["TransferTo"].ToString();
@@ -680,6 +684,9 @@ public partial class Default : System.Web.UI.Page
             tbEmployeeNo.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeNo"].ToString();
             tbEmployeeName.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeName"].ToString();
             tbSection.Text = ds.Tables[0].DefaultView[0]["Section"].ToString();
+            GetRequesteddby();
+            GetCheckedby();
+            GetApprovedby();
             tbLocalNo.Text = ds.Tables[0].DefaultView[0]["LocalNo"].ToString();
             tbDateRequested.Text = ds.Tables[0].DefaultView[0]["DateRequested"].ToString();
             tbActualDateofTransfer.Text = ds.Tables[0].DefaultView[0]["ActualDateOfTransfer"].ToString();
@@ -709,7 +716,6 @@ public partial class Default : System.Web.UI.Page
             lblComment3.Text = ds.Tables[0].DefaultView[2]["COMMENT"].ToString();
             lblDate3.Text = ds.Tables[0].DefaultView[2]["ACTIONDATE"].ToString();
             tbAssignedto.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeName"].ToString();
-
 
             if (ddlRequestedby.SelectedValue != UserID || UserID != ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper())
             {
@@ -819,5 +825,10 @@ public partial class Default : System.Web.UI.Page
                 tbBearerEmployeeName.Text = dt.Rows[0]["FullName"].ToString();
             }
         }
+    }
+
+    protected void LnkBtnBack_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("FarmOutDocuments.aspx" + "?controlno=" + tbControlNo.Text);
     }
 }

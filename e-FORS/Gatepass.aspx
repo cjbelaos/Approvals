@@ -1,10 +1,9 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="Gatepass.aspx.cs" Inherits="Gatepass" %>
 
-<asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="server">
+<asp:Content ID="Content1" ContentPlaceHolderID="maincontent" runat="Server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-    <asp:UpdatePanel runat="server">
+    <asp:UpdatePanel ID="upTable" runat="server">
         <ContentTemplate>
-
             <section class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-2">
@@ -26,7 +25,7 @@
             <section class="content">
                 <div class="container-fluid">
 
-                    <div class="card card-info">
+                    <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Gatepass</h3>
                         </div>
@@ -76,19 +75,18 @@
 
                             <div class="row">
                                 <div class="col">
-                                    <asp:Button runat="server" ID="BtnSearch" Text="Search" class="btn btn-info" Width="80px" OnClick="BtnSearch_OnClick" />
-                                    <asp:Button runat="server" ID="BtnClear" Text="Clear" class="btn btn-info" Width="80px" OnClick="BtnClear_OnClick" />
+                                    <asp:Button runat="server" ID="BtnSearch" Text="Search" class="btn btn-primary" Width="70px" OnClick="BtnSearch_OnClick" />
+                                    <asp:Button runat="server" ID="BtnClear" Text="Clear" class="btn btn-warning" Width="70px" OnClick="BtnClear_OnClick" />
                                 </div>
                             </div>
                         </div>
                         <!-- /.card-body -->
 
                         <div class="card-body">
-
-
                             <div class="row">
-                                <div class="table-responsive" style="overflow: auto; width: 1500px">
-                                    <asp:GridView runat="server" ID="gvGatepass" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false" HeaderStyle-HorizontalAlign="Center" HeaderStyle-BackColor="Teal" HeaderStyle-ForeColor="White" Width="2000px">
+                                <div class="table-responsive">
+                                    <asp:GridView runat="server" ID="gvGatepass" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false" Width="2000px">
+                                        <HeaderStyle CssClass="thead-light" HorizontalAlign="Center"/>
                                         <Columns>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="ControlNo." ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
@@ -174,29 +172,25 @@
                                     </asp:GridView>
                                 </div>
                             </div>
-
-
-                            <!-- /.card-body -->
-                            <div class="card-footer">
-                            </div>
                         </div>
-                        <!-- /.card -->
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                        </div>
+                        <!-- /.card-footer -->
+
                     </div>
+                    <!-- /.card -->
                 </div>
             </section>
-
         </ContentTemplate>
-        <Triggers>
-            <asp:AsyncPostBackTrigger ControlID="BtnSearch" EventName="Click" />
-            <asp:AsyncPostBackTrigger ControlID="BtnClear" EventName="Click" />
-        </Triggers>
     </asp:UpdatePanel>
 </asp:Content>
-<asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="script" runat="Server">
     <script type="text/javascript">
         $(function () {
             $('#<%=gvGatepass.ClientID%>').DataTable({
-                searching: false,
+                searching: true,
                 dom: 'Bfrtip',
                 buttons: [
                     {
@@ -224,18 +218,18 @@
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
                 $('#<%=gvGatepass.ClientID%>').DataTable({
-                    searching: false,
-                    dom: 'Bfrtip',
-                    buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            title: 'Farm Out Monitoring'
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            title: 'Farm Out Monitoring'
-                        }
-                    ]
+                searching: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        title: 'Farm Out Monitoring'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Farm Out Monitoring'
+                    }
+                ]
                 });
 
                 //Initialize Select2 Elements

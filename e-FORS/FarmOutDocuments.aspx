@@ -19,12 +19,12 @@
     </section>
 
     <!-- Main content -->
-    <asp:scriptmanager id="ScriptManager1" runat="server"></asp:scriptmanager>
-    <asp:updatepanel id="upTable" runat="server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+    <asp:UpdatePanel ID="upTable" runat="server">
         <ContentTemplate>
             <section class="content">
                 <div class="container-fluid">
-                    <div class="card card-info">
+                    <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Farm-out Documents</h3>
                         </div>
@@ -34,7 +34,12 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Farm-out Control No.</label>
-                                        <asp:TextBox runat="server" ID="tbFarmOutControlNo" CssClass="form-control" Enabled="false"></asp:TextBox>
+                                        <div class="input-group">
+                                            <asp:TextBox runat="server" ID="tbFarmOutControlNo" CssClass="form-control" Enabled="false"></asp:TextBox>
+                                            <div class="input-group-append">
+                                                <asp:LinkButton runat="server" ID="LnkBtnView" CssClass="btn btn-info" Text="View" OnClick="LnkBtnView_Click" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">
@@ -42,7 +47,7 @@
                                         <asp:DropDownList runat="server" ID="ddlDocumentFormattobeUsed" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlDocumentFormattobeUsed_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                                         <div class="card">
                                             <div class="card-body p-0">
-                                                <asp:GridView runat="server" ID="GrvPrint" CssClass="table table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="true" OnRowCommand="GrvPrint_RowCommand" Visible="false" OnRowDataBound="GrvPrint_RowDataBound">
+                                                <asp:GridView runat="server" ID="GrvPrint" BorderStyle="None" CssClass="table table-sm table-borderless" ShowHeaderWhenEmpty="true" AutoGenerateColumns="true" OnRowCommand="GrvPrint_RowCommand" Visible="false" OnRowDataBound="GrvPrint_RowDataBound">
                                                     <Columns>
                                                         <asp:TemplateField>
                                                             <ItemTemplate>
@@ -168,9 +173,9 @@
                                     <div class="form-group">
                                         <label>Prepared by</label>
                                         <div class="input-group">
-                                            <asp:DropDownList runat="server" ID="ddlPreparedby" CssClass="form-control select2" Enabled="false"></asp:DropDownList>
+                                            <asp:DropDownList runat="server" ID="ddlPreparedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm1_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm1_OnClick" />
                                             </div>
                                         </div>
                                     </div>
@@ -204,7 +209,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
                                             </div>
                                         </div>
                                         <small id="ApprovedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
@@ -239,10 +244,8 @@
                         </div>
                         <!-- /.card-body -->
 
-
-
                         <div class="card-footer">
-                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-info" Text="Save" Width="110px" Enabled="false" OnClick="BtnSave_OnClick" />
+                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary" Text="Save" Width="110px" Enabled="false" OnClick="BtnSave_OnClick" />
                         </div>
                     </div>
 
@@ -256,9 +259,9 @@
             <asp:AsyncPostBackTrigger ControlID="ddlLOAType" EventName="SelectedIndexChanged" />
             <asp:AsyncPostBackTrigger ControlID="ddlLOANo" EventName="SelectedIndexChanged" />
         </Triggers>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 
-    <asp:updatepanel id="upModalConfirm" runat="server">
+    <asp:UpdatePanel ID="upModalConfirm" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalConfirm">
@@ -298,9 +301,9 @@
             <!-- /.modal -->
             </section>
         </ContentTemplate>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 
-    <asp:updatepanel id="upRequestChange" runat="server">
+    <asp:UpdatePanel ID="upRequestChange" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalRequestChange" data-backdrop="static">
@@ -343,12 +346,12 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal -->
-            
+
             </section>
         </ContentTemplate>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 
-    <asp:updatepanel id="upReassignTask" runat="server">
+    <asp:UpdatePanel ID="upReassignTask" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalReassignTask" data-backdrop="static">
@@ -397,7 +400,7 @@
             </div>
             <!-- /.modal -->
         </ContentTemplate>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
 
@@ -489,11 +492,6 @@
             }
         })
 
-        function RemoveAttr() {
-            $("#<%=GrvPrint.ClientID%>").removeAttr("border");
-            $("#<%=GrvPrint.ClientID%>").removeAttr("rules");
-        }
-
         function AddDesign() {
             $('.select2').select2()
 
@@ -571,6 +569,10 @@
 
         function ShowReassigntoHelpBlock() {
             $('#ReassigntoHelpBlock').removeAttr('hidden');
+        }
+
+        function ShowLinkButton() {
+            $('#HideLinkButton').removeAttr('hidden');
         }
     </script>
 </asp:Content>

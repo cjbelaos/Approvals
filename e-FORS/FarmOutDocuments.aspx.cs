@@ -26,11 +26,8 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 GetDocumentFormattobeUsed();
                 GetLOAType();
                 GetEPPIAuthorizedSignatory();
+                GetPEZASignatory();
                 GetPreparedby();
-
-
-                tbPEZAExaminerSignatory.Text = "MS. TERESA ELAINE LAYLO / MS. PAMELA ROSE DEL RIO";
-                tbPEZAOICSignatory.Text = "MR. JOSE MA. GEREMI T. MANAS";
 
                 if (Request.QueryString["controlno"] != null)
                 {
@@ -42,28 +39,19 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                         GetFarmOutDocument();
                     }
                     ddlPreparedby.SelectedValue = UserID;
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
+                    //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
                 }
                 else
                 {
+                    LnkBtnView.Visible = false;
                     ddlPreparedby.SelectedValue = UserID;
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
+                    //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
                 }
             }
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
+            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveAttr()", true);
             ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "AddDesign();", true);
         }
     }
-
-    //private void AddUserInfo()
-    //{
-    //    DataSet ds = new DataSet();
-    //    ds = maint.GetUserInformation(UserID);
-    //    if (ds.Tables[0].DefaultView.Count > 0)
-    //    {
-    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-    //    }
-    //}
 
     protected void ddlDocumentFormattobeUsed_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -82,7 +70,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
         dt.Columns.Add("Task", typeof(string));
         dt.Rows.Add(ddlDocumentFormattobeUsed.SelectedItem.Text);
-        if (ddlDocumentFormattobeUsed.SelectedValue.ToString() != "4" && ddlDocumentFormattobeUsed.SelectedValue.ToString() != "0")
+        if (ddlDocumentFormattobeUsed.SelectedValue.ToString() != "4" && ddlDocumentFormattobeUsed.SelectedValue.ToString() != "")
         {
             dt.Rows.Add("GATEPASS");
             GrvPrint.Visible = true;
@@ -122,6 +110,14 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         }
     }
 
+    private void GetPEZASignatory()
+    {
+        DataSet ds = new DataSet();
+        ds = fodm.GetPEZASignatory();
+        tbPEZAExaminerSignatory.Text = ds.Tables[0].DefaultView[0]["NAME"].ToString();
+        tbPEZAOICSignatory.Text = ds.Tables[1].DefaultView[0]["NAME"].ToString();
+    }
+   
     private void GetDocumentFormattobeUsed()
     {
         DataSet ds = new DataSet();
@@ -163,7 +159,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         DataSet ds = new DataSet();
         ds = fodm.GetPreparedby();
         ddlPreparedby.DataSource = ds.Tables[0];
-        ddlPreparedby.DataTextField = "FullName";
+        ddlPreparedby.DataTextField = "Name";
         ddlPreparedby.DataValueField = "APOAccount";
         ddlPreparedby.DataBind();
         ddlPreparedby.Items.Insert(0, new ListItem("Choose...", ""));
@@ -204,16 +200,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         ddlLOANo.DataValueField = "ID";
         ddlLOANo.DataBind();
         ddlLOANo.Items.Insert(0, new ListItem("Choose...", ""));
-
-        //if (ddlDocumentFormattobeUsed.SelectedValue == "1" || ddlDocumentFormattobeUsed.SelectedValue == "2")
-        //{
-        //    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ShowLOA();", true);
-        //    if (tbFarmOutControlNo.Text == null || (tbFarmOutControlNo.Text != null && fodm.FinishTaskChecking(tbFarmOutControlNo.Text) == false))
-        //    {
-        //        ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "DisableBtnPrint();", true);
-        //    }
-
-        //}
     }
 
     protected void ddlLOANo_SelectedIndexChanged(object sender, EventArgs e)
@@ -318,7 +304,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         DisableForm();
 
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "DisableForm();", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ApprovedAlert();", true);
 
 
@@ -339,7 +324,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         DisableForm();
 
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "DisableForm()", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeAlert();", true);
     }
     protected void BtnCancelRequestChange_OnClick(object sender, EventArgs e)
@@ -375,7 +359,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             DisableForm();
 
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "DisableForm()", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignAlert();", true);
         }
 
@@ -519,5 +502,10 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 button.Enabled = true;
             }
         }
+    }
+
+    protected void LnkBtnView_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("FarmOutRequestForm.aspx" + "?controlno=" + tbFarmOutControlNo.Text);
     }
 }

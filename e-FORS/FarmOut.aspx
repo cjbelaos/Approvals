@@ -14,7 +14,7 @@
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                                <li class="breadcrumb-item active">Reports</li>
+                                <li class="breadcrumb-item active">FarmOut</li>
                             </ol>
                         </div>
                     </div>
@@ -26,9 +26,9 @@
             <section class="content">
                 <div class="container-fluid">
 
-                    <div class="card card-success">
+                    <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Gatepass</h3>
+                            <h3 class="card-title">FarmOut</h3>
                         </div>
                         <!-- /.card-header -->
 
@@ -76,18 +76,17 @@
 
                             <div class="row">
                                 <div class="col">
-                                    <asp:Button runat="server" ID="BtnSearch" Text="Search" class="btn btn-primary" Width="110px" OnClick="BtnSearch_OnClick" />
-                                    <asp:Button runat="server" ID="BtnClear" Text="Clear" class="btn btn-warning" Width="110px" OnClick="BtnClear_OnClick" />
+                                    <asp:Button runat="server" ID="BtnSearch" Text="Search" class="btn btn-primary" Width="70px" OnClick="BtnSearch_OnClick" />
+                                    <asp:Button runat="server" ID="BtnClear" Text="Clear" class="btn btn-warning" Width="70px" OnClick="BtnClear_OnClick" />
                                 </div>
                             </div>
                         </div>
                         <!-- /.card-body -->
 
                         <div class="card-body">
-
                             <div class="row">
                                 <div class="table-responsive">
-                                    <asp:GridView runat="server" ID="gvFarmout" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false">
+                                    <asp:GridView runat="server" ID="gvFarmout" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false" Width="3000px">
                                         <Columns>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Control Number" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
@@ -189,23 +188,19 @@
 
                         <div class="card-footer">
                         </div>
+
                     </div>
                     <!-- /.card -->
                 </div>
             </section>
-
         </ContentTemplate>
-        <Triggers>
-            <asp:AsyncPostBackTrigger ControlID="BtnSearch" EventName="Click" />
-            <asp:AsyncPostBackTrigger ControlID="BtnClear" EventName="Click" />
-        </Triggers>
     </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
             $('#<%=gvFarmout.ClientID%>').DataTable({
-                searching: false,
+                searching: true,
                 dom: 'Bfrtip',
                 buttons: [
                     {
@@ -233,7 +228,7 @@
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
                 $('#<%=gvFarmout.ClientID%>').DataTable({
-                    searching: false,
+                    searching: true,
                     dom: 'Bfrtip',
                     buttons: [
                         {

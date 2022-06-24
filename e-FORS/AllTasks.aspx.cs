@@ -10,42 +10,27 @@ public partial class AllTasks : System.Web.UI.Page
     public static string UserID;
     public static string UserName;
 
-    //public static string UserName = "Geryl Mendoza";
-    //public static string UserID = "D009488"; // Geryl Mendoza
-
-    //public static string UserName = "Dayanara Palomar";
-    //public static string UserID = "D018275";
-
-    public static string ToTitleCase(string title)
-    {
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
-
     protected void Page_Load(object sender, EventArgs e)
     {
-        UserID = Session["UserID"].ToString();
-        UserName = Session["UserName"].ToString();
-
-        if (!Page.IsPostBack)
+        if (Session["UserID"] == null && Session["UserName"] == null)
         {
-            //AddUserInfo();
-            GetAllTasks();
+            Response.Redirect("Login.aspx");
         }
+        else
+        {
+            UserID = Session["UserID"].ToString();
+            UserName = Session["UserName"].ToString();
 
+            if (!Page.IsPostBack)
+            {
+                GetAllTasks();
+            }
+        }
+        
         //Required for jQuery DataTables to work.
         gvAllTasks.UseAccessibleHeader = true;
         gvAllTasks.HeaderRow.TableSection = TableRowSection.TableHeader;
     }
-
-    //private void AddUserInfo()
-    //{
-    //    DataSet ds = new DataSet();
-    //    ds = maint.GetUserInformation(UserID);
-    //    if (ds.Tables[0].DefaultView.Count > 0)
-    //    {
-    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-    //    }
-    //}
 
     private void GetAllTasks()
     {

@@ -11,37 +11,28 @@ public partial class LOA : System.Web.UI.Page
     public static string UserName;
     public static string UserID;
 
-    public static string ToTitleCase(string title)
-    {
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["UserID"] == null && Session["UserName"] == null)
         {
             Response.Redirect("Login.aspx");
         }
-
-        if (!Page.IsPostBack)
+        else
         {
-            UserID = Session["UserID"].ToString();
-            UserName = Session["UserName"].ToString();
+            if (!Page.IsPostBack)
+            {
+                UserID = Session["UserID"].ToString();
+                UserName = Session["UserName"].ToString();
 
-            AddSupplierName();
-            GetLOA();
-            //AddUserInfo();
+                AddSupplierName();
+                GetLOA();
+            }
         }
-    }
-    //private void AddUserInfo()
-    //{
-    //    DataSet ds = new DataSet();
-    //    ds = maint.GetUserInformation(UserID);
-    //    if (ds.Tables[0].DefaultView.Count > 0)
-    //    {
-    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-    //    }
-    //}
 
+        gvLOA.UseAccessibleHeader = true;
+        gvLOA.HeaderRow.TableSection = TableRowSection.TableHeader;
+    }
+    
     protected void BtnSearch_OnClick(object sender, EventArgs e)
     {
         GetLOA();
@@ -53,7 +44,6 @@ public partial class LOA : System.Web.UI.Page
         ddlSupplier.SelectedIndex = 0;
         tbDateFrom.Text = "";
         tbDateTo.Text = "";
-        GetLOA();
     }
 
     private void AddSupplierName()

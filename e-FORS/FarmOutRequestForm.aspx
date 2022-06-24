@@ -13,7 +13,7 @@
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                                <li class="breadcrumb-item active">Forms</li>
+                                <li class="breadcrumb-item active">Farm-out Request Form</li>
                             </ol>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
             <section class="content">
                 <div class="container-fluid">
 
-                    <div class="card card-info">
+                    <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Farm-out Request Form</h3>
                             <asp:TextBox runat="server" ID="inputUserID" CssClass="form-control" Visible="false"></asp:TextBox>
@@ -39,7 +39,12 @@
                                 <div class="col-md-4">
                                     <div class="form-group" id="ControlNo">
                                         <label class="col-form-label" for="tbControlNo"><i class="far fa-bell"></i>&nbsp;Control No.</label>
-                                        <asp:TextBox runat="server" ID="tbControlNo" CssClass="form-control ControlNo" Enabled="false"></asp:TextBox>
+                                        <div class="input-group">
+                                            <asp:TextBox runat="server" ID="tbControlNo" CssClass="form-control ControlNo" Enabled="false"></asp:TextBox>
+                                            <div class="input-group-append">
+                                                <asp:LinkButton runat="server" ID="LnkBtnBack" CssClass="btn btn-info" Text="Back" OnClick="LnkBtnBack_Click"/>
+                                            </div>
+                                        </div>
                                         <small id="tbControlNoHelpBlock" class="form-text text-danger">This is auto-generated upon saving.</small>
                                     </div>
                                 </div>
@@ -207,7 +212,7 @@
 
                         <div class="card-body">
                             <div class="row mb-1">
-                                <asp:Button runat="server" ID="BtnAdd" Text="Add" class="btn btn-info BtnAdd" OnClick="BtnAdd_OnClick" Width="110px" />
+                                <asp:Button runat="server" ID="BtnAdd" Text="Add" CssClass="btn btn-primary BtnAdd" Enabled="false" OnClick="BtnAdd_OnClick" Width="70px" />
                             </div>
                             <div class="row">
                                 <div class="table-responsive">
@@ -270,21 +275,21 @@
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Button ID="btnEdit" runat="server" Text="Edit"
+                                                    <asp:Button ID="BtnEdit" runat="server" Text="Edit"
                                                         CommandName="EditItem"
                                                         CommandArgument='<%#Eval("ID") %>'
                                                         CssClass="btn btn-warning btn-sm"
-                                                        Width="100px" />
+                                                        Width="70px" />
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Button ID="btnDelete" runat="server" Text="Delete"
+                                                    <asp:Button ID="BtnDelete" runat="server" Text="Delete"
                                                         CommandName="DeleteItem"
                                                         CommandArgument='<%#Eval("ID") %>'
                                                         OnClientClick="return confirm('Are you sure you want to delete product?')"
                                                         CssClass="btn btn-danger btn-sm"
-                                                        Width="100px" />
+                                                        Width="70px" />
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                         </Columns>
@@ -292,8 +297,6 @@
                                     </asp:GridView>
                                 </div>
                             </div>
-
-
                         </div>
                         <!-- /.card-body -->
 
@@ -315,10 +318,10 @@
                                         <div class="input-group">
                                             <div class="custom-file">
                                                 <asp:FileUpload runat="server" CssClass="custom-file-input" ID="fuChooseFile" name="choosefile" AllowMultiple="true" />
-                                                <label class="custom-file-label" for="fuChooseFile">Choose file</label>
+                                                <label class="custom-file-label" for="fuChooseFile"></label>
                                             </div>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnUpload" CssClass="btn btn-info" Text="Upload" OnClick="BtnUpload_Click" />
+                                                <asp:Button runat="server" ID="BtnUpload" CssClass="btn btn-success" Text="Upload" OnClick="BtnUpload_Click" />
                                             </div>
                                         </div>
                                         <div class="card">
@@ -327,12 +330,12 @@
                                                     <Columns>
                                                         <asp:TemplateField ItemStyle-VerticalAlign="Middle">
                                                             <ItemTemplate>
-                                                                <asp:Button ID="btnDelete" runat="server" Text="Delete"
+                                                                <asp:Button ID="BtnDelete" runat="server" Text="Delete"
                                                                     CommandName="DeleteItem"
                                                                     CommandArgument='<%#Eval("ID") %>'
                                                                     OnClientClick="return confirm('Are you sure you want to delete product?')"
                                                                     CssClass="btn btn-danger btn-sm"
-                                                                    Width="100px" />
+                                                                    Width="70px" />
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
                                                         <asp:TemplateField HeaderText="File Name" ItemStyle-VerticalAlign="Middle">
@@ -346,10 +349,8 @@
                                         </div>
                                     </div>
                                     <!-- /.form-group -->
-
                                 </div>
                                 <!-- /.col -->
-
                             </div>
                             <!-- /.row -->
                         </div>
@@ -440,7 +441,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlRequestedby" CssClass="form-control select2" Enabled="false"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-info" Text="Confirm" OnClick="BtnConfirm1_OnClick" Enabled="false" />
+                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-warning" Text="Confirm" OnClick="BtnConfirm1_OnClick" Enabled="false" />
                                             </div>
                                         </div>
                                     </div>
@@ -479,7 +480,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlCheckedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
                                             </div>
                                         </div>
                                         <small id="CheckedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
@@ -519,7 +520,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm3" CssClass="btn btn-info" Text="Confirm" Enabled="false" OnClick="BtnConfirm3_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm3" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm3_OnClick" />
                                             </div>
                                         </div>
                                         <small id="ApprovedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
@@ -556,15 +557,17 @@
                         <!-- /.card-body -->
 
                         <div class="card-footer">
-                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-info BtnSave" Text="Save" OnClick="BtnSave_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary BtnSave" Text="Save" OnClick="BtnSave_OnClick" Width="70px" />
                         </div>
                     </div>
                     <!-- /.card -->
                 </div>
             </section>
+
         </ContentTemplate>
         <Triggers>
             <asp:AsyncPostBackTrigger ControlID="ddlSupplierName" EventName="SelectedIndexChanged" />
+            <asp:PostBackTrigger ControlID="BtnUpload" />
         </Triggers>
     </asp:UpdatePanel>
     <asp:UpdatePanel ID="upModalItem" runat="server">
@@ -585,7 +588,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbItemNo">Item/Part Code/Serial No.</label>
-                                        <span style="color:#ff0000">*</span>
+                                        <span style="color: #ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbItemNo" CssClass="form-control" name="itemno"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -594,7 +597,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbItemDescription">Item Description</label>
-                                        <span style="color:#ff0000">*</span>
+                                        <span style="color: #ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbItemDescription" CssClass="form-control" name="itemdescription"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -607,7 +610,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbQuantity">Quantity</label>
-                                        <span style="color:#ff0000">*</span>
+                                        <span style="color: #ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbQuantity" CssClass="form-control" name="quantity" onkeypress="return isNumberKey(event)"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -616,7 +619,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbUnitofMeasurement">Unit of Measurement</label>
-                                        <span style="color:#ff0000">*</span>
+                                        <span style="color: #ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbUnitofMeasurement" CssClass="form-control" name="unitofmeasurement"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -687,7 +690,7 @@
                         </div>
                         <div class="modal-footer justify-content-between">
                             <button type="button" id="btnClose" class="btn btn-danger" data-dismiss="modal" style="width: 100px">Close</button>
-                            <asp:Button runat="server" ID="BtnSubmit" CssClass="btn btn-info" Text="Submit" OnClick="BtnSubmit_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSubmit" CssClass="btn btn-primary" Text="Submit" OnClick="BtnSubmit_OnClick" Width="110px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -698,7 +701,7 @@
             </section>
         </ContentTemplate>
         <Triggers>
-            <asp:AsyncPostBackTrigger ControlID="btnSubmit" EventName="Click" />
+            <asp:AsyncPostBackTrigger ControlID="BtnSubmit" EventName="Click" />
         </Triggers>
     </asp:UpdatePanel>
 
@@ -729,8 +732,8 @@
                             <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-info btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
-                            <button type="button" class="btn btn-info btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
+                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-success btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
+                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
                             <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-info btn-sm" OnClick="BtnRequestChange_OnClick" Width="110px" />
                             <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-info btn-sm" OnClick="BtnReassignTask_OnClick" Width="110px" />
                         </div>
@@ -842,18 +845,13 @@
             </section>
         </ContentTemplate>
     </asp:UpdatePanel>
-
-
-
 </asp:Content>
-
-
 
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
 
-            $('.BtnAdd').attr('disabled', true)
+            //$('.BtnAdd').attr('disabled', true)
 
             //Initialize Select2 Elements
             $('.select2').select2()
@@ -872,20 +870,11 @@
 
             bsCustomFileInput.init();
 
-            $('#form1').validate({
-                errorElement: 'span',
-                errorPlacement: function (error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                }
-            });
-
             $("#<%=gvFiles.ClientID%>").removeAttr("border");
             $("#<%=gvFiles.ClientID%>").removeAttr("rules");
 
             if ($(".ControlNo").val() != '[AUTOMATIC]') {
                 $('#tbControlNoHelpBlock').prop('hidden', true);
-                $('.BtnAdd').attr('disabled', false);
             }
 
             var x = $('#CheckedbyHelpBlock').attr('hidden')
@@ -939,7 +928,7 @@
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
 
-                $('.BtnAdd').attr('disabled', true)
+                //$('.BtnAdd').attr('disabled', true)
 
                 //Initialize Select2 Elements
                 $('.select2').select2()
@@ -958,20 +947,11 @@
 
                 bsCustomFileInput.init();
 
-                $('#form1').validate({
-                    errorElement: 'span',
-                    errorPlacement: function (error, element) {
-                        error.addClass('invalid-feedback');
-                        element.closest('.form-group').append(error);
-                    }
-                });
-
                 $("#<%=gvFiles.ClientID%>").removeAttr("border");
                 $("#<%=gvFiles.ClientID%>").removeAttr("rules");
 
                 if ($("#maincontent_tbControlNo").val() != '[AUTOMATIC]') {
                     $('#tbControlNoHelpBlock').prop('hidden', true);
-                    $('.BtnAdd').attr('disabled', false);
                 }
 
                 var x = $('#CheckedbyHelpBlock').attr('hidden')
@@ -1102,8 +1082,6 @@
             })
         }
 
-        
-
         function UpdateItemsSuccessAlert() {
             var Toast = Swal.mixin({
                 toast: true,
@@ -1131,41 +1109,6 @@
 
         function FailedAlert() {
             toastr.error('Please save Farm-Out First!')
-        }
-
-        function DisableForm() {
-            $('#maincontent_ddlDivision').prop('disabled', true);
-            $('#maincontent_ddlNatureofItem').prop('disabled', true);
-            $('#maincontent_ddlTransferto').prop('disabled', true);
-            $('#maincontent_ddlTypeofItem').prop('disabled', true);
-            $('#maincontent_ddlClassificationofItem').prop('disabled', true);
-            $('#maincontent_ddlPurposeofItem').prop('disabled', true);
-            $('#maincontent_tbLocalNo').prop('disabled', true);
-            $('#maincontent_tbDateRequested').prop('disabled', true);
-            $('#maincontent_tbActualDateofTransfer').prop('disabled', true);
-            $('#maincontent_tbTargetDateofReturn').prop('disabled', true);
-            $('#maincontent_BtnAdd').prop('disabled', true);
-            $('#maincontent_ddlPackagingUsed').prop('disabled', true);
-            $('#maincontent_fuChooseFile').prop('disabled', true);
-            $('#maincontent_BtnUpload').prop('disabled', true);
-            $('#maincontent_ddlSupplierName').prop('disabled', true);
-            $('#maincontent_tbOriginofItem').prop('disabled', true);
-            $('#maincontent_tbDestinationAddress').prop('disabled', true);
-            $('#maincontent_tbInvoiceNo').prop('disabled', true);
-            $('#maincontent_tbDeliveryReceiptNo').prop('disabled', true);
-            $('#maincontent_tbContactPerson').prop('disabled', true);
-            $('#maincontent_tbContactNo').prop('disabled', true);
-            $('#maincontent_tbTelephoneNo').prop('disabled', true);
-            $('#maincontent_tbFaxNo').prop('disabled', true);
-            $('#maincontent_ddlModeofTransfer').prop('disabled', true);
-            $('#maincontent_ddlTypeofTransfer').prop('disabled', true);
-            $('#maincontent_ddlCheckedby').prop('disabled', true);
-            $('#maincontent_ddlApprovedby').prop('disabled', true);
-            $('#maincontent_BtnSave').prop('disabled', true);
-            $('#maincontent_BtnConfirm1').prop('disabled', true);
-            $('#maincontent_BtnConfirm2').prop('disabled', true);
-            $('#maincontent_BtnConfirm3').prop('disabled', true);
-            $("#maincontent_gvItems").find("input,button,textarea,select").attr("disabled", "disabled");
         }
 
         //Function to allow only Decimal values to textbox
@@ -1219,12 +1162,9 @@
         }
 
         function ShowDestinationAddressHelpBlock() {
-            if ( $('.ddlDestinationAddress').val() != '')
-            {
+            if ($('.ddlDestinationAddress').val() != '') {
                 $('#DestinationAddressHelpBlock').removeAttr('hidden');
             }
         }
-
-
     </script>
 </asp:Content>

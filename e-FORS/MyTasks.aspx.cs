@@ -13,36 +13,21 @@ public partial class MyTasks : System.Web.UI.Page
     public static string UserID;
     public static string UserName;
 
-    public static string ToTitleCase(string title)
-    {
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
-
-    //public static string UserID = "D018277";
-    //public static string UserName = "Dayanara Palomar";
-    //public static string UserID = "D018275";
-    //public static string UserName = "Geryl Mendoza";
-    //public static string UserID = "D009488";
-    //public static string UserName = "Rommel Magcawas";
-    //public static string UserID = "D016023";
-    //public static string UserName = "CJ Belaos";
-    //public static string UserID = "B012128";
-    //public static string UserName = "Maricar Mendoza";
-    //public static string UserID = "D011094";
     protected void Page_Load(object sender, EventArgs e)
     {
         if(Session["UserID"] == null && Session["UserName"] == null)
         {
             Response.Redirect("Login.aspx");
         }
-
-        UserID = Session["UserID"].ToString();
-        UserName = Session["UserName"].ToString();
-
-        if (!Page.IsPostBack)
+        else
         {
-            //AddUserInfo();
-            GetMyTasks();
+            UserID = Session["UserID"].ToString();
+            UserName = Session["UserName"].ToString();
+
+            if (!Page.IsPostBack)
+            {
+                GetMyTasks();
+            }
         }
 
         //Required for jQuery DataTables to work.
@@ -75,14 +60,4 @@ public partial class MyTasks : System.Web.UI.Page
 
         Response.Redirect(lbl.Text + "?controlno=" + lnk.Text);
     }
-
-    //private void AddUserInfo()
-    //{
-    //    DataSet ds = new DataSet();
-    //    ds = maint.GetUserInformation(UserID);
-    //    if (ds.Tables[0].DefaultView.Count > 0)
-    //    {
-    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-    //    }
-    //}
 }

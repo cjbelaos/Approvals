@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -9,42 +8,28 @@ public partial class FarmOut : System.Web.UI.Page
     private static readonly Maintenance maint = new Maintenance();
     public static string UserID;
     public static string UserName;
-    //public static string UserName = "Dayanara Palomar";
-    //public static string UserID = "D018275";
-    public static string ToTitleCase(string title)
-    {
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!Page.IsPostBack)
+        if (Session["UserID"] == null && Session["UserName"] == null)
         {
-            if (Session["UserID"] == null && Session["UserName"] == null)
-            {
-                Response.Redirect("Login.aspx");
-            }
-
-            UserID = Session["UserID"].ToString();
-            UserName = Session["UserName"].ToString();
-
-            AddSupplierName();
-            GetFarmOut();
-            //AddUserInfo();
+            Response.Redirect("Login.aspx");
         }
+        else
+        {
+            if (!Page.IsPostBack)
+            {
+                UserID = Session["UserID"].ToString();
+                UserName = Session["UserName"].ToString();
 
+                AddSupplierName();
+                GetFarmOut();
+            }
+        }
+        
         gvFarmout.UseAccessibleHeader = true;
         gvFarmout.HeaderRow.TableSection = TableRowSection.TableHeader;
     }
-
-    //private void AddUserInfo()
-    //{
-    //    DataSet ds = new DataSet();
-    //    ds = maint.GetUserInformation(UserID);
-    //    if (ds.Tables[0].DefaultView.Count > 0)
-    //    {
-    //        lblUserName.Text = ToTitleCase(ds.Tables[0].DefaultView[0]["FullName"].ToString());
-    //    }
-    //}
 
     protected void BtnSearch_OnClick(object sender, EventArgs e)
     {
@@ -66,7 +51,6 @@ public partial class FarmOut : System.Web.UI.Page
         ddlSupplier.SelectedIndex = 0;
         tbDateFrom.Text = "";
         tbDateTo.Text = "";
-        GetFarmOut();
     }
 
     private void AddSupplierName()
@@ -78,6 +62,7 @@ public partial class FarmOut : System.Web.UI.Page
         ddlSupplier.DataBind();
         ddlSupplier.Items.Insert(0, new ListItem("Choose...", ""));
     }
+
     private void GetFarmOut()
     {
         ReportDetails rd = new ReportDetails();

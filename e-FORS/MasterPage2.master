@@ -8,7 +8,8 @@
     <title>e-FORS | <% Response.Write(serviceName); %></title>
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <%--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">--%>
+    <link href="AdminLTE-3.2.0/plugins/fonts/Font.css" rel="stylesheet" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
     <!-- SweetAlert2 -->
@@ -25,18 +26,19 @@
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <!-- daterange picker -->
-    <link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/daterangepicker/daterangepicker.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/dist/css/adminlte.min.css">
+    <link href="ProgressBar.css" rel="stylesheet" />
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <form id="form1" runat="server">
         <div class="wrapper">
 
             <!-- Preloader -->
-            <div class="preloader flex-column justify-content-center align-items-center">
+            <%--<div class="preloader flex-column justify-content-center align-items-center">
                 <img class="animation__shake" src="Images/Logo.bmp" alt="e-FORS Logo" height="60" width="60">
-            </div>
+            </div>--%>
 
             <!-- Navbar -->
             <nav class="main-header navbar navbar-expand navbar-dark">
@@ -180,7 +182,7 @@
             <!-- /.navbar -->
 
             <!-- Main Sidebar Container -->
-            <aside class="main-sidebar sidebar-dark-info elevation-4">
+            <aside class="main-sidebar sidebar-dark-primary elevation-4">
                 <!-- Brand Logo -->
                 <a href="Home.aspx" class="brand-link">
                     <img src="Images/Logo.bmp" alt="e-FORS Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -246,7 +248,7 @@
                                     <p>
                                         Tasks
                             <i class="fas fa-angle-left right"></i>
-                                        <span class="badge badge-info right" <% Response.Write(HideCountMyTasks); %>><% Response.Write(CountMyTasks); %></span>
+                                        <span class="badge badge-info  right" <% Response.Write(HideCountMyTasks); %>><% Response.Write(CountMyTasks); %></span>
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
@@ -391,7 +393,6 @@
         <script src="AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
         <!-- AdminLTE for demo purposes -->
         <script src="AdminLTE-3.2.0/dist/js/demo.js"></script>
-
         <!-- Script -->
         <asp:ContentPlaceHolder ID="script" runat="server">
         </asp:ContentPlaceHolder>
