@@ -311,7 +311,6 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Request Change</h4>
-                            </button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
@@ -359,7 +358,6 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Re-assign Task</h4>
-                            </button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
@@ -401,6 +399,44 @@
             <!-- /.modal -->
         </ContentTemplate>
     </asp:UpdatePanel>
+
+    <asp:UpdatePanel ID="upPrint" runat="server">
+        <ContentTemplate>
+            <div class="modal fade" id="modalPrint">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Print PEZA Form No. 8106</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Please Enter Date of Processing:</label>
+                                    <div class="input-group date" id="DateOfProcessing" data-target-input="nearest">
+                                        <asp:TextBox runat="server" ID="tbDateOfProcessing" CssClass="form-control datetimepicker-input" data-target="#DateOfProcessing"></asp:TextBox>
+                                        <div class="input-group-append" data-target="#DateOfProcessing" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <asp:Button runat="server" ID="BtnDone" CssClass="btn btn-info btn-sm" Text="Done" OnClick="BtnDone_Click" Width="70px" />
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+        </ContentTemplate>
+    </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
 
@@ -420,6 +456,9 @@
                 format: 'L'
             });
             $('#ExpiryDate2').datetimepicker({
+                format: 'L'
+            });
+            $('#DateOfProcessing').datetimepicker({
                 format: 'L'
             });
 
@@ -463,6 +502,9 @@
                     format: 'L'
                 });
                 $('#ExpiryDate2').datetimepicker({
+                    format: 'L'
+                });
+                $('#DateOfProcessing').datetimepicker({
                     format: 'L'
                 });
 

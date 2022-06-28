@@ -375,9 +375,9 @@ public class FarmOutDocumentsMaintenance
         return ds;
     }
 
-    public DataSet GetLOA8106ForPrint(string ControlNo)
+    public DataSet PrintLOA8106(string ControlNo)
     {
-        SqlCommand cmd = new SqlCommand("GetLOA8106ForPrint", conn);
+        SqlCommand cmd = new SqlCommand("PrintLOA8106", conn);
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
 
@@ -517,5 +517,7 @@ public class FarmOutDocumentsMaintenance
             return false;
         }
     }
+
+
 
 }

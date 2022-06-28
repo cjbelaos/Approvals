@@ -102,11 +102,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
         if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8106"))
         {
-            DataSet dsPEZA8106 = fodm.GetLOA8106ForPrint(tbFarmOutControlNo.Text);
-            DataTable dt = fodm.GetAuthorizedOfficial(UserID);
-            Session["dsPEZA8106"] = dsPEZA8106;
-            Session["dtAuthorizedOfficial"] = dt;
-            Response.Redirect("PEZA8106Print.aspx");
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
         }
     }
 
@@ -507,5 +503,19 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     protected void LnkBtnView_Click(object sender, EventArgs e)
     {
         Response.Redirect("FarmOutRequestForm.aspx" + "?controlno=" + tbFarmOutControlNo.Text);
+    }
+
+    protected void BtnDone_Click(object sender, EventArgs e)
+    {
+        Session["ControlNo"] = Request.QueryString["controlno"].ToString();
+
+        DataTable dt = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
+        Session["AuthorizedOffical"] = dt.Rows[0]["AuthorizedOfficial"].ToString();
+
+        string Date = tbDateOfProcessing.Text;
+        var parsedDate = DateTime.Parse(Date);
+        Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
+
+        Response.Redirect("PEZA8106Print.aspx");
     }
 }
