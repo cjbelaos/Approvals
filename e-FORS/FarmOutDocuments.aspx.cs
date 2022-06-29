@@ -205,7 +205,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         DataTable dt = new DataTable();
         dt = fodm.GetSuretyBondNo(LOANo);
         tbExpiryDate1.Text = dt.Rows[0]["ExpirationDate"].ToString();
-        ddlSuretyBondNo.Items.Insert(0, new ListItem(dt.Rows[0]["SBNo"].ToString(), "0"));
+        ddlSuretyBondNo.Items.Insert(0, new ListItem(dt.Rows[0]["SBNo"].ToString(), ""));
         tbExpiryDate2.Text = dt.Rows[0]["ExpirationDate1"].ToString();
     }
 
@@ -218,23 +218,63 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         
         if (ddlApprovedby.SelectedValue != "")
         {
-                string ControlNo = tbFarmOutControlNo.Text;
-                string DocumentFormat = ddlDocumentFormattobeUsed.SelectedItem.Text;
-                string PEZADocumentNo = tbPEZADocumentNo.Text;
-                string GatepassNo = tbGatepassNo.Text;
-                string LOAType = ddlLOAType.SelectedItem.Text;
-                string LOANo = ddlLOANo.SelectedItem.Text;
-                string LOAExpiryDate = tbExpiryDate1.Text;
-                string SuretyBondNo = ddlSuretyBondNo.SelectedItem.Text;
-                string SuretyExpiryDate = tbExpiryDate2.Text;
-                string ContainerNo = tbContainerNo.Text;
-                string PEZASeal = tbPEZASeal.Text;
-                string PlateNo = tbPlateNo.Text;
-                string ControlNo8105 = tb8105ControlNo.Text;
-                string EPPIAuthorizedSignatory = ddlEPPIAuthorizedSignatory.Text;
-                string PEZAExaminerSignatory = tbPEZAExaminerSignatory.Text;
-                string PEZAOICSignatory = tbPEZAOICSignatory.Text;
-                fodm.SaveFarmOutDocuments(
+            string ControlNo = tbFarmOutControlNo.Text;
+            string DocumentFormat = ddlDocumentFormattobeUsed.SelectedItem.Text;
+            string PEZADocumentNo = tbPEZADocumentNo.Text.ToUpper();
+            string GatepassNo = tbGatepassNo.Text.ToUpper();
+            string LOAType;
+            if (ddlLOAType.SelectedValue == "")
+            {
+                LOAType = "";
+            }
+            else
+            {
+                LOAType = ddlLOAType.SelectedItem.Text;
+            }
+            string LOANo;
+            if (ddlLOANo.SelectedValue == "")
+            {
+                LOANo = "";
+            }
+            else
+            {
+                LOANo = ddlLOANo.SelectedItem.Text;
+            }
+            string LOAExpiryDate;
+            if (tbExpiryDate1.Text == "")
+            {
+                LOAExpiryDate = "";
+            }
+            else
+            {
+                LOAExpiryDate = tbExpiryDate1.Text;
+            }
+            string SuretyBondNo;
+            if (ddlSuretyBondNo.SelectedValue == "")
+            {
+                SuretyBondNo = "";
+            }
+            else
+            {
+                SuretyBondNo = ddlSuretyBondNo.SelectedItem.Text;
+            }
+            string SuretyExpiryDate;
+            if (tbExpiryDate2.Text == "")
+            {
+                SuretyExpiryDate = "";
+            }
+            else
+            {
+                SuretyExpiryDate = tbExpiryDate2.Text;
+            }
+            string ContainerNo = tbContainerNo.Text.ToUpper();
+            string PEZASeal = tbPEZASeal.Text.ToUpper();
+            string PlateNo = tbPlateNo.Text.ToUpper();
+            string ControlNo8105 = tb8105ControlNo.Text.ToUpper();
+            string EPPIAuthorizedSignatory = ddlEPPIAuthorizedSignatory.Text;
+            string PEZAExaminerSignatory = tbPEZAExaminerSignatory.Text;
+            string PEZAOICSignatory = tbPEZAOICSignatory.Text;
+            fodm.SaveFarmOutDocuments(
                     ControlNo,
                     DocumentFormat,
                     PEZADocumentNo,
@@ -408,29 +448,36 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             }
             tbPEZADocumentNo.Text = ds.Tables[1].DefaultView[0]["PEZADOCUMENTNO"].ToString();
             tbGatepassNo.Text = ds.Tables[1].DefaultView[0]["GATEPASSNO"].ToString();
-            ddlLOAType.ClearSelection();
-            ddlLOAType.Items.FindByText(ds.Tables[1].DefaultView[0]["LOATYPE"].ToString()).Selected = true;
+            if (ds.Tables[1].DefaultView[0]["LOATYPE"].ToString() == "")
             {
-                ddlLOANo.Items.Clear();
-                ddlSuretyBondNo.Items.Clear();
-                string LOAType = ddlLOAType.SelectedItem.Text;
-                DataTable dt = new DataTable();
-                dt = fodm.GetLOANo(LOAType);
-                ddlLOANo.DataSource = dt;
-                ddlLOANo.DataTextField = "LOANo";
-                ddlLOANo.DataValueField = "ID";
-                ddlLOANo.DataBind();
-                ddlLOANo.Items.Insert(0, new ListItem("Choose...", ""));
+                ddlLOAType.SelectedValue = "";
             }
-            ddlLOANo.Items.FindByText(ds.Tables[1].DefaultView[0]["LOANO"].ToString()).Selected = true;
+            else
             {
-                ddlSuretyBondNo.Items.Clear();
-                string LOANo = ddlLOANo.SelectedItem.Text;
-                DataTable dt = new DataTable();
-                dt = fodm.GetSuretyBondNo(LOANo);
-                tbExpiryDate1.Text = dt.Rows[0]["ExpirationDate"].ToString();
-                ddlSuretyBondNo.Items.Insert(0, new ListItem(dt.Rows[0]["SBNo"].ToString(), "0"));
-                tbExpiryDate2.Text = dt.Rows[0]["ExpirationDate1"].ToString();
+                ddlLOAType.ClearSelection();
+                ddlLOAType.Items.FindByText(ds.Tables[1].DefaultView[0]["LOATYPE"].ToString()).Selected = true;
+                {
+                    ddlLOANo.Items.Clear();
+                    ddlSuretyBondNo.Items.Clear();
+                    string LOAType = ddlLOAType.SelectedItem.Text;
+                    DataTable dt = new DataTable();
+                    dt = fodm.GetLOANo(LOAType);
+                    ddlLOANo.DataSource = dt;
+                    ddlLOANo.DataTextField = "LOANo";
+                    ddlLOANo.DataValueField = "ID";
+                    ddlLOANo.DataBind();
+                    ddlLOANo.Items.Insert(0, new ListItem("Choose...", ""));
+                }
+                ddlLOANo.Items.FindByText(ds.Tables[1].DefaultView[0]["LOANO"].ToString()).Selected = true;
+                {
+                    ddlSuretyBondNo.Items.Clear();
+                    string LOANo = ddlLOANo.SelectedItem.Text;
+                    DataTable dt = new DataTable();
+                    dt = fodm.GetSuretyBondNo(LOANo);
+                    tbExpiryDate1.Text = dt.Rows[0]["ExpirationDate"].ToString();
+                    ddlSuretyBondNo.Items.Insert(0, new ListItem(dt.Rows[0]["SBNo"].ToString(), "0"));
+                    tbExpiryDate2.Text = dt.Rows[0]["ExpirationDate1"].ToString();
+                }
             }
             tbContainerNo.Text = ds.Tables[1].DefaultView[0]["CONTAINERNO"].ToString();
             tbPEZASeal.Text = ds.Tables[1].DefaultView[0]["PEZASEAL"].ToString();
@@ -478,6 +525,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         tbPlateNo.Enabled = false;
         tb8105ControlNo.Enabled = false;
         ddlEPPIAuthorizedSignatory.Enabled = false;
+        ddlPreparedby.Enabled = false;
         ddlApprovedby.Enabled = false;
         BtnConfirm1.Enabled = false;
         BtnConfirm2.Enabled = false;

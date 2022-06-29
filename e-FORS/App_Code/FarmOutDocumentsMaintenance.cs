@@ -220,9 +220,17 @@ public class FarmOutDocumentsMaintenance
             cmd.Parameters.AddWithValue("@CreatedBy", UserName);
             cmd.Parameters.AddWithValue("@UpdatedBy", UserName);
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
-            conn.Close();
+            if (conn.State == ConnectionState.Open)
+            {
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            else
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
         }
         catch (Exception ex)
         {

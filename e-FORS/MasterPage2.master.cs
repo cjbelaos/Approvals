@@ -16,7 +16,8 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
 
     public string serviceName;
 
-    public string HideAllTasks; 
+    public string HideAllTasks;
+    public string HideFinishedTasks;
 
     public string HideCountMyTasks;
 
@@ -31,6 +32,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
     public string Tasks = "";
     public string MyTasks = "";
     public string AllTasks = "";
+    public string FinishedTasks = "";
     
     public string ReportsMenuOpen = "";
     public string Reports = "";
@@ -96,6 +98,12 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 Tasks = "active";
                 AllTasks = "active";
             }
+            else if (serviceName == "FinishedTasks.aspx")
+            {
+                TasksMenuOpen = "menu-open";
+                Tasks = "active";
+                FinishedTasks = "active";
+            }
             else if (serviceName == "Gatepass.aspx")
             {
                 ReportsMenuOpen = "menu-open";
@@ -131,6 +139,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
             if (x == false)
             {
                 HideAllTasks = "hidden";
+                HideFinishedTasks = "hidden";
             }
         }
     }

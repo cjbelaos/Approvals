@@ -124,6 +124,33 @@ public class Maintenance
         }
     }
 
+    public DataTable GetFinishedTasks()
+    {
+        using (SqlCommand cmd = new SqlCommand("GetFinishedTasks", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd);
+            DataTable dataTable = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    sqlDataAdapter.Fill(dataTable);
+                }
+                else
+                {
+                    conn.Open();
+                    sqlDataAdapter.Fill(dataTable);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dataTable;
+        }
+    }
+
     public DataSet SaveFarmOutRequestForm(FarmOutDetails fo, string strUsername)
     {
         using (var cmd = new SqlCommand("SaveFarmOutRequestForm", conn) { CommandType = CommandType.StoredProcedure })

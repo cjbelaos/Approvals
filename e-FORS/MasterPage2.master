@@ -264,6 +264,12 @@
                                             <p>All Tasks</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item" <% Response.Write(HideFinishedTasks); %>>
+                                        <a href="FinishedTasks.aspx" class="nav-link <% Response.Write(FinishedTasks); %>">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Finished Tasks</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="nav-item <% Response.Write(ReportsMenuOpen); %>">

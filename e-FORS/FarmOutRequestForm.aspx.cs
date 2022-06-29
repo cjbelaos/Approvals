@@ -381,7 +381,7 @@ public partial class Default : System.Web.UI.Page
                 fo.TransferTo = ddlTransferto.SelectedValue;
                 fo.TypeOfItem = ddlTypeofItem.SelectedValue;
                 fo.ClassificationOfItem = ddlClassificationofItem.SelectedValue;
-                if (ddlPurposeofItem.SelectedValue == "Return(Others)")
+                if (ddlPurposeofItem.SelectedValue == "Return (Others)")
                 {
                     fo.PurposeOfItem = tbOthers.Text;
                 }
@@ -678,7 +678,18 @@ public partial class Default : System.Web.UI.Page
             ddlTransferto.SelectedValue = ds.Tables[0].DefaultView[0]["TransferTo"].ToString();
             ddlTypeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["TypeOfItem"].ToString();
             ddlClassificationofItem.SelectedValue = ds.Tables[0].DefaultView[0]["ClassificationOfItem"].ToString();
-            ddlPurposeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
+            if (ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()) == null)
+            {
+                ddlPurposeofItem.SelectedValue = "Return (Others)";
+                tbOthers.Text = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowOthers()", true);
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);
+            }
+            else
+            {
+                ddlPurposeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);
+            }
             tbBearerEmployeeNo.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeNo"].ToString();
             tbBearerEmployeeName.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeName"].ToString();
             tbEmployeeNo.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeNo"].ToString();
