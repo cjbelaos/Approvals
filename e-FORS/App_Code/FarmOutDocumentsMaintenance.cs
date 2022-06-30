@@ -526,6 +526,83 @@ public class FarmOutDocumentsMaintenance
         }
     }
 
+    public Boolean CheckIfWithContainer(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("CheckIfWithContainer", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
 
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
 
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public Boolean CheckIfWithLOA(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("CheckIfWithLOA", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

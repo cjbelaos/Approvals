@@ -190,12 +190,27 @@ public class Maintenance
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
 
-            conn.Open();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(ds);
 
-            da.Fill(ds);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
 
-            conn.Close();
+                    da.Fill(ds);
 
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
             return ds;
         }
     }

@@ -94,14 +94,16 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     {
         if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("GATEPASS"))
         {
-            DataSet dsGatepass = fodm.GetGatepassForPrint(tbFarmOutControlNo.Text);
-            Session["dsGatepass"] = dsGatepass;
-            Session["ControlNo"] = tbFarmOutControlNo.Text;
-            Response.Redirect("GatepassPrint.aspx");
+            lblPrintTitle.Text = "Print Gatepass";
+            lblPrintTask.Text = "Date of Pull-out";
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
+            
         }
 
         if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8106"))
         {
+            lblPrintTitle.Text = "Print PEZA Form 8106";
+            lblPrintTask.Text = "Date";
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
         }
     }
@@ -555,15 +557,35 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void BtnDone_Click(object sender, EventArgs e)
     {
-        Session["ControlNo"] = Request.QueryString["controlno"].ToString();
+        if (lblPrintTitle.Text == "Print Gatepass")
+        {
+            string DateOfPullOut = txtDate.Text;
+            var parsedDate = DateTime.Parse(DateOfPullOut);
+            Session["DateOfPullOut"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
 
-        DataTable dt = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
-        Session["AuthorizedOffical"] = dt.Rows[0]["AuthorizedOfficial"].ToString();
+            DataSet dsGatepass = fodm.GetGatepassForPrint(tbFarmOutControlNo.Text);
+            Session["dsGatepass"] = dsGatepass;
+            Session["ControlNo"] = tbFarmOutControlNo.Text;
+            Response.Redirect("GatepassPrint.aspx");
+        }
+        else if (lblPrintTitle.Text == "Print PEZA Form 8106")
+        {
+            Session["ControlNo"] = Request.QueryString["controlno"].ToString();
 
-        string Date = tbDateOfProcessing.Text;
-        var parsedDate = DateTime.Parse(Date);
-        Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
+            DataTable dt = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
+            Session["AuthorizedOffical"] = dt.Rows[0]["AuthorizedOfficial"].ToString();
 
-        Response.Redirect("PEZA8106Print.aspx");
+            string Date = txtDate.Text;
+            var parsedDate = DateTime.Parse(Date);
+            Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
+
+            bool WithContainer = fodm.CheckIfWithContainer(Request.QueryString["controlno"].ToString());
+            Session["WithContainer"] = WithContainer.ToString();
+
+            bool WithLOA = fodm.CheckIfWithLOA(Request.QueryString["controlno"].ToString());
+            Session["WithLOA"] = WithLOA.ToString();
+
+            Response.Redirect("PEZA8106Print.aspx");
+        }
     }
 }

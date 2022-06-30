@@ -24,7 +24,6 @@ public partial class Default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        //this.Page.Form.Enctype = "multipart/form-data";
 
         if (Session["UserID"] == null)
         {
@@ -55,6 +54,7 @@ public partial class Default : System.Web.UI.Page
 
                 if (Request.QueryString["CONTROLNO"] != null)
                 {
+                    tbControlNo.Text = Request.QueryString["CONTROLNO"];
                     GetFarmOut();
                     if (frfm.FarmOutRequestFormApprovalChecking(tbControlNo.Text) == false)
                     {
@@ -665,12 +665,11 @@ public partial class Default : System.Web.UI.Page
         DataSet ds = new DataSet();
         FarmOutDetails fo = new FarmOutDetails();
         FarmOutRequestFormMaintenance fom = new FarmOutRequestFormMaintenance();
-        fo.ControlNo = Request.QueryString["controlno"].ToString();
+        fo.ControlNo = tbControlNo.Text;
         ds = fom.GetFarmOut(fo);
 
         if (ds.Tables[0].DefaultView.Count > 0)
         {
-            tbControlNo.Text = ds.Tables[0].DefaultView[0]["ControlNo"].ToString();
             GetItems();
             GetFiles();
             ddlDivision.SelectedValue = ds.Tables[0].DefaultView[0]["Division"].ToString();

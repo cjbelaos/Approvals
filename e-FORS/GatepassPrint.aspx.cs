@@ -13,14 +13,22 @@ public partial class GatepassPrint : System.Web.UI.Page
     DataView dvTable4 = new DataView();
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["dsGatepass"] != null)
+        if (Session["ControlNo"].ToString() == null)
         {
-            PrintGatepass();
+            Response.Redirect("FarmOutDocuments.aspx");
+        }
+        else if (!Page.IsPostBack)
+        {
+            if (Session["dsGatepass"] != null)
+            {
+                PrintGatepass();
+            }
         }
     }
-
     private void PrintGatepass()
     {
+        string DateOfPullOut = Session["DateOfPullOut"].ToString();
+
         DataSet ds = (DataSet)Session["dsGatepass"];
         dvTable = ds.Tables[0].DefaultView;
         dvTable1 = ds.Tables[1].DefaultView;
@@ -100,6 +108,7 @@ public partial class GatepassPrint : System.Web.UI.Page
         crystalReport.Load(Server.MapPath("~/crGatepass.rpt"));
 
         crystalReport.SetDataSource(dg);
+        crystalReport.SetParameterValue("@DateOfPullOut", DateOfPullOut);
         CrystalReportViewer1.ReportSource = crystalReport;
 
         ExportOptions options = new ExportOptions();

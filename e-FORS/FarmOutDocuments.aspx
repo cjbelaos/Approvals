@@ -406,18 +406,15 @@
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Print PEZA Form No. 8106</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <h3 class="modal-title"><asp:Label ID="lblPrintTitle" runat="server"></asp:Label></h3>
                         </div>
                         <div class="modal-body">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label>Please Enter Date of Processing:</label>
-                                    <div class="input-group date" id="DateOfProcessing" data-target-input="nearest">
-                                        <asp:TextBox runat="server" ID="tbDateOfProcessing" CssClass="form-control datetimepicker-input" data-target="#DateOfProcessing"></asp:TextBox>
-                                        <div class="input-group-append" data-target="#DateOfProcessing" data-toggle="datetimepicker">
+                                    <asp:Label ID="lblPrintTask" runat="server"></asp:Label>
+                                    <div class="input-group date" id="Date" data-target-input="nearest">
+                                        <asp:TextBox runat="server" ID="txtDate" CssClass="form-control datetimepicker-input" data-target="#Date"></asp:TextBox>
+                                        <div class="input-group-append" data-target="#Date" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
@@ -437,6 +434,7 @@
             <!-- /.modal -->
         </ContentTemplate>
     </asp:UpdatePanel>
+
 </asp:Content>
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
 
@@ -458,7 +456,7 @@
             $('#ExpiryDate2').datetimepicker({
                 format: 'L'
             });
-            $('#DateOfProcessing').datetimepicker({
+            $('#Date').datetimepicker({
                 format: 'L'
             });
 
@@ -504,7 +502,7 @@
                 $('#ExpiryDate2').datetimepicker({
                     format: 'L'
                 });
-                $('#DateOfProcessing').datetimepicker({
+                $('#Date').datetimepicker({
                     format: 'L'
                 });
 
