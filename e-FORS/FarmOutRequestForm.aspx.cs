@@ -9,7 +9,6 @@ using System.Web.Services;
 
 public partial class Default : System.Web.UI.Page
 {
-    // test
     private static readonly FarmOutRequestFormMaintenance frfm = new FarmOutRequestFormMaintenance();
     private static readonly Maintenance maint = new Maintenance();
     private static readonly Items items = new Items();
