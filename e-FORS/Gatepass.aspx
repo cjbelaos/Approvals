@@ -85,7 +85,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="table-responsive">
-                                    <asp:GridView runat="server" ID="gvGatepass" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false" Width="2000px">
+                                    <asp:GridView runat="server" ID="gvGatepass" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false" Width="3000px">
                                         <HeaderStyle CssClass="thead-light" HorizontalAlign="Center"/>
                                         <Columns>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="ControlNo." ItemStyle-VerticalAlign="Middle">

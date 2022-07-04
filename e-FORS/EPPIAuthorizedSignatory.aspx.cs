@@ -18,14 +18,15 @@ public partial class EPPIAuthorizedSignatory : System.Web.UI.Page
     }
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["UserID"] == null && Session["UserName"] == null)
+        if (Session["UserID"] == null)
         {
             Response.Redirect("Login.aspx");
         }
-
-        UserID = Session["UserID"].ToString();
-        UserName = Session["UserName"].ToString();
-        //AddUserInfo();
+        else
+        {
+            UserID = Session["UserID"].ToString();
+            UserName = Session["UserName"].ToString();
+        }
     }
 
     //private void AddUserInfo()

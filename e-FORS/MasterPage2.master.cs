@@ -44,6 +44,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
     public string Maintenance = "";
     public string Supplier = "";
     public string EPPIAuthorizedSignatory = "";
+    public string LOAs = "";
 
     public static string ToTitleCase(string title)
     {
@@ -64,8 +65,8 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
             if (!this.Page.IsPostBack)
             {
                 lblUserName.Text = ToTitleCase(Session["UserName"].ToString());
-                UserID = Session["UserID"].ToString();
-                
+                lblUserID.Text = Session["UserID"].ToString();
+                UserID = Session["UserID"].ToString();   
             }
 
             GetMyTasksCount();
@@ -133,6 +134,12 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 MaintenanceMenuOpen = "menu-open";
                 Maintenance = "active";
                 EPPIAuthorizedSignatory = "active";
+            }
+            else if (serviceName == "LOAs.aspx")
+            {
+                MaintenanceMenuOpen = "menu-open";
+                Maintenance = "active";
+                LOAs = "active";
             }
 
             bool x = maint.CheckAuthorization(UserID);

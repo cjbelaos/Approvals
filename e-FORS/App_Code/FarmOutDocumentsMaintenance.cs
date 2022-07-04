@@ -108,23 +108,6 @@ public class FarmOutDocumentsMaintenance
         return dt;
     }
 
-    public DataTable GetLOAType()
-    {
-        SqlCommand cmd = new SqlCommand("GetLOAType", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataTable dt = new DataTable();
-
-        conn.Open();
-
-        da.Fill(dt);
-
-        conn.Close();
-
-        return dt;
-    }
-
     public DataTable GetLOANo(string LOAType)
     {
         using (var cmd = new SqlCommand("GetLOANo", conn) { CommandType = CommandType.StoredProcedure })
@@ -556,7 +539,7 @@ public class FarmOutDocumentsMaintenance
             conn.Close();
         }
 
-        if (dt.Rows.Count > 0)
+        if (dt.Rows[0]["CONTAINERNO"].ToString() != "")
         {
             return true;
         }
@@ -596,7 +579,7 @@ public class FarmOutDocumentsMaintenance
             conn.Close();
         }
 
-        if (dt.Rows.Count > 0)
+        if (dt.Rows[0]["LOANO"].ToString() != "")
         {
             return true;
         }

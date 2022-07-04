@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
+﻿e<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="Server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
@@ -68,7 +68,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>Type of Item</label>
-                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
+                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">

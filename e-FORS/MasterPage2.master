@@ -198,6 +198,7 @@
                         </div>
                         <div class="info">
                             <a href="#" class="d-block">
+                                <asp:Label runat="server" ID="lblUserID" Visible="false"></asp:Label>
                                 <asp:Label runat="server" ID="lblUserName"></asp:Label></a>
                         </div>
                     </div>
@@ -322,6 +323,14 @@
                                         <a href="EPPIAuthorizedSignatory.aspx" class="nav-link <% Response.Write(EPPIAuthorizedSignatory); %>">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>EPPI Authorized Signatory</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <ul class="nav nav-treeview" hidden>
+                                    <li class="nav-item">
+                                        <a href="LOAs.aspx" class="nav-link <% Response.Write(LOAs); %>">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>LOA</p>
                                         </a>
                                     </li>
                                 </ul>

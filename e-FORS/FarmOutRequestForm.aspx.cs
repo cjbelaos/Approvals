@@ -381,7 +381,7 @@ public partial class Default : System.Web.UI.Page
                 fo.TransferTo = ddlTransferto.SelectedValue;
                 fo.TypeOfItem = ddlTypeofItem.SelectedValue;
                 fo.ClassificationOfItem = ddlClassificationofItem.SelectedValue;
-                if (ddlPurposeofItem.SelectedValue == "Return (Others)")
+                if (ddlPurposeofItem.SelectedValue == "Others")
                 {
                     fo.PurposeOfItem = tbOthers.Text;
                 }
@@ -814,7 +814,7 @@ public partial class Default : System.Web.UI.Page
 
     protected void ddlPurposeofItem_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (ddlPurposeofItem.SelectedValue == "Return (Others)")
+        if (ddlPurposeofItem.SelectedValue == "Others")
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowOthers()", true);
             ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);

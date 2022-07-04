@@ -582,60 +582,6 @@ public class Maintenance
         return dt;
     }
 
-    public void AddSupplier(SupplierDetails sd)
-    {
-        SqlCommand cmd = new SqlCommand("SaveSupplier", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@UserName",
-            Value = sd.UserName
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@SupplierID",
-            Value = sd.SupplierID
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@Address",
-            Value = sd.Address
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@LOANo",
-            Value = sd.LOANo
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@LOAExpirationDate",
-            Value = sd.LOAExpirationDate
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@AmountLimit",
-            Value = sd.AmountLimit
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@QuantityLimit",
-            Value = sd.QuantityLimit
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@SuretyBondNo",
-            Value = sd.SuretyBondNo
-        });
-        cmd.Parameters.Add(new SqlParameter()
-        {
-            ParameterName = "@SuretyExpirationDate",
-            Value = sd.SuretyExpirationDate
-        });
-        conn.Open();
-        cmd.ExecuteNonQuery();
-        conn.Close();
-    }
-
     public DataTable GetGatepass(ReportDetails rd)
     {
         SqlCommand cmd = new SqlCommand("GetGatepass", conn);
@@ -757,9 +703,9 @@ public class Maintenance
         }
     }
 
-    public string GetGatepassJS()
+    public DataTable GetLOAType()
     {
-        SqlCommand cmd = new SqlCommand("GetGatepassJS", conn);
+        SqlCommand cmd = new SqlCommand("GetLOAType", conn);
         cmd.CommandType = CommandType.StoredProcedure;
 
         SqlDataAdapter da = new SqlDataAdapter(cmd);
@@ -771,7 +717,163 @@ public class Maintenance
 
         conn.Close();
 
-        return JsonConvert.SerializeObject(dt);
+        return dt;
     }
 
+    public void SaveLOAType(string LOAType, string UserID)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_SaveLOAType", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@LOAType", LOAType);
+            cmd.Parameters.AddWithValue("@UserID", UserID);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public DataTable GetSuppliers()
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetSuppliers", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if(conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public void AddSupplier(SupplierDetails sd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_AddSupplier", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@UserID", sd.UserID);
+            cmd.Parameters.AddWithValue("@SupplierName", sd.Supplier);
+            cmd.Parameters.AddWithValue("@SupplierAddress", sd.Address);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public void UpdateSupplier(SupplierDetails sd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_UpdateSupplier", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@UserID", sd.UserID);
+            cmd.Parameters.AddWithValue("@ID", sd.ID);
+            cmd.Parameters.AddWithValue("@SupplierName", sd.Supplier);
+            cmd.Parameters.AddWithValue("@SupplierAddress", sd.Address);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public void DeleteSupplier(SupplierDetails sd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_DeleteSupplier", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@UserID", sd.UserID);
+            cmd.Parameters.AddWithValue("@ID", sd.ID);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public DataTable GetFarmOutDetailsCreatorandApprover(FarmOutDetails fo)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetFarmOutDetailsCreatorandApprover", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@ControlNo", fo.ControlNo);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                conn.Open();
+                da.Fill(dt);
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+
+            return dt;
+        }
+    }
+
+    public DataTable GetTotalQuantityWithUnitOfMeasurement(FarmOutDetails fo)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetTotalQuantityWithUnitOfMeasurement", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@ControlNo", fo.ControlNo);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                conn.Open();
+                da.Fill(dt);
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+
+            return dt;
+        }
+    }
 }
