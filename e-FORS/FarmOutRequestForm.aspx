@@ -1,8 +1,8 @@
-﻿e<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="Server">
-    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-    <asp:UpdatePanel ID="upTable" runat="server">
+    <asp:scriptmanager id="ScriptManager1" runat="server"></asp:scriptmanager>
+    <asp:updatepanel id="upTable" runat="server">
         <ContentTemplate>
             <section class="content-header">
                 <div class="container-fluid">
@@ -68,7 +68,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>Type of Item</label>
-                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
+                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">
@@ -569,8 +569,8 @@
             <asp:AsyncPostBackTrigger ControlID="ddlSupplierName" EventName="SelectedIndexChanged" />
             <asp:PostBackTrigger ControlID="BtnUpload" />
         </Triggers>
-    </asp:UpdatePanel>
-    <asp:UpdatePanel ID="upModalItem" runat="server">
+    </asp:updatepanel>
+    <asp:updatepanel id="upModalItem" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modal">
@@ -703,9 +703,9 @@
         <Triggers>
             <asp:AsyncPostBackTrigger ControlID="BtnSubmit" EventName="Click" />
         </Triggers>
-    </asp:UpdatePanel>
+    </asp:updatepanel>
 
-    <asp:UpdatePanel ID="upModalConfirm" runat="server">
+    <asp:updatepanel id="upModalConfirm" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalConfirm">
@@ -745,9 +745,9 @@
             <!-- /.modal -->
             </section>
         </ContentTemplate>
-    </asp:UpdatePanel>
+    </asp:updatepanel>
 
-    <asp:UpdatePanel ID="upRequestChange" runat="server">
+    <asp:updatepanel id="upRequestChange" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalRequestChange" data-backdrop="static">
@@ -792,9 +792,9 @@
             <!-- /.modal -->
             </section>
         </ContentTemplate>
-    </asp:UpdatePanel>
+    </asp:updatepanel>
 
-    <asp:UpdatePanel ID="upReassignTask" runat="server">
+    <asp:updatepanel id="upReassignTask" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalReassignTask" data-backdrop="static">
@@ -844,14 +844,12 @@
             <!-- /.modal -->
             </section>
         </ContentTemplate>
-    </asp:UpdatePanel>
+    </asp:updatepanel>
 </asp:Content>
 
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
-
-            //$('.BtnAdd').attr('disabled', true)
 
             //Initialize Select2 Elements
             $('.select2').select2()
@@ -927,8 +925,6 @@
 
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
-
-                //$('.BtnAdd').attr('disabled', true)
 
                 //Initialize Select2 Elements
                 $('.select2').select2()
@@ -1015,6 +1011,10 @@
                 icon: 'warning',
                 title: 'Unable to upload. Invalid Control No.'
             })
+        }
+
+        function TypeOfItem() {
+            var TypeOfItem = $('#<%=ddlTypeofItem.ClientID%>').select2('val');
         }
 
         function UploadFailedAlert() {

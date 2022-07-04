@@ -5,6 +5,7 @@ using System.Web.UI;
 using System.Globalization;
 using System.Web;
 using System.IO;
+using System.Web.Services;
 
 public partial class Default : System.Web.UI.Page
 {
@@ -369,68 +370,69 @@ public partial class Default : System.Web.UI.Page
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowApprovedbyHelpBlock()", true);
         }
 
-            if (ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "")
+        if (ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "")
+        {
+            Maintenance maint = new Maintenance();
+            DataSet ds = new DataSet();
+            FarmOutDetails fo = new FarmOutDetails();
+
+
+            fo.ControlNo = tbControlNo.Text;
+            fo.Division = ddlDivision.SelectedValue;
+            fo.NatureOfItem = ddlNatureofItem.SelectedValue;
+            fo.TransferTo = ddlTransferto.SelectedValue;
+            fo.TypeOfItem = ddlTypeofItem.SelectedValue;
+            fo.ClassificationOfItem = ddlClassificationofItem.SelectedValue;
+            if (ddlPurposeofItem.SelectedValue == "Others")
             {
-                Maintenance maint = new Maintenance();
-                DataSet ds = new DataSet();
-                FarmOutDetails fo = new FarmOutDetails();
-
-                fo.ControlNo = tbControlNo.Text;
-                fo.Division = ddlDivision.SelectedValue;
-                fo.NatureOfItem = ddlNatureofItem.SelectedValue;
-                fo.TransferTo = ddlTransferto.SelectedValue;
-                fo.TypeOfItem = ddlTypeofItem.SelectedValue;
-                fo.ClassificationOfItem = ddlClassificationofItem.SelectedValue;
-                if (ddlPurposeofItem.SelectedValue == "Others")
-                {
-                    fo.PurposeOfItem = tbOthers.Text;
-                }
-                else
-                {
-                    fo.PurposeOfItem = ddlPurposeofItem.SelectedValue;
-                }
-                fo.BearerEmployeeNo = tbBearerEmployeeNo.Text;
-                fo.BearerEmployeeName = tbBearerEmployeeName.Text;
-                fo.RequestorEmployeeNo = tbEmployeeNo.Text;
-                fo.RequestorEmployeeName = tbEmployeeName.Text;
-                fo.Section = tbSection.Text;
-                fo.LocalNo = tbLocalNo.Text;
-                fo.DateRequested = tbDateRequested.Text;
-                fo.ActualDateOfTransfer = tbActualDateofTransfer.Text;
-                fo.TargetDateOfReturn = tbTargetDateofReturn.Text;
-                fo.PackagingUsed = ddlPackagingUsed.SelectedValue;
-                fo.SupplierName = ddlSupplierName.SelectedValue;
-                fo.DestinationAddress = ddlDestinationAddress.Text;
-                fo.OriginOfItem = tbOriginofItem.Text;
-                fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text;
-                fo.InvoiceNo = tbInvoiceNo.Text;
-                fo.ContactPerson = tbContactPerson.Text;
-                fo.ContactNo = tbContactNo.Text;
-                fo.TelephoneNo = tbTelephoneNo.Text;
-                fo.FaxNo = tbFaxNo.Text;
-                fo.ModeOfTransfer = ddlModeofTransfer.SelectedValue;
-                fo.TypeOfTransfer = ddlTypeofTransfer.SelectedValue;
-                ds = maint.SaveFarmOutRequestForm(fo, UserID);
-                tbControlNo.Text = ds.Tables[0].DefaultView[0]["CONTROLNO"].ToString();
-
-                Approval a = new Approval();
-                a.ControlNo = tbControlNo.Text;
-                a.Requestedby = ddlRequestedby.SelectedValue;
-                a.Checkedby = ddlCheckedby.SelectedValue;
-                a.Approvedby = ddlApprovedby.SelectedValue;
-                maint.SaveApproval(a);
-                maint.SaveMirrorApproval(a);
-
-                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutSuccessAlert();", true);
-
-                BtnAdd.Enabled = true;
-                BtnConfirm1.Enabled = true;
-
+                fo.PurposeOfItem = tbOthers.Text;
             }
             else
             {
-                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutFailedAlert();", true);
+                fo.PurposeOfItem = ddlPurposeofItem.SelectedValue;
             }
+            fo.BearerEmployeeNo = tbBearerEmployeeNo.Text;
+            fo.BearerEmployeeName = tbBearerEmployeeName.Text;
+            fo.RequestorEmployeeNo = tbEmployeeNo.Text;
+            fo.RequestorEmployeeName = tbEmployeeName.Text;
+            fo.Section = tbSection.Text;
+            fo.LocalNo = tbLocalNo.Text;
+            fo.DateRequested = tbDateRequested.Text;
+            fo.ActualDateOfTransfer = tbActualDateofTransfer.Text;
+            fo.TargetDateOfReturn = tbTargetDateofReturn.Text;
+            fo.PackagingUsed = ddlPackagingUsed.SelectedValue;
+            fo.SupplierName = ddlSupplierName.SelectedValue;
+            fo.DestinationAddress = ddlDestinationAddress.Text;
+            fo.OriginOfItem = tbOriginofItem.Text;
+            fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text;
+            fo.InvoiceNo = tbInvoiceNo.Text;
+            fo.ContactPerson = tbContactPerson.Text;
+            fo.ContactNo = tbContactNo.Text;
+            fo.TelephoneNo = tbTelephoneNo.Text;
+            fo.FaxNo = tbFaxNo.Text;
+            fo.ModeOfTransfer = ddlModeofTransfer.SelectedValue;
+            fo.TypeOfTransfer = ddlTypeofTransfer.SelectedValue;
+            ds = maint.SaveFarmOutRequestForm(fo, UserID);
+            tbControlNo.Text = ds.Tables[0].DefaultView[0]["CONTROLNO"].ToString();
+
+            Approval a = new Approval();
+            a.ControlNo = tbControlNo.Text;
+            a.Requestedby = ddlRequestedby.SelectedValue;
+            a.Checkedby = ddlCheckedby.SelectedValue;
+            a.Approvedby = ddlApprovedby.SelectedValue;
+            maint.SaveApproval(a);
+            maint.SaveMirrorApproval(a);
+
+            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutSuccessAlert();", true);
+
+            BtnAdd.Enabled = true;
+            BtnConfirm1.Enabled = true;
+
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutFailedAlert();", true);
+        }
     }
 
     protected void GrvItems_RowCommand(object sender, GridViewCommandEventArgs g)
@@ -840,5 +842,11 @@ public partial class Default : System.Web.UI.Page
     protected void LnkBtnBack_Click(object sender, EventArgs e)
     {
         Response.Redirect("FarmOutDocuments.aspx" + "?controlno=" + tbControlNo.Text);
+    }
+
+    [WebMethod]
+    public static void GetSelectedTypeOfItems()
+    {
+
     }
 }
