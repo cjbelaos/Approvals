@@ -288,6 +288,7 @@ public class FarmOutDocumentsMaintenance
         using (var cmd = new SqlCommand("GET_FARMOUT_DETAILS", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+            cmd.CommandTimeout = 360000;
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
@@ -399,11 +400,77 @@ public class FarmOutDocumentsMaintenance
         return ds;
     }
 
-    public DataTable GetAuthorizedOfficial(string APO)
+    public DataTable GetAuthorizedOfficial(string APOAccount)
     {
         SqlCommand cmd = new SqlCommand("GetAuthorizedOfficial", conn);
         cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@APOAccount", APO);
+        cmd.Parameters.AddWithValue("@APOAccount", APOAccount);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+            return dt;
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+    }
+
+    public DataTable GetItemContainers(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("sp_GetItemContainers", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+            return dt;
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+    }
+
+    public DataTable GetItemSealNo(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("sp_GetItemSealNo", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
 
         SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
@@ -580,6 +647,46 @@ public class FarmOutDocumentsMaintenance
         }
 
         if (dt.Rows[0]["LOANO"].ToString() != "")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public Boolean CheckIfWithItemContainer(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("CheckIfWithItemContainer", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        if (dt.Rows[0]["ContainerNo"].ToString() != "")
         {
             return true;
         }

@@ -20,7 +20,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         else
         {
             if (!Page.IsPostBack)
-            {
+                {
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
 
@@ -573,24 +573,33 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             Session["PreparedBy"] = dt.Rows[0]["CREATEDBY"].ToString();
             Session["ApprovedBy"] = dt.Rows[0]["EPPIAUTHORIZEDSIGNATORY"].ToString();
 
-            DataTable data = maint.GetTotalQuantityWithUnitOfMeasurement(fo);
-            Session["TotalQuantity"] = data.Rows[0]["TotalQuantity"].ToString();
+            DataTable dt1 = maint.GetTotalQuantityWithUnitOfMeasurement(fo);
+            Session["TotalQuantity"] = dt1.Rows[0]["TotalQuantity"].ToString();
+
+            DataTable dt2 = fodm.GetItemContainers(ControlNo);
+            Session["ContainerNo"] = dt2.Rows[0]["ContainerNo"].ToString();
+
+            DataTable dt3 = fodm.GetItemSealNo(ControlNo);
+            Session["SealNo"] = dt3.Rows[0]["SealNo"].ToString();
+
+            bool WithItemContainer = fodm.CheckIfWithItemContainer(ControlNo);
+            Session["WithItemContainer"] = WithItemContainer.ToString();
 
             Response.Redirect("GatepassPrint.aspx");
-
-            //DataSet dsGatepass = fodm.GetGatepassForPrint(tbFarmOutControlNo.Text);
-            //Session["dsGatepass"] = dsGatepass;
-            //Session["ControlNo"] = tbFarmOutControlNo.Text;
-            //Response.Redirect("GatepassPrint.aspx");
-
         }
         else if (lblPrintTitle.Text == "Print PEZA Form 8106")
         {
             ControlNo = tbFarmOutControlNo.Text;
             Session["ControlNo"] = ControlNo;
 
-            DataTable dt = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
-            Session["AuthorizedOffical"] = ControlNo;
+            DataTable dt1 = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
+            Session["AuthorizedOffical"] = dt1.Rows[0]["AuthorizedOfficial"].ToString();
+
+            DataTable dt2 = fodm.GetItemContainers(ControlNo);
+            Session["ContainerNo"] = dt2.Rows[0]["ContainerNo"].ToString();
+
+            DataTable dt3 = fodm.GetItemSealNo(ControlNo);
+            Session["SealNo"] = dt3.Rows[0]["SealNo"].ToString(); 
 
             string Date = txtDate.Text;
             var parsedDate = DateTime.Parse(Date);
@@ -601,6 +610,9 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
             bool WithLOA = fodm.CheckIfWithLOA(ControlNo);
             Session["WithLOA"] = WithLOA.ToString();
+
+            bool WithItemContainer = fodm.CheckIfWithItemContainer(ControlNo);
+            Session["WithItemContainer"] = WithItemContainer.ToString();
 
             Response.Redirect("PEZA8106Print.aspx");
         }

@@ -21,8 +21,11 @@ public partial class TestPrint : System.Web.UI.Page
             string ControlNo = Session["ControlNo"].ToString();
             string Date = Session["Date"].ToString();
             string AuthorizedOfficial = Session["AuthorizedOffical"].ToString();
+            string ContainerNo = Session["ContainerNo"].ToString();
+            string SealNo = Session["SealNo"].ToString();
             string WithContainer = Session["WithContainer"].ToString();
             string WithLOA = Session["WithLOA"].ToString();
+            string WithItemContainer = Session["WithItemContainer"].ToString();
 
             ReportDocument reportDocument = new ReportDocument();
             dsPEZA8106 ds8106 = new dsPEZA8106();
@@ -36,6 +39,10 @@ public partial class TestPrint : System.Web.UI.Page
             {
                 reportPath = Server.MapPath("~/crPEZA8106WithoutLOA.rpt");
             }
+            else if (WithItemContainer == "True")
+            {
+                reportPath = Server.MapPath("~/crPEZA8106WithItemContainer.rpt");
+            }
             else 
             {
                 reportPath = Server.MapPath("~/crPEZA8106.rpt");
@@ -47,6 +54,8 @@ public partial class TestPrint : System.Web.UI.Page
             reportDocument.SetParameterValue("@ControlNo", ControlNo);
             reportDocument.SetParameterValue("@Date", Date);
             reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
+            reportDocument.SetParameterValue("@ContainerNo", ContainerNo);
+            reportDocument.SetParameterValue("@SealNo", SealNo);
             reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
 
             //Load the report by setting the report source

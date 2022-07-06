@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Web;
 using System.IO;
 using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class Default : System.Web.UI.Page
 {
@@ -381,7 +382,16 @@ public partial class Default : System.Web.UI.Page
             fo.Division = ddlDivision.SelectedValue;
             fo.NatureOfItem = ddlNatureofItem.SelectedValue;
             fo.TransferTo = ddlTransferto.SelectedValue;
-            fo.TypeOfItem = ddlTypeofItem.SelectedValue;
+
+            string selectedTypeOfItem = hfTypeofItem.Value;
+            //string TypeOfItem = "";
+            //for (int i = 0; i < selectedTypeOfItem.Split(',').Length; i++)
+            //{
+            //    TypeOfItem += selectedTypeOfItem.Split(',')[i] + " \\n";
+            //}
+            string TypeOfItem = selectedTypeOfItem.Replace(",", " | ");
+            fo.TypeOfItem = TypeOfItem;
+            //fo.TypeOfItem = ddlTypeofItem.SelectedValue;
             fo.ClassificationOfItem = ddlClassificationofItem.SelectedValue;
             if (ddlPurposeofItem.SelectedValue == "Others")
             {
@@ -677,7 +687,7 @@ public partial class Default : System.Web.UI.Page
             ddlDivision.SelectedValue = ds.Tables[0].DefaultView[0]["Division"].ToString();
             ddlNatureofItem.SelectedValue = ds.Tables[0].DefaultView[0]["NatureOfItem"].ToString();
             ddlTransferto.SelectedValue = ds.Tables[0].DefaultView[0]["TransferTo"].ToString();
-            ddlTypeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["TypeOfItem"].ToString();
+            //ddlTypeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["TypeOfItem"].ToString();
             ddlClassificationofItem.SelectedValue = ds.Tables[0].DefaultView[0]["ClassificationOfItem"].ToString();
             if (ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()) == null)
             {
@@ -845,8 +855,8 @@ public partial class Default : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static void GetSelectedTypeOfItems()
+    public static string GetTypeOfItem(FarmOutDetails fo)
     {
-
+        return JsonConvert.SerializeObject(maint.GetTypeOfItem(fo));
     }
 }

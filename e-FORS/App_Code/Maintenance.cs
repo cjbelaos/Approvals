@@ -876,4 +876,27 @@ public class Maintenance
             return dt;
         }
     }
+
+    public DataTable GetTypeOfItem(FarmOutDetails fo)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetTypeOfItem", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@ControlNo", fo.ControlNo);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                conn.Open();
+                da.Fill(dt);
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+
+            return dt;
+        }
+    }
 }

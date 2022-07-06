@@ -6,11 +6,6 @@ using CrystalDecisions.Shared;
 
 public partial class GatepassPrint : System.Web.UI.Page
 {
-    //DataView dvTable = new DataView();
-    //DataView dvTable1 = new DataView();
-    //DataView dvTable2 = new DataView();
-    //DataView dvTable3 = new DataView();
-    //DataView dvTable4 = new DataView();
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["ControlNo"].ToString() == null)
@@ -19,21 +14,27 @@ public partial class GatepassPrint : System.Web.UI.Page
         }
         else if (!Page.IsPostBack)
         {
-            //if (Session["dsGatepass"] != null)
-            //{
-            //    PrintGatepass();
-            //}
-
             string ControlNo = Session["ControlNo"].ToString();
             string TotalQuantity = Session["TotalQuantity"].ToString();
             string Date = Session["Date"].ToString();
             string PreparedBy = Session["PreparedBy"].ToString();
             string Approvedby = Session["Approvedby"].ToString();
+            string ContainerNo = Session["ContainerNo"].ToString();
+            string SealNo = Session["SealNo"].ToString();
+            string WithItemContainer = Session["WithItemContainer"].ToString();
 
             ReportDocument reportDocument = new ReportDocument();
             dsPEZA8106 ds8106 = new dsPEZA8106();
 
-            string reportPath = Server.MapPath("~/crGatepass1.rpt");
+            string reportPath;
+            if (WithItemContainer == "True")
+            {
+                reportPath = Server.MapPath("~/crGatepassWithItemContainer.rpt");
+            }
+            else
+            {
+                reportPath = Server.MapPath("~/crGatepass.rpt");
+            }
 
             reportDocument.Load(reportPath);
 
@@ -43,6 +44,8 @@ public partial class GatepassPrint : System.Web.UI.Page
             reportDocument.SetParameterValue("@Date", Date);
             reportDocument.SetParameterValue("@PreparedBy", PreparedBy);
             reportDocument.SetParameterValue("@Approvedby", Approvedby);
+            reportDocument.SetParameterValue("@ContainerNo", ContainerNo);
+            reportDocument.SetParameterValue("@SealNo", SealNo);
             reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
 
             //Load the report by setting the report source

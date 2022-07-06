@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="Server">
-    <asp:scriptmanager id="ScriptManager1" runat="server"></asp:scriptmanager>
-    <asp:updatepanel id="upTable" runat="server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+    <asp:UpdatePanel ID="upTable" runat="server">
         <ContentTemplate>
             <section class="content-header">
                 <div class="container-fluid">
@@ -42,7 +42,7 @@
                                         <div class="input-group">
                                             <asp:TextBox runat="server" ID="tbControlNo" CssClass="form-control ControlNo" Enabled="false"></asp:TextBox>
                                             <div class="input-group-append">
-                                                <asp:LinkButton runat="server" ID="LnkBtnBack" CssClass="btn btn-info" Text="Back" OnClick="LnkBtnBack_Click"/>
+                                                <asp:LinkButton runat="server" ID="LnkBtnBack" CssClass="btn btn-info" Text="Back" OnClick="LnkBtnBack_Click" />
                                             </div>
                                         </div>
                                         <small id="tbControlNoHelpBlock" class="form-text text-danger">This is auto-generated upon saving.</small>
@@ -69,6 +69,7 @@
                                     <div class="form-group">
                                         <label>Type of Item</label>
                                         <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
+                                        <asp:HiddenField runat="server" ID="hfTypeofItem" />
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">
@@ -569,8 +570,8 @@
             <asp:AsyncPostBackTrigger ControlID="ddlSupplierName" EventName="SelectedIndexChanged" />
             <asp:PostBackTrigger ControlID="BtnUpload" />
         </Triggers>
-    </asp:updatepanel>
-    <asp:updatepanel id="upModalItem" runat="server">
+    </asp:UpdatePanel>
+    <asp:UpdatePanel ID="upModalItem" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modal">
@@ -703,9 +704,9 @@
         <Triggers>
             <asp:AsyncPostBackTrigger ControlID="BtnSubmit" EventName="Click" />
         </Triggers>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 
-    <asp:updatepanel id="upModalConfirm" runat="server">
+    <asp:UpdatePanel ID="upModalConfirm" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalConfirm">
@@ -745,9 +746,9 @@
             <!-- /.modal -->
             </section>
         </ContentTemplate>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 
-    <asp:updatepanel id="upRequestChange" runat="server">
+    <asp:UpdatePanel ID="upRequestChange" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalRequestChange" data-backdrop="static">
@@ -792,9 +793,9 @@
             <!-- /.modal -->
             </section>
         </ContentTemplate>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 
-    <asp:updatepanel id="upReassignTask" runat="server">
+    <asp:UpdatePanel ID="upReassignTask" runat="server">
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalReassignTask" data-backdrop="static">
@@ -844,12 +845,16 @@
             <!-- /.modal -->
             </section>
         </ContentTemplate>
-    </asp:updatepanel>
+    </asp:UpdatePanel>
 </asp:Content>
 
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
+
+            $('#<%=ddlTypeofItem.ClientID%>').on('change', function () {
+                $('#<%=hfTypeofItem.ClientID%>').val($(this).val());
+            });
 
             //Initialize Select2 Elements
             $('.select2').select2()
@@ -873,6 +878,8 @@
 
             if ($(".ControlNo").val() != '[AUTOMATIC]') {
                 $('#tbControlNoHelpBlock').prop('hidden', true);
+                //$("#<%=ddlTypeofItem.ClientID%>").val(['Parts','Spare / Mold Parts']).trigger('change');
+                GetTypeOfItem();
             }
 
             var x = $('#CheckedbyHelpBlock').attr('hidden')
@@ -946,8 +953,10 @@
                 $("#<%=gvFiles.ClientID%>").removeAttr("border");
                 $("#<%=gvFiles.ClientID%>").removeAttr("rules");
 
-                if ($("#maincontent_tbControlNo").val() != '[AUTOMATIC]') {
+                if ($("#.ControlNo").val() != '[AUTOMATIC]') {
                     $('#tbControlNoHelpBlock').prop('hidden', true);
+                    //$("#<%=ddlTypeofItem.ClientID%>").val(['Parts','Spare / Mold Parts']).trigger('change');
+                    GetTypeOfItem();
                 }
 
                 var x = $('#CheckedbyHelpBlock').attr('hidden')
@@ -1165,6 +1174,34 @@
             if ($('.ddlDestinationAddress').val() != '') {
                 $('#DestinationAddressHelpBlock').removeAttr('hidden');
             }
+        }
+
+        function GetTypeOfItem(callback) {
+            var FarmOutDetails = {};
+            FarmOutDetails.ControlNo = $("#<%=tbControlNo.ClientID%>").val();
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetTypeOfItem",
+                data: JSON.stringify({ fo: FarmOutDetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    //console.log(e);
+                    var d = JSON.parse(e.d);
+                    var a = d[0]["TypeOfItem"];
+                    var b = a.split(',').map(function (str) {
+                        return "'" + str + "'";
+                    }).join(',');
+                    alert(a);
+                    $("#<%=ddlTypeofItem.ClientID%>").val([b]).trigger('change')
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
         }
     </script>
 </asp:Content>
