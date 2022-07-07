@@ -2,11 +2,8 @@ using System;
 using System.Data;
 using System.Web.UI.WebControls;
 using System.Web.UI;
-using System.Globalization;
 using System.Web;
 using System.IO;
-using System.Web.Services;
-using Newtonsoft.Json;
 
 public partial class Default : System.Web.UI.Page
 {
@@ -46,7 +43,7 @@ public partial class Default : System.Web.UI.Page
                 AddClassificationofItem();
                 AddPurposeofItem();
                 AddPackagingUsed();
-                AddSupplierName();
+                AddSuppliers();
                 AddModeofTransfer();
                 AddTypeofTransfer();
                 GetRequesteddby();
@@ -84,7 +81,7 @@ public partial class Default : System.Web.UI.Page
                     AddClassificationofItem();
                     AddPurposeofItem();
                     AddPackagingUsed();
-                    AddSupplierName();
+                    AddSuppliers();
                     AddModeofTransfer();
                     AddTypeofTransfer();
                     GetRequesteddby();
@@ -286,7 +283,7 @@ public partial class Default : System.Web.UI.Page
     {
         if (string.IsNullOrEmpty(tbID.Text))
         {
-            if (tbItemNo.Text == "" && tbItemDescription.Text == "" && tbQuantity.Text == "" && tbUnitofMeasurement.Text == "")
+            if (tbItemNo.Text == "" || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "")
             {
                 ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
@@ -382,16 +379,9 @@ public partial class Default : System.Web.UI.Page
             fo.Division = ddlDivision.SelectedValue;
             fo.NatureOfItem = ddlNatureofItem.SelectedValue;
             fo.TransferTo = ddlTransferto.SelectedValue;
-
             string selectedTypeOfItem = hfTypeofItem.Value;
-            //string TypeOfItem = "";
-            //for (int i = 0; i < selectedTypeOfItem.Split(',').Length; i++)
-            //{
-            //    TypeOfItem += selectedTypeOfItem.Split(',')[i] + " \\n";
-            //}
             string TypeOfItem = selectedTypeOfItem.Replace(",", " | ");
             fo.TypeOfItem = TypeOfItem;
-            //fo.TypeOfItem = ddlTypeofItem.SelectedValue;
             fo.ClassificationOfItem = ddlClassificationofItem.SelectedValue;
             if (ddlPurposeofItem.SelectedValue == "Others")
             {
@@ -411,8 +401,9 @@ public partial class Default : System.Web.UI.Page
             fo.ActualDateOfTransfer = tbActualDateofTransfer.Text;
             fo.TargetDateOfReturn = tbTargetDateofReturn.Text;
             fo.PackagingUsed = ddlPackagingUsed.SelectedValue;
-            fo.SupplierName = ddlSupplierName.SelectedValue;
-            fo.DestinationAddress = ddlDestinationAddress.Text;
+            fo.SupplierCode = ddlSupplierName.SelectedValue;
+            fo.SupplierName = ddlSupplierName.SelectedItem.ToString();
+            fo.DestinationAddress = tbDestinationAddress.Text;
             fo.OriginOfItem = tbOriginofItem.Text;
             fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text;
             fo.InvoiceNo = tbInvoiceNo.Text;
@@ -576,12 +567,12 @@ public partial class Default : System.Web.UI.Page
         ddlPackagingUsed.Items.Insert(0, new ListItem("Choose...", ""));
     }
 
-    private void AddSupplierName()
+    private void AddSuppliers()
     {
-        DataTable dt = maint.GetSupplier();
+        DataTable dt = maint.GetSuppliers();
         ddlSupplierName.DataSource = dt;
         ddlSupplierName.DataTextField = "SupplierName";
-        ddlSupplierName.DataValueField = "SupplierName";
+        ddlSupplierName.DataValueField = "SupplierCode";
         ddlSupplierName.DataBind();
         ddlSupplierName.Items.Insert(0, new ListItem("Choose...", ""));
     }
@@ -687,7 +678,9 @@ public partial class Default : System.Web.UI.Page
             ddlDivision.SelectedValue = ds.Tables[0].DefaultView[0]["Division"].ToString();
             ddlNatureofItem.SelectedValue = ds.Tables[0].DefaultView[0]["NatureOfItem"].ToString();
             ddlTransferto.SelectedValue = ds.Tables[0].DefaultView[0]["TransferTo"].ToString();
-            //ddlTypeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["TypeOfItem"].ToString();
+            string selectedTypeOfItem = ds.Tables[0].DefaultView[0]["TypeOfItem"].ToString();
+            string TypeOfItem = selectedTypeOfItem.Replace(" | ", ",");
+            hfTypeofItem.Value = TypeOfItem;
             ddlClassificationofItem.SelectedValue = ds.Tables[0].DefaultView[0]["ClassificationOfItem"].ToString();
             if (ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()) == null)
             {
@@ -714,8 +707,8 @@ public partial class Default : System.Web.UI.Page
             tbActualDateofTransfer.Text = ds.Tables[0].DefaultView[0]["ActualDateOfTransfer"].ToString();
             tbTargetDateofReturn.Text = ds.Tables[0].DefaultView[0]["TargetDateOfReturn"].ToString();
             ddlPackagingUsed.SelectedValue = ds.Tables[0].DefaultView[0]["PackagingUsed"].ToString();
-            ddlSupplierName.SelectedValue = ds.Tables[0].DefaultView[0]["SupplierName"].ToString();
-            ddlDestinationAddress.Items.Add(ds.Tables[0].DefaultView[0]["DestinationAddress"].ToString());
+            ddlSupplierName.SelectedValue = ds.Tables[0].DefaultView[0]["SupplierCode"].ToString();
+            tbDestinationAddress.Text = ds.Tables[0].DefaultView[0]["DestinationAddress"].ToString();
             tbOriginofItem.Text = ds.Tables[0].DefaultView[0]["OriginOfItem"].ToString();
             tbDeliveryReceiptNo.Text = ds.Tables[0].DefaultView[0]["DeliveryReceiptNo"].ToString();
             tbInvoiceNo.Text = ds.Tables[0].DefaultView[0]["InvoiceNo"].ToString();
@@ -782,7 +775,7 @@ public partial class Default : System.Web.UI.Page
         BtnUpload.Enabled = false;
         ddlSupplierName.Enabled = false;
         tbOriginofItem.Enabled = false;
-        ddlDestinationAddress.Enabled = false;
+        tbDestinationAddress.Enabled = false;
         tbInvoiceNo.Enabled = false;
         tbDeliveryReceiptNo.Enabled = false;
         tbContactPerson.Enabled = false;
@@ -804,24 +797,8 @@ public partial class Default : System.Web.UI.Page
 
     protected void ddlSupplierName_SelectedIndexChanged(object sender, EventArgs e)
     {
-        DataTable dt = frfm.GetSupplierAddress(ddlSupplierName.Text);
-        if (dt.Rows.Count > 1)
-        {
-            ddlDestinationAddress.DataSource = dt;
-            ddlDestinationAddress.DataTextField = "SupplierAddress";
-            ddlDestinationAddress.DataValueField = "SupplierAddress";
-            ddlDestinationAddress.DataBind();
-            ddlDestinationAddress.Items.Insert(0, new ListItem("Choose...", ""));
-            ddlDestinationAddress.Enabled = true;
-        }
-        else
-        {
-            ddlDestinationAddress.DataSource = dt;
-            ddlDestinationAddress.DataTextField = "SupplierAddress";
-            ddlDestinationAddress.DataValueField = "SupplierAddress";
-            ddlDestinationAddress.DataBind();
-            ddlDestinationAddress.Enabled = false;
-        }
+        DataTable dt = frfm.GetSupplierAddress(ddlSupplierName.SelectedValue);
+        tbDestinationAddress.Text = dt.Rows[0]["SupplierAddress"].ToString();
     }
 
     protected void ddlPurposeofItem_SelectedIndexChanged(object sender, EventArgs e)
@@ -854,9 +831,51 @@ public partial class Default : System.Web.UI.Page
         Response.Redirect("FarmOutDocuments.aspx" + "?controlno=" + tbControlNo.Text);
     }
 
-    [WebMethod]
-    public static string GetTypeOfItem(FarmOutDetails fo)
+    private void showAlert(string strType, string strTitle, string strMessage)
     {
-        return JsonConvert.SerializeObject(maint.GetTypeOfItem(fo));
+        switch (strType)
+        {
+            case "error":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-error'});return false;});</script>";
+                break;
+            case "warning":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-warning'});return false;});</script>";
+                break;
+            case "success":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-success'});return false;});</script>";
+                break;
+            case "light":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-light'});return false;});</script>";
+                break;
+            default:
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'my-sticky-class'});return false;});</script>";
+                break;
+
+
+        }
+    }
+
+    private void ShowAlert(string strType, string strTitle, string strMessage)
+    {
+        switch (strType)
+        {
+            case "error":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-error'});return false;});</script>";
+                break;
+            case "warning":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-warning'});return false;});</script>";
+                break;
+            case "success":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-success'});return false;});</script>";
+                break;
+            case "light":
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-light'});return false;});</script>";
+                break;
+            default:
+                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'my-sticky-class'});return false;});</script>";
+                break;
+
+
+        }
     }
 }

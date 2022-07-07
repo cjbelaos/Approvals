@@ -30,7 +30,6 @@
                         <div class="card-header">
                             <h3 class="card-title">Farm-out Request Form</h3>
                             <asp:TextBox runat="server" ID="inputUserID" CssClass="form-control" Visible="false"></asp:TextBox>
-                            <asp:Label runat="server" ID="lblMessage"></asp:Label>
                         </div>
                         <!-- /.card-header -->
 
@@ -68,7 +67,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>Type of Item</label>
-                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
+                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
                                         <asp:HiddenField runat="server" ID="hfTypeofItem" />
                                     </div>
                                     <!-- /.form-group -->
@@ -374,8 +373,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Destination Address</label>
-                                        <asp:DropDownList runat="server" ID="ddlDestinationAddress" CssClass="form-control select2 ddlDestinationAddress" Width="100%" Enabled="false"></asp:DropDownList>
-                                        <small id="DestinationAddressHelpBlock" class="form-text text-danger" hidden>Please select destination address.</small>
+                                        <asp:TextBox runat="server" ID="tbDestinationAddress" CssClass="form-control" Enabled="false"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -579,6 +577,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Item Information</h4>
+                            <asp:Label runat="server" ID="lblMessage"></asp:Label>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -850,10 +849,12 @@
 
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
-        $(function () {
 
+        $(function () {
             $('#<%=ddlTypeofItem.ClientID%>').on('change', function () {
-                $('#<%=hfTypeofItem.ClientID%>').val($(this).val());
+                x = $(this).val();
+                array = x + ""
+                $('#<%=hfTypeofItem.ClientID%>').val(array);
             });
 
             //Initialize Select2 Elements
@@ -878,8 +879,8 @@
 
             if ($(".ControlNo").val() != '[AUTOMATIC]') {
                 $('#tbControlNoHelpBlock').prop('hidden', true);
-                //$("#<%=ddlTypeofItem.ClientID%>").val(['Parts','Spare / Mold Parts']).trigger('change');
-                GetTypeOfItem();
+                var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
+                $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
             }
 
             var x = $('#CheckedbyHelpBlock').attr('hidden')
@@ -918,20 +919,14 @@
                 });
             }
 
-            var x = $('#DestinationAddressHelpBlock').attr('hidden')
-            if (typeof x == typeof undefined) {
-                $('#<%=ddlDestinationAddress.ClientID%>').on('change', function () {
-                    if ($('#<%=ddlDestinationAddress.ClientID%>').val() != '') {
-                        $('#DestinationAddressHelpBlock').prop('hidden', true);
-                    }
-                    else {
-                        $('#DestinationAddressHelpBlock').prop('hidden', false);
-                    }
-                });
-            }
-
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
+
+                $('#<%=ddlTypeofItem.ClientID%>').on('change', function () {
+                    x = $(this).val();
+                    array = x + ""
+                    $('#<%=hfTypeofItem.ClientID%>').val(array);
+                });
 
                 //Initialize Select2 Elements
                 $('.select2').select2()
@@ -953,10 +948,10 @@
                 $("#<%=gvFiles.ClientID%>").removeAttr("border");
                 $("#<%=gvFiles.ClientID%>").removeAttr("rules");
 
-                if ($("#.ControlNo").val() != '[AUTOMATIC]') {
+                if ($("#maincontent_tbControlNo").val() != '[AUTOMATIC]') {
                     $('#tbControlNoHelpBlock').prop('hidden', true);
-                    //$("#<%=ddlTypeofItem.ClientID%>").val(['Parts','Spare / Mold Parts']).trigger('change');
-                    GetTypeOfItem();
+                    var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
+                    $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
                 }
 
                 var x = $('#CheckedbyHelpBlock').attr('hidden')
@@ -994,18 +989,6 @@
                         }
                     });
                 }
-
-                var x = $('#DestinationAddressHelpBlock').attr('hidden')
-                if (typeof x == typeof undefined) {
-                    $('#<%=ddlDestinationAddress.ClientID%>').on('change', function () {
-                        if ($('#<%=ddlDestinationAddress.ClientID%>').val() != '') {
-                            $('#DestinationAddressHelpBlock').prop('hidden', true);
-                        }
-                        else {
-                            $('#DestinationAddressHelpBlock').prop('hidden', false);
-                        }
-                    });
-                }
             }
         })
 
@@ -1020,10 +1003,6 @@
                 icon: 'warning',
                 title: 'Unable to upload. Invalid Control No.'
             })
-        }
-
-        function TypeOfItem() {
-            var TypeOfItem = $('#<%=ddlTypeofItem.ClientID%>').select2('val');
         }
 
         function UploadFailedAlert() {
@@ -1087,7 +1066,7 @@
             });
             Toast.fire({
                 icon: 'warning',
-                title: '<% Response.Write(Message); %>'
+                title: 'Please complete the required item information.'
             })
         }
 
@@ -1174,34 +1153,6 @@
             if ($('.ddlDestinationAddress').val() != '') {
                 $('#DestinationAddressHelpBlock').removeAttr('hidden');
             }
-        }
-
-        function GetTypeOfItem(callback) {
-            var FarmOutDetails = {};
-            FarmOutDetails.ControlNo = $("#<%=tbControlNo.ClientID%>").val();
-            $.ajax({
-                type: "POST",
-                url: "FarmOutRequestForm.aspx/GetTypeOfItem",
-                data: JSON.stringify({ fo: FarmOutDetails }),
-                contentType: "application/json;charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    //console.log(e);
-                    var d = JSON.parse(e.d);
-                    var a = d[0]["TypeOfItem"];
-                    var b = a.split(',').map(function (str) {
-                        return "'" + str + "'";
-                    }).join(',');
-                    alert(a);
-                    $("#<%=ddlTypeofItem.ClientID%>").val([b]).trigger('change')
-                    if (callback !== undefined) {
-                        callback(d);
-                    }
-                },
-                error: function (errormessage) {
-                    alert(errormessage.responseText);
-                }
-            });
         }
     </script>
 </asp:Content>

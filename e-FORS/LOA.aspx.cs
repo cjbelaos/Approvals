@@ -48,10 +48,10 @@ public partial class LOA : System.Web.UI.Page
 
     private void AddSupplierName()
     {
-        DataTable dt = maint.GetSupplier();
+        DataTable dt = maint.GetSuppliers();
         ddlSupplier.DataSource = dt;
         ddlSupplier.DataTextField = "SupplierName";
-        ddlSupplier.DataValueField = "SupplierName";
+        ddlSupplier.DataValueField = "SupplierCode";
         ddlSupplier.DataBind();
         ddlSupplier.Items.Insert(0, new ListItem("Choose...", ""));
     }

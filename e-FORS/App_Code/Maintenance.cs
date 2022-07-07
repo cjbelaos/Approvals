@@ -172,6 +172,7 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@ActualDateOfTransfer", fo.ActualDateOfTransfer);
             cmd.Parameters.AddWithValue("@TargetDateOfReturn", fo.TargetDateOfReturn);
             cmd.Parameters.AddWithValue("@PackagingUsed", fo.PackagingUsed);
+            cmd.Parameters.AddWithValue("@SupplierCode", fo.SupplierCode);
             cmd.Parameters.AddWithValue("@SupplierName", fo.SupplierName);
             cmd.Parameters.AddWithValue("@DestinationAddress", fo.DestinationAddress);
             cmd.Parameters.AddWithValue("@OriginOfItem", fo.OriginOfItem);
@@ -518,28 +519,6 @@ public class Maintenance
         return dt;
     }
 
-    public DataTable GetSupplier()
-    {
-        SqlCommand cmd = new SqlCommand("GetSupplier", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataTable dt = new DataTable();
-
-        try
-        {
-            conn.Open();
-            da.Fill(dt);
-            conn.Close();
-        }
-        catch (Exception ex)
-        {
-            ex.Message.ToString();
-            conn.Close();
-        }
-        return dt;
-    }
-
     public DataTable GetModeOfTransfer()
     {
         DataTable dt = new DataTable();
@@ -857,29 +836,6 @@ public class Maintenance
     public DataTable GetTotalQuantityWithUnitOfMeasurement(FarmOutDetails fo)
     {
         using (SqlCommand cmd = new SqlCommand("sp_GetTotalQuantityWithUnitOfMeasurement", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            cmd.Parameters.AddWithValue("@ControlNo", fo.ControlNo);
-
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            try
-            {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-
-            return dt;
-        }
-    }
-
-    public DataTable GetTypeOfItem(FarmOutDetails fo)
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_GetTypeOfItem", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@ControlNo", fo.ControlNo);
 

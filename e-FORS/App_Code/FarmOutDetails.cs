@@ -25,6 +25,7 @@ public class FarmOutDetails
     public string ActualDateOfTransfer { get; set; }
     public string TargetDateOfReturn { get; set; }
     public string PackagingUsed { get; set; }
+    public string SupplierCode { get; set; }
     public string SupplierName { get; set; }
     public string DestinationAddress { get; set; }
     public string OriginOfItem { get; set; }

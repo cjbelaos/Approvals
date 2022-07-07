@@ -106,6 +106,13 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             lblPrintTask.Text = "Date";
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
         }
+
+        if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8110"))
+        {
+            lblPrintTitle.Text = "Print PEZA Form 8110";
+            lblPrintTask.Text = "Date";
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
+        }
     }
 
     private void GetPEZASignatory()
@@ -615,6 +622,27 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             Session["WithItemContainer"] = WithItemContainer.ToString();
 
             Response.Redirect("PEZA8106Print.aspx");
+        }
+
+        else if (lblPrintTitle.Text == "Print PEZA Form 8110")
+        {
+            ControlNo = tbFarmOutControlNo.Text;
+            Session["ControlNo"] = ControlNo;
+
+            DataTable dt = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
+            Session["AuthorizedOffical"] = dt.Rows[0]["AuthorizedOfficial"].ToString();
+
+            FarmOutDetails fo = new FarmOutDetails();
+            fo.ControlNo = ControlNo;
+
+            DataTable dt1 = maint.GetTotalQuantityWithUnitOfMeasurement(fo);
+            Session["TotalQuantity"] = dt1.Rows[0]["TotalQuantity"].ToString();
+
+            string Date = txtDate.Text;
+            var parsedDate = DateTime.Parse(Date);
+            Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
+
+            Response.Redirect("PEZA8110Print.aspx");
         }
     }
 }
