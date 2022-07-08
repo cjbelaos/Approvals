@@ -534,7 +534,6 @@ public partial class Default : System.Web.UI.Page
         ddlTypeofItem.DataTextField = "Description";
         ddlTypeofItem.DataValueField = "Description";
         ddlTypeofItem.DataBind();
-        ddlTypeofItem.Items.Insert(0, new ListItem("Choose...", ""));
     }
 
     private void AddClassificationofItem()
@@ -684,7 +683,7 @@ public partial class Default : System.Web.UI.Page
             ddlClassificationofItem.SelectedValue = ds.Tables[0].DefaultView[0]["ClassificationOfItem"].ToString();
             if (ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()) == null)
             {
-                ddlPurposeofItem.SelectedValue = "Return (Others)";
+                ddlPurposeofItem.SelectedValue = "Others";
                 tbOthers.Text = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowOthers()", true);
                 ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);
@@ -797,8 +796,15 @@ public partial class Default : System.Web.UI.Page
 
     protected void ddlSupplierName_SelectedIndexChanged(object sender, EventArgs e)
     {
-        DataTable dt = frfm.GetSupplierAddress(ddlSupplierName.SelectedValue);
-        tbDestinationAddress.Text = dt.Rows[0]["SupplierAddress"].ToString();
+        if (ddlSupplierName.SelectedValue != "")
+        {
+            DataTable dt = frfm.GetSupplierAddress(ddlSupplierName.SelectedValue);
+            tbDestinationAddress.Text = dt.Rows[0]["SupplierAddress"].ToString();
+        }
+        else
+        {
+            tbDestinationAddress.Text = "";
+        }
     }
 
     protected void ddlPurposeofItem_SelectedIndexChanged(object sender, EventArgs e)

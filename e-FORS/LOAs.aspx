@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="LOAs.aspx.cs" Inherits="LOAs" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="LOAs.aspx.cs" Inherits="LOAs" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="maincontent" runat="Server">
     <section class="content-header">

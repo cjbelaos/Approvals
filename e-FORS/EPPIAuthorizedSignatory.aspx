@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="EPPIAuthorizedSignatory.aspx.cs" Inherits="EPPIAuthorizedSignatory" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="EPPIAuthorizedSignatory.aspx.cs" Inherits="EPPIAuthorizedSignatory" %>
 
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="server">

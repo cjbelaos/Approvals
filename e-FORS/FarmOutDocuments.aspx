@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutDocuments.aspx.cs" Inherits="FarmOutDocuments" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="FarmOutDocuments.aspx.cs" Inherits="FarmOutDocuments" %>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="server">
     <section class="content-header">
@@ -83,8 +83,9 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>LOA Type</label>
-                                        <asp:DropDownList runat="server" ID="ddlLOAType" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlLOAType_SelectedIndexChanged" AutoPostBack="true" Enabled="false"></asp:DropDownList>
+                                        <label id="lblLOAType" hidden>LOA Type</label>
+                                        <asp:TextBox runat="server" ID="tbLOAType" CssClass="form-control" Visible="false"></asp:TextBox>
+                                        <%--<asp:DropDownList runat="server" ID="ddlLOAType" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlLOAType_SelectedIndexChanged" AutoPostBack="true" Enabled="false"></asp:DropDownList>--%>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -93,12 +94,14 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>LOA No.</label>
-                                        <asp:DropDownList runat="server" ID="ddlLOANo" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlLOANo_SelectedIndexChanged" AutoPostBack="true" Enabled="false"></asp:DropDownList>
+                                        <asp:TextBox runat="server" ID="tbLOANo" CssClass="form-control" Enabled="false"></asp:TextBox>
+                                        <%--<asp:DropDownList runat="server" ID="ddlLOANo" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlLOANo_SelectedIndexChanged" AutoPostBack="true" Enabled="false"></asp:DropDownList>--%>
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>Surety Bond No.</label>
-                                        <asp:DropDownList runat="server" ID="ddlSuretyBondNo" CssClass="form-control select2" Width="100%" Enabled="false"></asp:DropDownList>
+                                        <asp:TextBox runat="server" ID="tbSBNo" CssClass="form-control" Enabled="false"></asp:TextBox>
+                                        <%--<asp:DropDownList runat="server" ID="ddlSuretyBondNo" CssClass="form-control select2" Width="100%" Enabled="false"></asp:DropDownList>--%>
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">
@@ -184,20 +187,20 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>Status</label>
-                                        <asp:Label runat="server" ID="lblStatus1" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblStatus1" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                 </div>
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>Comment</label>
-                                        <asp:Label runat="server" ID="lblComment1" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblComment1" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>Date</label>
-                                        <asp:Label runat="server" ID="lblDate1" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblDate1" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -218,7 +221,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblStatus2" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblStatus2" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -226,7 +229,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblComment2" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblComment2" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -235,7 +238,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblDate2" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblDate2" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -256,8 +259,8 @@
         </ContentTemplate>
         <Triggers>
             <asp:AsyncPostBackTrigger ControlID="ddlDocumentFormattobeUsed" EventName="SelectedIndexChanged" />
-            <asp:AsyncPostBackTrigger ControlID="ddlLOAType" EventName="SelectedIndexChanged" />
-            <asp:AsyncPostBackTrigger ControlID="ddlLOANo" EventName="SelectedIndexChanged" />
+            <%--<asp:AsyncPostBackTrigger ControlID="ddlLOAType" EventName="SelectedIndexChanged" />--%>
+            <%--<asp:AsyncPostBackTrigger ControlID="ddlLOANo" EventName="SelectedIndexChanged" />--%>
         </Triggers>
     </asp:UpdatePanel>
 
@@ -406,7 +409,8 @@
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title"><asp:Label ID="lblPrintTitle" runat="server"></asp:Label></h3>
+                            <h3 class="modal-title">
+                                <asp:Label ID="lblPrintTitle" runat="server"></asp:Label></h3>
                         </div>
                         <div class="modal-body">
                             <div class="col-md-12">
@@ -436,15 +440,15 @@
     </asp:UpdatePanel>
 
 </asp:Content>
-<asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
 
+<asp:Content ID="Content2" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
-            //$('#BtnSaveReassignTask').on('click', function () {
-            //    if ($('.ddlReassignto').val() == '') {
-            //        $('#ReassigntoHelpBlock').prop('hidden', true);
-            //    }
-            //});
+            $('#BtnSaveReassignTask').on('click', function () {
+                if ($('.ddlReassignto').val() == '') {
+                    $('#ReassigntoHelpBlock').prop('hidden', true);
+                }
+            });
 
             //Initialize Select2 Elements
             $('.select2').select2()
@@ -532,16 +536,16 @@
             }
         })
 
-        function AddDesign() {
-            $('.select2').select2()
+        //function AddDesign() {
+        //    $('.select2').select2()
 
-            $('#ExpiryDate1').datetimepicker({
-                format: 'L'
-            });
-            $('#ExpiryDate2').datetimepicker({
-                format: 'L'
-            });
-        }
+        //    $('#ExpiryDate1').datetimepicker({
+        //        format: 'L'
+        //    });
+        //    $('#ExpiryDate2').datetimepicker({
+        //        format: 'L'
+        //    });
+        //}
 
         function SaveSuccessAlert() {
             var Toast = Swal.mixin({
@@ -610,9 +614,8 @@
         function ShowReassigntoHelpBlock() {
             $('#ReassigntoHelpBlock').removeAttr('hidden');
         }
-
-        function ShowLinkButton() {
-            $('#HideLinkButton').removeAttr('hidden');
-        }
     </script>
 </asp:Content>
+
+
+

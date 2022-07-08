@@ -19,18 +19,6 @@
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/toastr/toastr.min.css">
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
-
-    <style type="text/css">
-        #cbRemember {
-            content: "";
-            display: inline-block;
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            border: 1px solid #D3CFC8;
-            border-radius: 0;
-        }
-    </style>
 </head>
 <body class="hold-transition login-page">
     <form id="form1" method="post" runat="server">
@@ -45,7 +33,6 @@
                     <div class="card">
                         <div class="card-body login-card-body" style="background-image: url(Images/Epson.png); background-repeat: no-repeat">
                             <p class="login-box-msg">Login Form</p>
-
 
                             <div class="input-group mb-3">
                                 <asp:TextBox ID="tbUsername" runat="server" CssClass="form-control" placeholder="Username"></asp:TextBox>
@@ -64,22 +51,17 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-8">
-                                    <div class="icheck-primary">
-                                        <asp:CheckBox runat="server" ID="cbRemember" type="checkbox" />
-                                        <label for="cbRemember">Remember Me</label>
-                                    </div>
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4"> <asp:Button runat="server" ID="BtnLogin" CssClass="btn btn-primary btn-block" Text="Sign In" Width="100px" OnClick="BtnLogin_Click" /></div>
+                                <div class="col-md-4"></div>
                                 </div>
-                                <!-- /.col -->
-                                <div class="col-4">
-                                    <asp:Button runat="server" ID="BtnLogin" class="btn btn-primary btn-block" Text="Sign In" OnClick="BtnLogin_Click" />
-                                </div>
-                                <!-- /.col -->
                             </div>
-
+                            <!-- /.col -->
                         </div>
-                        <!-- /.login-card-body -->
+
                     </div>
+                    <!-- /.login-card-body -->
+                </div>
                 </div>
                 <!-- /.login-box -->
             </ContentTemplate>
@@ -125,7 +107,7 @@
             })
         }
         function InputPassword() {
-             var Toast = Swal.mixin({
+            var Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,

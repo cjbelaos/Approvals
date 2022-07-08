@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage2.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="Server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
@@ -22,7 +22,6 @@
             </section>
 
             <!-- Main content -->
-
             <section class="content">
                 <div class="container-fluid">
 
@@ -59,44 +58,52 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>Nature of Item</label>
                                         <asp:DropDownList runat="server" ID="ddlNatureofItem" CssClass="form-control select2" Width="100%" name="natureofitem"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Transfer to</label>
+                                        <asp:DropDownList runat="server" ID="ddlTransferto" CssClass="form-control select2" Width="100%" name="transferto"></asp:DropDownList>
+                                    </div>
+                                    <!-- /.form-group -->
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Type of Item</label>
-                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
+                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
                                         <asp:HiddenField runat="server" ID="hfTypeofItem" />
                                     </div>
                                     <!-- /.form-group -->
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Classification of Item</label>
+                                        <asp:DropDownList runat="server" ID="ddlClassificationofItem" CssClass="form-control select2" Width="100%" name="classificationofitem"></asp:DropDownList>
+                                    </div>
+                                    <!-- /.form-group -->
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Purpose of Item</label>
                                         <asp:DropDownList runat="server" ID="ddlPurposeofItem" CssClass="form-control select2" Width="100%" name="purposeofitem" OnSelectedIndexChanged="ddlPurposeofItem_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
-                                <!-- /.col -->
                                 <div class="col-md-6">
-
-                                    <div class="form-group">
-                                        <label>Transfer to</label>
-                                        <asp:DropDownList runat="server" ID="ddlTransferto" CssClass="form-control select2" Width="100%" name="transferto"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label>Classification of Item</label>
-                                        <asp:DropDownList runat="server" ID="ddlClassificationofItem" CssClass="form-control select2" Width="100%" name="classificationofitem"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
                                     <div class="form-group" id="Others" hidden>
                                         <label>Others</label>
                                         <asp:TextBox runat="server" ID="tbOthers" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
-                                <!-- /.col -->
                             </div>
                             <!-- /.row -->
                         </div>
@@ -449,7 +456,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group">
                                         <label>Status</label>
-                                        <asp:Label runat="server" ID="lblStatus1" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblStatus1" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -457,7 +464,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>Comment</label>
-                                        <asp:Label runat="server" ID="lblComment1" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblComment1" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -465,7 +472,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>Date</label>
-                                        <asp:Label runat="server" ID="lblDate1" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblDate1" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -489,7 +496,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblStatus2" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblStatus2" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -497,7 +504,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblComment2" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblComment2" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -505,7 +512,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblDate2" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblDate2" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -529,7 +536,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblStatus3" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblStatus3" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -537,7 +544,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblComment3" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblComment3" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -545,7 +552,7 @@
                                 <div class="col-md-2" style="text-align: center">
                                     <div class="form-group-row">
                                         <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblDate3" class="form-control-plaintext"></asp:Label>
+                                        <asp:Label runat="server" ID="lblDate3" CssClass="form-control-plaintext"></asp:Label>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -857,6 +864,9 @@
                 $('#<%=hfTypeofItem.ClientID%>').val(array);
             });
 
+            var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
+            $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
+
             //Initialize Select2 Elements
             $('.select2').select2()
 
@@ -927,6 +937,9 @@
                     array = x + ""
                     $('#<%=hfTypeofItem.ClientID%>').val(array);
                 });
+
+                var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
+                $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
 
                 //Initialize Select2 Elements
                 $('.select2').select2()
