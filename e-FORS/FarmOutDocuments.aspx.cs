@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -15,7 +16,11 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     {
         if (Session["UserID"] == null)
         {
-            Response.Redirect("Login.aspx");
+            Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
+            //not logged in
+            //Redirect to Login
+
+            Response.Redirect("Login.aspx?expired=1");
         }
         else
         {
@@ -38,18 +43,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                     {
                         GetFarmOutDocument();
                     }
-                    //else
-                    //{
-                    //    if (ddlDocumentFormattobeUsed.SelectedValue == "3")
-                    //    {
-                    //        NOLOANOSB();
-                    //    }
-                    //    else
-                    //    {
-                    //        GetLOA();
-                    //        GetSB();
-                    //    }
-                    //}
                     ddlPreparedby.SelectedValue = UserID;
                 }
                 else

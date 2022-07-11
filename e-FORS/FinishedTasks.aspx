@@ -87,13 +87,19 @@
     </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="script" runat="Server">
-    $(function () {
-            $('#<%=gvFinishedTasks.ClientID%>').DataTable();
+    <script type="text/javascript">
+        $(function () {
+            $('#<%=gvFinishedTasks.ClientID%>').DataTable({
+                order: [[4, 'desc']],
+            });
 
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
-                $('#<%=gvFinishedTasks.ClientID%>').DataTable();
+                $('#<%=gvFinishedTasks.ClientID%>').DataTable({
+                    order: [[4, 'desc']],
+                });
             }
         })
+    </script>
 </asp:Content>
 

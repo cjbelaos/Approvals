@@ -13,9 +13,7 @@ public partial class Default : System.Web.UI.Page
     private static readonly FarmOutDetails fod = new FarmOutDetails();
     public static string UserID;
     public static string UserName;
-
     public static string Message;
-
     public static string ItemNoHelpBlock;
     public static string ItemDescriptionHelpBlock;
     public static string QuantityHelpBlock;
@@ -26,15 +24,18 @@ public partial class Default : System.Web.UI.Page
 
         if (Session["UserID"] == null)
         {
-            Response.Redirect("Login.aspx");
+            Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
+            //not logged in
+            //Redirect to Login
+
+            Response.Redirect("Login.aspx?expired=1");
         }
         else
         {
-            UserID = Session["UserID"].ToString();
-            UserName = Session["UserName"].ToString();
-
             if (!Page.IsPostBack)
             {
+                UserID = Session["UserID"].ToString();
+                UserName = Session["UserName"].ToString();
                 GetUserInfo();
                 AddDivision();
                 AddNatureofItem();
@@ -88,7 +89,6 @@ public partial class Default : System.Web.UI.Page
                     GetCheckedby();
                     GetApprovedby();
                     GetItems();
-
                     ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
                 }
             }

@@ -17,63 +17,65 @@ public partial class PEZA8110Print : System.Web.UI.Page
         {
             Response.Redirect("FarmOutDocuments.aspx");
         }
-        else if (!Page.IsPostBack)
+        else 
         {
-            string ControlNo = Session["ControlNo"].ToString();
-            string Date = Session["Date"].ToString();
-            string AuthorizedOfficial = Session["AuthorizedOffical"].ToString();
-            string TotalQuantity = Session["TotalQuantity"].ToString();
+            if (!Page.IsPostBack)
+            {
+                string ControlNo = Session["ControlNo"].ToString();
+                string Date = Session["Date"].ToString();
+                string AuthorizedOfficial = Session["AuthorizedOffical"].ToString();
+                string TotalQuantity = Session["TotalQuantity"].ToString();
 
-            ReportDocument reportDocument = new ReportDocument();
-            dsPEZA8106 ds8106 = new dsPEZA8106();
+                ReportDocument reportDocument = new ReportDocument();
+                dsPEZA8106 ds8106 = new dsPEZA8106();
 
-            string reportPath = Server.MapPath("~/crPEZA8110.rpt");
+                string reportPath = Server.MapPath("~/crPEZA8110.rpt");
 
-            reportDocument.Load(reportPath);
+                reportDocument.Load(reportPath);
 
-            reportDocument.SetDataSource(ds8106);
-            reportDocument.SetParameterValue("@ControlNo", ControlNo);
-            reportDocument.SetParameterValue("@Date", Date);
-            reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
-            reportDocument.SetParameterValue("@TotalQuantity", TotalQuantity);
-            reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
+                reportDocument.SetDataSource(ds8106);
+                reportDocument.SetParameterValue("@ControlNo", ControlNo);
+                reportDocument.SetParameterValue("@Date", Date);
+                reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
+                reportDocument.SetParameterValue("@TotalQuantity", TotalQuantity);
+                reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
 
-            //Load the report by setting the report source
-            CrystalReportViewer1.ReportSource = reportDocument;
+                //Load the report by setting the report source
+                CrystalReportViewer1.ReportSource = reportDocument;
 
-            ExportOptions options = new ExportOptions();
+                ExportOptions options = new ExportOptions();
 
-            options.ExportFormatType = ExportFormatType.PortableDocFormat;
+                options.ExportFormatType = ExportFormatType.PortableDocFormat;
 
-            options.FormatOptions = new PdfRtfWordFormatOptions();
+                options.FormatOptions = new PdfRtfWordFormatOptions();
 
-            ExportRequestContext req = new ExportRequestContext();
+                ExportRequestContext req = new ExportRequestContext();
 
-            req.ExportInfo = options;
-
-
-            Stream s = reportDocument.FormatEngine.ExportToStream(req);
-
-            Response.ClearHeaders();
-
-            Response.ClearContent();
-
-            Response.ContentType = "application/pdf";
+                req.ExportInfo = options;
 
 
-            s.Seek(0, SeekOrigin.Begin);
+                Stream s = reportDocument.FormatEngine.ExportToStream(req);
 
-            byte[] buffer = new byte[s.Length];
+                Response.ClearHeaders();
 
-            s.Read(buffer, 0, (int)s.Length);
+                Response.ClearContent();
 
-            Response.BinaryWrite(buffer);
+                Response.ContentType = "application/pdf";
 
-            Response.End();
 
-            reportDocument.Close();
-            reportDocument.Dispose();
+                s.Seek(0, SeekOrigin.Begin);
 
+                byte[] buffer = new byte[s.Length];
+
+                s.Read(buffer, 0, (int)s.Length);
+
+                Response.BinaryWrite(buffer);
+
+                Response.End();
+
+                reportDocument.Close();
+                reportDocument.Dispose();
+            }
         }
     }
 }

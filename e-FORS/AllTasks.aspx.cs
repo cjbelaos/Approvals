@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -12,17 +12,21 @@ public partial class AllTasks : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["UserID"] == null && Session["UserName"] == null)
+        if (Session["UserID"] == null)
         {
-            Response.Redirect("Login.aspx");
+            Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
+            //not logged in
+            //Redirect to Login
+
+            Response.Redirect("Login.aspx?expired=1");
         }
         else
         {
-            UserID = Session["UserID"].ToString();
-            UserName = Session["UserName"].ToString();
-
             if (!Page.IsPostBack)
             {
+                UserID = Session["UserID"].ToString();
+                UserName = Session["UserName"].ToString();
+
                 GetAllTasks();
             }
         }

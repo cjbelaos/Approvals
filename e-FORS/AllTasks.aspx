@@ -90,11 +90,15 @@
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
-            $('#<%=gvAllTasks.ClientID%>').DataTable();
+            $('#<%=gvAllTasks.ClientID%>').DataTable({
+                order: [[4, 'desc']],
+            });
 
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
-                $('#<%=gvAllTasks.ClientID%>').DataTable();
+                $('#<%=gvAllTasks.ClientID%>').DataTable({
+                    order: [[4, 'desc']],
+                });
             }
         })
     </script>

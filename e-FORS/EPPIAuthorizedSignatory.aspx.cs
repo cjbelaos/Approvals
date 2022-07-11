@@ -20,7 +20,11 @@ public partial class EPPIAuthorizedSignatory : System.Web.UI.Page
     {
         if (Session["UserID"] == null)
         {
-            Response.Redirect("Login.aspx");
+            Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
+            //not logged in
+            //Redirect to Login
+
+            Response.Redirect("Login.aspx?expired=1");
         }
         else
         {
