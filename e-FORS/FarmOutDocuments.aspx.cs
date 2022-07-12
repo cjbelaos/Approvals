@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Web;
 using System.Web.UI;
@@ -28,6 +29,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             {
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
+
                 GetDocumentFormattobeUsed();
                 //GetLOAType();
                 GetEPPIAuthorizedSignatory();
@@ -58,6 +60,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     {
         if (ddlDocumentFormattobeUsed.SelectedValue == "1" || ddlDocumentFormattobeUsed.SelectedValue == "2")
         {
+            
             GetLOA();
             GetSB();
         }
@@ -95,22 +98,37 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("GATEPASS"))
         {
             lblPrintTitle.Text = "Print Gatepass";
-            lblPrintTask.Text = "Date";
+            divControlNo.Visible = false;
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
             
         }
 
-        if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8106"))
+        else if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8106"))
         {
             lblPrintTitle.Text = "Print PEZA Form 8106";
-            lblPrintTask.Text = "Date";
+            divControlNo.Visible = false;
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
         }
 
-        if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8110"))
+        else if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8110"))
         {
             lblPrintTitle.Text = "Print PEZA Form 8110";
-            lblPrintTask.Text = "Date";
+            divControlNo.Visible = false;
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
+        }
+
+        else if (g.CommandName.Equals("Print") && g.CommandArgument.Equals("PEZA FORM 8112"))
+        {
+            lblPrintTitle.Text = "Print PEZA Form 8112";
+            divControlNo.Visible = true;
+
+            DataTable dt = maint.GetControlNoOf8112WithSameLOA(tbLOANo.Text, tbFarmOutControlNo.Text);
+            ddlControlNo.DataSource = dt;
+            ddlControlNo.DataTextField = "CONTROLNO";
+            ddlControlNo.DataValueField = "CONTROLNO";
+            ddlControlNo.DataBind();
+            ddlControlNo.Items.Insert(0, new ListItem("Choose...", ""));
+
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
         }
     }
@@ -132,6 +150,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         ddlDocumentFormattobeUsed.DataValueField = "ID";
         ddlDocumentFormattobeUsed.DataBind();
         ddlDocumentFormattobeUsed.Items.Insert(0, new ListItem("Choose...", ""));
+        NOLOANOSB();
     }
 
     private void GetEPPIAuthorizedSignatory()
@@ -423,6 +442,17 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 {
                     tbLOAType.Enabled = true;
                     tbLOANo.Enabled = true;
+                    divLOA.Visible = true;
+                    divSB.Visible = true;
+                    divLOAExp.Visible = true;
+                    divSBExp.Visible = true;
+                }
+                else
+                {
+                    divLOA.Visible = false;
+                    divSB.Visible = false;
+                    divLOAExp.Visible = false;
+                    divSBExp.Visible = false;
                 }
 
                 DataTable dt = new DataTable();
@@ -644,10 +674,45 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
             Response.Redirect("PEZA8110Print.aspx");
         }
+
+        else if (lblPrintTitle.Text == "Print PEZA Form 8112")
+        {
+            Session["ControlNo"] = tbFarmOutControlNo.Text;
+
+            string ControlNos;
+
+            if (hfControlNo.Value == null)
+            {
+                ControlNos = tbFarmOutControlNo.Text;
+            }
+            else
+            {
+                ControlNos = hfControlNo.Value;
+                ControlNos = ControlNos.Replace("','", ",");
+            }
+
+            Session["ControlNoS"] = ControlNos;
+
+            DataTable dt1 = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
+            Session["AuthorizedOffical"] = dt1.Rows[0]["AuthorizedOfficial"].ToString();
+
+            FarmOutDetails fo = new FarmOutDetails();
+            fo.ControlNo = ControlNo;
+
+            string Date = txtDate.Text;
+            var parsedDate = DateTime.Parse(Date);
+            Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
+
+            Response.Redirect("PEZA8112Print.aspx");
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalPrint", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+        }
     }
 
     private void GetLOA()
     {
+        divLOA.Visible = true;
+        divLOAExp.Visible = true;
+
         FarmOutDetails fo = new FarmOutDetails();
         fo.ControlNo = tbFarmOutControlNo.Text;
 
@@ -666,6 +731,9 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     private void GetSB()
     {
+        divSB.Visible = true;
+        divSBExp.Visible = true;
+
         FarmOutDetails fo = new FarmOutDetails();
         fo.ControlNo = tbFarmOutControlNo.Text;
 
@@ -684,10 +752,11 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     private void NOLOANOSB()
     {
-        tbLOANo.Text = "";
-        tbExpiryDate1.Text = "";
-        tbSBNo.Text = "";
-        tbExpiryDate2.Text = "";
+        divLOA.Visible = false;
+        divSB.Visible = false;
+        divLOAExp.Visible = false;
+        divSBExp.Visible = false;
+
     }
 
     public void SessionForm()
@@ -783,4 +852,20 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         }
 
     }
+
+    //protected void ddlControlNo_SelectedIndexChanged(object sender, EventArgs e)
+    //{
+    //    if (ddlControlNo.SelectedValue == "0")
+    //    {
+    //        divBtnAdd.Visible = false;
+    //    }
+    //}
+
+    //protected void btnAdd_Click(object sender, EventArgs e)
+    //{
+    //    List<string> MyList = new List<string>();
+    //    MyList.Add("HELLO");
+
+    //    lbControlNo.DataSource = MyList;
+    //}
 }

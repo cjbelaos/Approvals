@@ -92,13 +92,13 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div runat="server" id="divLOA" class="form-group">
                                         <label>LOA No.</label>
                                         <asp:TextBox runat="server" ID="tbLOANo" CssClass="form-control" Enabled="false"></asp:TextBox>
                                         <%--<asp:DropDownList runat="server" ID="ddlLOANo" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlLOANo_SelectedIndexChanged" AutoPostBack="true" Enabled="false"></asp:DropDownList>--%>
                                     </div>
                                     <!-- /.form-group -->
-                                    <div class="form-group">
+                                    <div runat="server" id="divSB" class="form-group">
                                         <label>Surety Bond No.</label>
                                         <asp:TextBox runat="server" ID="tbSBNo" CssClass="form-control" Enabled="false"></asp:TextBox>
                                         <%--<asp:DropDownList runat="server" ID="ddlSuretyBondNo" CssClass="form-control select2" Width="100%" Enabled="false"></asp:DropDownList>--%>
@@ -138,7 +138,7 @@
                                 </div>
                                 <!-- /.col -->
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div runat="server" id="divLOAExp" class="form-group">
                                         <label>Expiry Date</label>
                                         <div class="input-group date" id="ExpiryDate1" data-target-input="nearest">
                                             <asp:TextBox runat="server" ID="tbExpiryDate1" CssClass="form-control datetimepicker-input" data-target="#ExpiryDate1" Enabled="false"></asp:TextBox>
@@ -148,7 +148,7 @@
                                         </div>
                                     </div>
                                     <!-- /.form-group -->
-                                    <div class="form-group">
+                                    <div runat="server" id="divSBExp" class="form-group">
                                         <label>Expiry Date</label>
                                         <div class="input-group date" id="ExpiryDate2" data-target-input="nearest">
                                             <asp:TextBox runat="server" ID="tbExpiryDate2" CssClass="form-control datetimepicker-input" data-target="#ExpiryDate2" Enabled="false"></asp:TextBox>
@@ -248,7 +248,7 @@
                         <!-- /.card-body -->
 
                         <div class="card-footer">
-                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary" Text="Save" Width="110px" Enabled="false" OnClick="BtnSave_OnClick" />
+                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary" Text="Save" Width="70px" Enabled="false" OnClick="BtnSave_OnClick" />
                         </div>
                     </div>
 
@@ -415,7 +415,7 @@
                         <div class="modal-body">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <asp:Label ID="lblPrintTask" runat="server"></asp:Label>
+                                    <label>Date</label>
                                     <div class="input-group date" id="Date" data-target-input="nearest">
                                         <asp:TextBox runat="server" ID="txtDate" CssClass="form-control datetimepicker-input" data-target="#Date"></asp:TextBox>
                                         <div class="input-group-append" data-target="#Date" data-toggle="datetimepicker">
@@ -424,11 +424,30 @@
                                     </div>
                                 </div>
                                 <!-- /.form-group -->
+                                <div runat="server" id="divControlNo" class="form-group">
+                                    <label runat="server" id="lblControlNo">ControlNo.</label>
+                                    <asp:DropDownList runat="server" ID="ddlControlNo" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
+                                    <asp:HiddenField runat="server" ID="hfControlNo" />
+                                    <%--<div class="input-group">
+                                        <asp:DropDownList runat="server" ID="ddlControlNo" CssClass="form-control select2" OnSelectedIndexChanged="ddlControlNo_SelectedIndexChanged" AutoPostBack="true" Width="85%"></asp:DropDownList>
+                                        <div runat="server" id="divBtnAdd" class="input-group-append">
+                                            <asp:Button runat="server" ID="btnAdd" CssClass="btn btn-success btn-xs" style="border-width: thick;" Text="Add" OnClick="btnAdd_Click" />
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-body p-0">
+                                            <asp:GridView runat="server" ID="gvControlNo" BorderStyle="None" CssClass="table table-sm table-borderless" ShowHeaderWhenEmpty="true" AutoGenerateColumns="true" Visible="false">
+                                            </asp:GridView>
+                                            <asp:ListBox runat="server" ID="lbControlNo"></asp:ListBox>
+                                        </div>
+                                    </div>--%>
+                                </div>
+                                <!-- /.form-group -->
                             </div>
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <asp:Button runat="server" ID="BtnDone" CssClass="btn btn-info btn-sm" Text="Done" OnClick="BtnDone_Click" Width="70px" />
+                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 70px">Close</button>
+                            <asp:Button runat="server" ID="BtnDone" CssClass="btn btn-primary btn-sm" Text="Done" OnClick="BtnDone_Click" Width="70px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -444,6 +463,12 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
+            $('#<%=ddlControlNo.ClientID%>').on('change', function () {
+                x = $('#<%=tbFarmOutControlNo.ClientID%>').val() + ',' + $(this).val();
+                array = x + ""
+                $('#<%=hfControlNo.ClientID%>').val(array);
+            });
+
             $('#BtnSaveReassignTask').on('click', function () {
                 if ($('.ddlReassignto').val() == '') {
                     $('#ReassigntoHelpBlock').prop('hidden', true);
@@ -490,6 +515,13 @@
 
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
+                $('#<%=ddlControlNo.ClientID%>').on('change', function () {
+                    x = $('#<%=tbFarmOutControlNo.ClientID%>').val() + ',' + $(this).val();
+                    //x = $(this).val();
+                    array = x + ""
+                    $('#<%=hfControlNo.ClientID%>').val(array);
+                });
+
                 $('#BtnSaveReassignTask').on('click', function () {
                     if ($('.ddlReassignto').val() == '') {
                         $('#ReassigntoHelpBlock').prop('hidden', true);

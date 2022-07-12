@@ -27,13 +27,13 @@ public partial class PEZA8110Print : System.Web.UI.Page
                 string TotalQuantity = Session["TotalQuantity"].ToString();
 
                 ReportDocument reportDocument = new ReportDocument();
-                dsPEZA8106 ds8106 = new dsPEZA8106();
+                dsEFORS eFORS = new dsEFORS();
 
                 string reportPath = Server.MapPath("~/crPEZA8110.rpt");
 
                 reportDocument.Load(reportPath);
 
-                reportDocument.SetDataSource(ds8106);
+                reportDocument.SetDataSource(eFORS);
                 reportDocument.SetParameterValue("@ControlNo", ControlNo);
                 reportDocument.SetParameterValue("@Date", Date);
                 reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);

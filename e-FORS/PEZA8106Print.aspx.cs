@@ -30,7 +30,7 @@ public partial class TestPrint : System.Web.UI.Page
                 string WithItemContainer = Session["WithItemContainer"].ToString();
 
                 ReportDocument reportDocument = new ReportDocument();
-                dsPEZA8106 ds8106 = new dsPEZA8106();
+                dsEFORS eFORS = new dsEFORS();
 
                 string reportPath;
                 if (WithContainer == "True")
@@ -52,7 +52,7 @@ public partial class TestPrint : System.Web.UI.Page
 
                 reportDocument.Load(reportPath);
 
-                reportDocument.SetDataSource(ds8106);
+                reportDocument.SetDataSource(eFORS);
                 reportDocument.SetParameterValue("@ControlNo", ControlNo);
                 reportDocument.SetParameterValue("@Date", Date);
                 reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);

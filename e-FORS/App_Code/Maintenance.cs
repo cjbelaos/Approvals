@@ -901,4 +901,51 @@ public class Maintenance
             return dt;
         }
     }
+
+    public DataTable GetControlNoOf8112WithSameLOA(string LOA, string CTRLNO)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetControlNoOf8112WithSameLOA", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@LOA", LOA);
+            cmd.Parameters.AddWithValue("@CTRLNO", CTRLNO);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                conn.Open();
+                da.Fill(dt);
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+
+            return dt;
+        }
+    }
+
+    public DataTable GetItemsForPEZA8112(string CTRLNO)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetItemsForPEZA8112", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CTRLNO", CTRLNO);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                conn.Open();
+                da.Fill(dt);
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+
+            return dt;
+        }
+    }
 }

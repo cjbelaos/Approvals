@@ -27,7 +27,7 @@ public partial class GatepassPrint : System.Web.UI.Page
                 string WithItemContainer = Session["WithItemContainer"].ToString();
 
                 ReportDocument reportDocument = new ReportDocument();
-                dsPEZA8106 ds8106 = new dsPEZA8106();
+                dsEFORS eFORS = new dsEFORS();
 
                 string reportPath;
                 if (WithItemContainer == "True")
@@ -41,7 +41,7 @@ public partial class GatepassPrint : System.Web.UI.Page
 
                 reportDocument.Load(reportPath);
 
-                reportDocument.SetDataSource(ds8106);
+                reportDocument.SetDataSource(eFORS);
                 reportDocument.SetParameterValue("@ControlNo", ControlNo);
                 reportDocument.SetParameterValue("@TotalQuantity", TotalQuantity);
                 reportDocument.SetParameterValue("@Date", Date);
