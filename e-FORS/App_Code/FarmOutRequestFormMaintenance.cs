@@ -77,9 +77,25 @@ public class FarmOutRequestFormMaintenance
         cmd.Parameters.AddWithValue("@FileType", fd.FileType);
         cmd.Parameters.AddWithValue("@UserID", fd.UserID);
 
-        conn.Open();
-        cmd.ExecuteNonQuery();
-        conn.Close();
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            else
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        
     }
 
     public DataTable GetFiles(string ControlNo)

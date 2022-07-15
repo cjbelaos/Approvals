@@ -8,21 +8,18 @@ public partial class PEZA8112Print : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["ControlNo"].ToString() == null)
-        {
-            Response.Redirect("FarmOutDocuments.aspx");
-        }
-        else
+        if (Session["ControlNo"] != null)
         {
             if (!Page.IsPostBack)
             {
                 string ControlNo = Session["ControlNo"].ToString();
                 string ControlNos = Session["ControlNoS"].ToString();
                 string Date = Session["Date"].ToString();
+                string Dates = Session["Dates"].ToString();
                 string AuthorizedOfficial = Session["AuthorizedOffical"].ToString();
 
                 ReportDocument reportDocument = new ReportDocument();
-                dsEFORS eFORS  = new dsEFORS();
+                dsEFORS eFORS = new dsEFORS();
 
                 string reportPath = Server.MapPath("~/crPEZA8112.rpt");
 
@@ -32,6 +29,7 @@ public partial class PEZA8112Print : System.Web.UI.Page
                 reportDocument.SetParameterValue("@ControlNo", ControlNo);
                 reportDocument.SetParameterValue("@ControlNos", ControlNos);
                 reportDocument.SetParameterValue("@Date", Date);
+                reportDocument.SetParameterValue("@Dates", Dates);
                 reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
                 reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
 
@@ -71,6 +69,10 @@ public partial class PEZA8112Print : System.Web.UI.Page
                 reportDocument.Close();
                 reportDocument.Dispose();
             }
+        }
+        else
+        {
+            Response.Redirect("FarmOutDocuments.aspx");
         }
     }
 }

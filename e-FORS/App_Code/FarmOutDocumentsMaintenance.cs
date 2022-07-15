@@ -606,7 +606,7 @@ public class FarmOutDocumentsMaintenance
             conn.Close();
         }
 
-        if (dt.Rows[0]["CONTAINERNO"].ToString() != "")
+        if (dt.Rows.Count > 0)
         {
             return true;
         }
@@ -686,7 +686,7 @@ public class FarmOutDocumentsMaintenance
             conn.Close();
         }
 
-        if (dt.Rows[0]["ContainerNo"].ToString() != "")
+        if (dt.Rows.Count > 0)
         {
             return true;
         }

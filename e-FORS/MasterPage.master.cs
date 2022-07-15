@@ -142,7 +142,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 LOAs = "active";
             }
 
-            bool x = maint.CheckAuthorization(UserID);
+            bool x = maint.CheckAuthorization(lblUserID.Text);
             if (x == false)
             {
                 HideAllTasks = "hidden";
@@ -153,7 +153,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
 
     public void GetMyTasksCount()
     {
-        DataTable dt = maint.GetMyTasksCount(UserID);
+        DataTable dt = maint.GetMyTasksCount(lblUserID.Text);
         if (dt.DefaultView[0]["MyTasksCount"].ToString() == "0")
         {
             HideCountMyTasks = "hidden";

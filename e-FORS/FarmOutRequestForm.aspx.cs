@@ -158,7 +158,6 @@ public partial class Default : System.Web.UI.Page
             gvFiles.DataSource = dt;
             gvFiles.DataBind();
         }
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
     }
 
     protected string CreateFileName(FileUpload fu)
@@ -353,22 +352,8 @@ public partial class Default : System.Web.UI.Page
 
     protected void BtnSave_OnClick(object sender, EventArgs e)
     {
-        if (ddlCheckedby.SelectedValue == "" && ddlApprovedby.SelectedValue == "")
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowApprovalHelpBlock()", true);
-        }
 
-        if (ddlCheckedby.SelectedValue == "" && ddlApprovedby.SelectedValue != "")
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowCheckedbyHelpBlock()", true);
-        }
-
-        if (ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue == "")
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowApprovedbyHelpBlock()", true);
-        }
-
-        if (ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "")
+        if (ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "" && ddlSupplierName.SelectedValue != "")
         {
             Maintenance maint = new Maintenance();
             DataSet ds = new DataSet();
@@ -880,7 +865,6 @@ public partial class Default : System.Web.UI.Page
             default:
                 lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'my-sticky-class'});return false;});</script>";
                 break;
-
 
         }
     }

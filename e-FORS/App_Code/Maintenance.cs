@@ -920,17 +920,18 @@ public class Maintenance
             catch (SqlException sqlex)
             {
                 throw sqlex;
+                conn.Close();
             }
 
             return dt;
         }
     }
 
-    public DataTable GetItemsForPEZA8112(string CTRLNO)
+    public string Get8112Dates(string CTRLNOS)
     {
-        using (SqlCommand cmd = new SqlCommand("sp_GetItemsForPEZA8112", conn) { CommandType = CommandType.StoredProcedure })
+        using (SqlCommand cmd = new SqlCommand("sp_Get8112Dates", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@CTRLNO", CTRLNO);
+            cmd.Parameters.AddWithValue("@CTRLNOS", CTRLNOS);
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
@@ -944,8 +945,15 @@ public class Maintenance
             {
                 throw sqlex;
             }
-
-            return dt;
+            if (dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["ACTUALDELIVERYDATES"].ToString();
+            }
+            else
+            {
+                return null;
+            }
+                
         }
     }
 }

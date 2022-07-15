@@ -52,15 +52,13 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                     LnkBtnView.Visible = false;
                 }
             }
-            //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "AddDesign();", true);
         }
     }
 
     protected void ddlDocumentFormattobeUsed_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (ddlDocumentFormattobeUsed.SelectedValue == "1" || ddlDocumentFormattobeUsed.SelectedValue == "2")
+        if (ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8106" || ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8112")
         {
-            
             GetLOA();
             GetSB();
         }
@@ -72,13 +70,13 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         DataTable dt = new DataTable();
 
         dt.Columns.Add("Task", typeof(string));
-        dt.Rows.Add(ddlDocumentFormattobeUsed.SelectedItem.Text);
-        if (ddlDocumentFormattobeUsed.SelectedValue.ToString() != "4" && ddlDocumentFormattobeUsed.SelectedValue.ToString() != "")
+        dt.Rows.Add(ddlDocumentFormattobeUsed.SelectedValue);
+        if (ddlDocumentFormattobeUsed.SelectedValue != "GATEPASS" && ddlDocumentFormattobeUsed.SelectedValue != "")
         {
             dt.Rows.Add("GATEPASS");
             GrvPrint.Visible = true;
         }
-        else if (ddlDocumentFormattobeUsed.SelectedValue.ToString().Trim().ToUpper() == "4")
+        else if (ddlDocumentFormattobeUsed.SelectedValue == "GATEPASS")
         {
             dt.Rows.Clear();
             dt.Rows.Add("GATEPASS");
@@ -147,7 +145,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         ds = fodm.GetDocumentFormattobeUsed();
         ddlDocumentFormattobeUsed.DataSource = ds.Tables[0];
         ddlDocumentFormattobeUsed.DataTextField = "Task";
-        ddlDocumentFormattobeUsed.DataValueField = "ID";
+        ddlDocumentFormattobeUsed.DataValueField = "Task";
         ddlDocumentFormattobeUsed.DataBind();
         ddlDocumentFormattobeUsed.Items.Insert(0, new ListItem("Choose...", ""));
         NOLOANOSB();
@@ -239,15 +237,10 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void BtnSave_OnClick(object sender, EventArgs e)
     {
-        if (ddlApprovedby.SelectedValue == "")
-        {
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ShowApprovedbyHelpBlock();", true);
-        }
-        
-        if (ddlApprovedby.SelectedValue != "")
+        if (ddlDocumentFormattobeUsed.SelectedValue != "" && ddlEPPIAuthorizedSignatory.SelectedValue != "" && ddlPreparedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "" )
         {
             string ControlNo = tbFarmOutControlNo.Text;
-            string DocumentFormat = ddlDocumentFormattobeUsed.SelectedItem.Text;
+            string DocumentFormat = ddlDocumentFormattobeUsed.SelectedValue;
             string PEZADocumentNo = tbPEZADocumentNo.Text.ToUpper();
             string GatepassNo = tbGatepassNo.Text.ToUpper();
             string LOAType = tbLOAType.Text;
@@ -404,7 +397,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalReassignTask').modal('show');", true);
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ShowReassigntoHelpBlock();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "SelectReassignToAlert();", true);
         }
         else
         {
@@ -435,10 +428,12 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
         if (ds.Tables[1].DefaultView.Count > 0)
         {
-            ddlDocumentFormattobeUsed.ClearSelection();
-            ddlDocumentFormattobeUsed.Items.FindByText(ds.Tables[1].DefaultView[0]["DOCUMENTFORMAT"].ToString()).Selected = true;
+            //ddlDocumentFormattobeUsed.ClearSelection();
+            //ddlDocumentFormattobeUsed.Items.FindByText(ds.Tables[1].DefaultView[0]["DOCUMENTFORMAT"].ToString()).Selected = true;
+
+            ddlDocumentFormattobeUsed.SelectedValue = ds.Tables[1].DefaultView[0]["DOCUMENTFORMAT"].ToString();
             {
-                if (ddlDocumentFormattobeUsed.SelectedValue == "1" || ddlDocumentFormattobeUsed.SelectedValue == "2")
+                if (ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8106" || ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8112")
                 {
                     tbLOAType.Enabled = true;
                     tbLOANo.Enabled = true;
@@ -458,13 +453,13 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 DataTable dt = new DataTable();
 
                 dt.Columns.Add("Task", typeof(string));
-                dt.Rows.Add(ddlDocumentFormattobeUsed.SelectedItem.Text);
-                if (ddlDocumentFormattobeUsed.SelectedValue.ToString() != "4" && ddlDocumentFormattobeUsed.SelectedValue.ToString() != "0")
+                dt.Rows.Add(ddlDocumentFormattobeUsed.SelectedValue);
+                if (ddlDocumentFormattobeUsed.SelectedValue != "GATEPASS" && ddlDocumentFormattobeUsed.SelectedValue != "")
                 {
                     dt.Rows.Add("GATEPASS");
                     GrvPrint.Visible = true;
                 }
-                else if (ddlDocumentFormattobeUsed.SelectedValue.ToString().Trim().ToUpper() == "4")
+                else if (ddlDocumentFormattobeUsed.SelectedValue == "GATEPASS")
                 {
                     dt.Rows.Clear();
                     dt.Rows.Add("GATEPASS");
@@ -607,18 +602,48 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             fo.ControlNo = ControlNo;
 
             DataTable dt = maint.GetFarmOutDetailsCreatorandApprover(fo);
-            Session["PreparedBy"] = dt.Rows[0]["CREATEDBY"].ToString();
-            Session["ApprovedBy"] = dt.Rows[0]["EPPIAUTHORIZEDSIGNATORY"].ToString();
+            if (dt.Rows.Count > 0)
+            {
+                Session["PreparedBy"] = dt.Rows[0]["CREATEDBY"].ToString();
+                Session["ApprovedBy"] = dt.Rows[0]["EPPIAUTHORIZEDSIGNATORY"].ToString();
+            }
+            else
+            {
+                Session["PreparedBy"] = "";
+                Session["ApprovedBy"] = "";
+            }
 
             DataTable dt1 = maint.GetTotalQuantityWithUnitOfMeasurement(fo);
-            Session["TotalQuantity"] = dt1.Rows[0]["TotalQuantity"].ToString();
-
+            if (dt1.Rows.Count > 0)
+            {
+                Session["TotalQuantity"] = dt1.Rows[0]["TotalQuantity"].ToString();
+            }
+            else
+            {
+                Session["TotalQuantity"] = "";
+            }
+            
             DataTable dt2 = fodm.GetItemContainers(ControlNo);
-            Session["ContainerNo"] = dt2.Rows[0]["ContainerNo"].ToString();
+            if (dt2.Rows.Count > 0)
+            {
+                Session["ContainerNo"] = dt2.Rows[0]["ContainerNo"].ToString();
+            }
+            else
+            {
+                Session["ContainerNo"] = "";
+            }
+            
 
             DataTable dt3 = fodm.GetItemSealNo(ControlNo);
-            Session["SealNo"] = dt3.Rows[0]["SealNo"].ToString();
-
+            if (dt.Rows.Count > 0)
+            {
+                Session["SealNo"] = dt3.Rows[0]["SealNo"].ToString();
+            }
+            else
+            {
+                Session["SealNo"] = "";
+            }
+            
             bool WithItemContainer = fodm.CheckIfWithItemContainer(ControlNo);
             Session["WithItemContainer"] = WithItemContainer.ToString();
 
@@ -630,14 +655,35 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             Session["ControlNo"] = ControlNo;
 
             DataTable dt1 = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
-            Session["AuthorizedOffical"] = dt1.Rows[0]["AuthorizedOfficial"].ToString();
+            if (dt1.Rows.Count > 0)
+            {
+                Session["AuthorizedOffical"] = dt1.Rows[0]["AuthorizedOfficial"].ToString();
+            }
+            else
+            {
+                Session["AuthorizedOffical"] = "";
+            }
 
             DataTable dt2 = fodm.GetItemContainers(ControlNo);
-            Session["ContainerNo"] = dt2.Rows[0]["ContainerNo"].ToString();
-
+            if (dt1.Rows.Count > 0)
+            {
+                Session["ContainerNo"] = dt2.Rows[0]["ContainerNo"].ToString();
+            }
+            else
+            {
+                Session["ContainerNo"] = "";
+            }
+            
             DataTable dt3 = fodm.GetItemSealNo(ControlNo);
-            Session["SealNo"] = dt3.Rows[0]["SealNo"].ToString(); 
-
+            if (dt1.Rows.Count > 0)
+            {
+                Session["SealNo"] = dt3.Rows[0]["SealNo"].ToString();
+            }
+            else
+            {
+                Session["SealNo"] = "";
+            }
+            
             string Date = txtDate.Text;
             var parsedDate = DateTime.Parse(Date);
             Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
@@ -660,14 +706,28 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             Session["ControlNo"] = ControlNo;
 
             DataTable dt = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
-            Session["AuthorizedOffical"] = dt.Rows[0]["AuthorizedOfficial"].ToString();
+            if (dt.Rows.Count > 0)
+            {
+                Session["AuthorizedOffical"] = dt.Rows[0]["AuthorizedOfficial"].ToString();
+            }
+            else
+            {
+                Session["AuthorizedOffical"] = "";
+            }
 
             FarmOutDetails fo = new FarmOutDetails();
             fo.ControlNo = ControlNo;
 
             DataTable dt1 = maint.GetTotalQuantityWithUnitOfMeasurement(fo);
-            Session["TotalQuantity"] = dt1.Rows[0]["TotalQuantity"].ToString();
-
+            if (dt1.Rows.Count > 0)
+            {
+                Session["TotalQuantity"] = dt1.Rows[0]["TotalQuantity"].ToString();
+            }
+            else
+            {
+                Session["TotalQuantity"] = "";
+            }
+            
             string Date = txtDate.Text;
             var parsedDate = DateTime.Parse(Date);
             Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
@@ -681,7 +741,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
             string ControlNos;
 
-            if (hfControlNo.Value == null)
+            if (string.IsNullOrEmpty(hfControlNo.Value))
             {
                 ControlNos = tbFarmOutControlNo.Text;
             }
@@ -693,9 +753,18 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
             Session["ControlNoS"] = ControlNos;
 
-            DataTable dt1 = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
-            Session["AuthorizedOffical"] = dt1.Rows[0]["AuthorizedOfficial"].ToString();
+            Session["Dates"] = maint.Get8112Dates(ControlNos);
 
+            DataTable dt1 = fodm.GetAuthorizedOfficial(ddlEPPIAuthorizedSignatory.SelectedValue);
+            if (dt1.Rows.Count > 0)
+            {
+                Session["AuthorizedOffical"] = dt1.Rows[0]["AuthorizedOfficial"].ToString();
+            }
+            else
+            {
+                Session["AuthorizedOffical"] = "";
+            }
+            
             FarmOutDetails fo = new FarmOutDetails();
             fo.ControlNo = ControlNo;
 

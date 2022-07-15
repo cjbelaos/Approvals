@@ -17,7 +17,6 @@ public partial class _Default : System.Web.UI.Page
         {
             Session["UserID"] = "";
             Session["UserName"] = "";
-            Session["Link"] = "";
 
             //Session["UserID"] = "B012128";
             //Session["UserName"] = "CHRIS JOHN BELAOS";
@@ -105,16 +104,14 @@ public partial class _Default : System.Web.UI.Page
             {
                 if (isLogin == true)
                 {
-                    Link = Session["Link"].ToString();
-                    if (Link != "")
-                    {
-                        Response.Redirect(Link);
-                    }
-                    else
+                    if (Session["Link"] == null)
                     {
                         Response.Redirect("Home.aspx");
                     }
-                    
+                    else
+                    {
+                        Response.Redirect(Session["Link"].ToString());
+                    }
                 }
                 else
                 {

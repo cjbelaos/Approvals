@@ -158,18 +158,17 @@
                         buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
                         data: d,
                         columns: [
-                            { data: "ID", title: 'ID' },
+                            { data: "SupplierCode", title: 'SupplierCode' },
                             { data: "SupplierName", title: 'Supplier Name' },
                             { data: "SupplierAddress", title: 'Supplier Address' },
-                            { data: "CreatedDate", title: 'Date Created' },
-                            { data: "CreatedBy", title: 'Created by' },
+                            { data: "IsActive", title: 'Active' },
                             {
-                                data: 'ID', title: 'Edit', render: function (e) {
+                                data: 'SupplierCode', title: 'Edit', render: function (e) {
                                     return btnEdit;
                                 }
                             },
                             {
-                                data: 'ID', title: 'Delete', render: function (e) {
+                                data: 'SupplierCode', title: 'Delete', render: function (e) {
                                     return btnDelete;
                                 }
                             },

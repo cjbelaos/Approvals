@@ -44,6 +44,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>Document Format to be Used</label>
+                                        <span style="color: #ff0000">*</span>
                                         <asp:DropDownList runat="server" ID="ddlDocumentFormattobeUsed" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlDocumentFormattobeUsed_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                                         <div class="card">
                                             <div class="card-body p-0">
@@ -121,6 +122,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>EPPI Authorized Signatory</label>
+                                        <span style="color: #ff0000">*</span>
                                         <asp:DropDownList runat="server" ID="ddlEPPIAuthorizedSignatory" CssClass="form-control select2" Width="100%"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
@@ -175,6 +177,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Prepared by</label>
+                                        <span style="color: #ff0000">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlPreparedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -209,6 +212,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Approved by</label>
+                                        <span style="color: #ff0000">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -369,15 +373,10 @@
                                         <div class="row mb-1">
                                             <div class="col-md-4">
                                                 <label for="ddlReassignto">&nbsp; &nbsp; &nbsp;Re-assign to:</label>
+                                                <span style="color: #ff0000">*</span>
                                             </div>
                                             <div class="col-md-8">
                                                 <asp:DropDownList runat="server" ID="ddlReassignto" CssClass="form-control select2 ddlReassignto" Width="100%" name="reassignto"></asp:DropDownList>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label>&nbsp;</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <small id="ReassigntoHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -428,19 +427,6 @@
                                     <label runat="server" id="lblControlNo">ControlNo.</label>
                                     <asp:DropDownList runat="server" ID="ddlControlNo" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
                                     <asp:HiddenField runat="server" ID="hfControlNo" />
-                                    <%--<div class="input-group">
-                                        <asp:DropDownList runat="server" ID="ddlControlNo" CssClass="form-control select2" OnSelectedIndexChanged="ddlControlNo_SelectedIndexChanged" AutoPostBack="true" Width="85%"></asp:DropDownList>
-                                        <div runat="server" id="divBtnAdd" class="input-group-append">
-                                            <asp:Button runat="server" ID="btnAdd" CssClass="btn btn-success btn-xs" style="border-width: thick;" Text="Add" OnClick="btnAdd_Click" />
-                                        </div>
-                                    </div>
-                                    <div class="card">
-                                        <div class="card-body p-0">
-                                            <asp:GridView runat="server" ID="gvControlNo" BorderStyle="None" CssClass="table table-sm table-borderless" ShowHeaderWhenEmpty="true" AutoGenerateColumns="true" Visible="false">
-                                            </asp:GridView>
-                                            <asp:ListBox runat="server" ID="lbControlNo"></asp:ListBox>
-                                        </div>
-                                    </div>--%>
                                 </div>
                                 <!-- /.form-group -->
                             </div>
@@ -469,12 +455,6 @@
                 $('#<%=hfControlNo.ClientID%>').val(array);
             });
 
-            $('#BtnSaveReassignTask').on('click', function () {
-                if ($('.ddlReassignto').val() == '') {
-                    $('#ReassigntoHelpBlock').prop('hidden', true);
-                }
-            });
-
             //Initialize Select2 Elements
             $('.select2').select2()
 
@@ -489,30 +469,6 @@
                 format: 'L'
             });
 
-            var x = $('#ApprovedbyHelpBlock').attr('hidden')
-            if (typeof x == typeof undefined) {
-                $('#<%=ddlApprovedby.ClientID%>').on('change', function () {
-                    if ($('#<%=ddlApprovedby.ClientID%>').val() != '') {
-                        $('#ApprovedbyHelpBlock').prop('hidden', true);
-                    }
-                    else {
-                        $('#ApprovedbyHelpBlock').prop('hidden', false);
-                    }
-                });
-            }
-
-            var x = $('#ReassigntoHelpBlock').attr('hidden')
-            if (typeof x == typeof undefined) {
-                $('#<%=ddlReassignto.ClientID%>').on('change', function () {
-                    if ($('#<%=ddlReassignto.ClientID%>').val() != '') {
-                        $('#ReassigntoHelpBlock').prop('hidden', true);
-                    }
-                    else {
-                        $('#ReassigntoHelpBlock').prop('hidden', false);
-                    }
-                });
-            }
-
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
                 $('#<%=ddlControlNo.ClientID%>').on('change', function () {
@@ -520,12 +476,6 @@
                     //x = $(this).val();
                     array = x + ""
                     $('#<%=hfControlNo.ClientID%>').val(array);
-                });
-
-                $('#BtnSaveReassignTask').on('click', function () {
-                    if ($('.ddlReassignto').val() == '') {
-                        $('#ReassigntoHelpBlock').prop('hidden', true);
-                    }
                 });
 
                 //Initialize Select2 Elements
@@ -541,43 +491,8 @@
                 $('#Date').datetimepicker({
                     format: 'L'
                 });
-
-                var x = $('#ApprovedbyHelpBlock').attr('hidden')
-                if (typeof x == typeof undefined) {
-                    $('#<%=ddlApprovedby.ClientID%>').on('change', function () {
-                        if ($('#<%=ddlApprovedby.ClientID%>').val() != '') {
-                            $('#ApprovedbyHelpBlock').prop('hidden', true);
-                        }
-                        else {
-                            $('#ApprovedbyHelpBlock').prop('hidden', false);
-                        }
-                    });
-                }
-
-                var x = $('#ReassigntoHelpBlock').attr('hidden')
-                if (typeof x == typeof undefined) {
-                    $('#<%=ddlReassignto.ClientID%>').on('change', function () {
-                        if ($('#<%=ddlReassignto.ClientID%>').val() != '') {
-                            $('#ReassigntoHelpBlock').prop('hidden', true);
-                        }
-                        else {
-                            $('#ReassigntoHelpBlock').prop('hidden', false);
-                        }
-                    });
-                }
             }
         })
-
-        //function AddDesign() {
-        //    $('.select2').select2()
-
-        //    $('#ExpiryDate1').datetimepicker({
-        //        format: 'L'
-        //    });
-        //    $('#ExpiryDate2').datetimepicker({
-        //        format: 'L'
-        //    });
-        //}
 
         function SaveSuccessAlert() {
             var Toast = Swal.mixin({
@@ -621,30 +536,8 @@
             toastr.error('Save farm-out document first!')
         }
 
-        function DisableForm() {
-            $('#maincontent_ddlDocumentFormattobeUsed').prop('disabled', true);
-            $('#maincontent_tbGatepassNo').prop('disabled', true);
-            $('#maincontent_ddlLOAType').prop('disabled', true);
-            $('#maincontent_ddlLOANo').prop('disabled', true);
-            $('#maincontent_tbContainerNo').prop('disabled', true);
-            $('#maincontent_tbPEZASeal').prop('disabled', true);
-            $('#maincontent_tbPlateNo').prop('disabled', true);
-            $('#maincontent_tb8105ControlNo').prop('disabled', true);
-            $('#maincontent_ddlEPPIAuthorizedSignatory').prop('disabled', true);
-            $('#maincontent_ddlPreparedby').prop('disabled', true);
-            $('#maincontent_ddlApprovedby').prop('disabled', true);
-            $('#maincontent_BtnConfirm1').prop('disabled', true);
-            $('#maincontent_BtnConfirm2').prop('disabled', true);
-            $('#maincontent_BtnSave').prop('disabled', true);
-            $("#maincontent_GrvPrint").find("input,button,textarea,select").attr("disabled", "disabled");
-        }
-
-        function ShowApprovedbyHelpBlock() {
-            $('#ApprovedbyHelpBlock').removeAttr('hidden');
-        }
-
-        function ShowReassigntoHelpBlock() {
-            $('#ReassigntoHelpBlock').removeAttr('hidden');
+        function SelectReassignToAlert() {
+            toastr.error('Please select reassign to.')
         }
     </script>
 </asp:Content>

@@ -333,7 +333,7 @@
                                         </div>
                                         <div class="card">
                                             <div class="card-body p-0">
-                                                <asp:GridView runat="server" ID="gvFiles" CssClass="table table-sm" AutoGenerateColumns="false" Visible="false">
+                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless" AutoGenerateColumns="false" Visible="false">
                                                     <Columns>
                                                         <asp:TemplateField ItemStyle-VerticalAlign="Middle">
                                                             <ItemTemplate>
@@ -368,7 +368,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Supplier Name</label>
+                                        <span style="color: #ff0000">*</span>
                                         <asp:DropDownList runat="server" ID="ddlSupplierName" CssClass="form-control select2" Width="100%" name="suppliername" OnSelectedIndexChanged="ddlSupplierName_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                                        <small id="ddlSupplierHelpBlock" class="form-text text-danger" hidden>Please  choose a supplier.</small>
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">
@@ -483,6 +485,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Checked by</label>
+                                        <span style="color: #ff0000">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlCheckedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -523,6 +526,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Approved by</label>
+                                        <span style="color: #ff0000">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -884,9 +888,6 @@
 
             bsCustomFileInput.init();
 
-            $("#<%=gvFiles.ClientID%>").removeAttr("border");
-            $("#<%=gvFiles.ClientID%>").removeAttr("rules");
-
             if ($(".ControlNo").val() != '[AUTOMATIC]') {
                 $('#tbControlNoHelpBlock').prop('hidden', true);
                 var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
@@ -957,9 +958,6 @@
                 });
 
                 bsCustomFileInput.init();
-
-                $("#<%=gvFiles.ClientID%>").removeAttr("border");
-                $("#<%=gvFiles.ClientID%>").removeAttr("rules");
 
                 if ($("#maincontent_tbControlNo").val() != '[AUTOMATIC]') {
                     $('#tbControlNoHelpBlock').prop('hidden', true);
@@ -1132,40 +1130,9 @@
             $("#modalRequestChange").modal({ backdrop: "static ", keyboard: false });
         }
 
-        function RemoveTableBorder() {
-            $("#<%=gvFiles.ClientID%>").removeAttr("border");
-            $("#<%=gvFiles.ClientID%>").removeAttr("rules");
-        }
-
         function ShowOthers() {
             $('#Others').removeAttr('hidden');
         }
 
-        function ShowApprovalHelpBlock() {
-            $('#CheckedbyHelpBlock').removeAttr('hidden');
-            $('#ApprovedbyHelpBlock').removeAttr('hidden');
-        }
-
-        function ShowCheckedbyHelpBlock() {
-            $('#CheckedbyHelpBlock').removeAttr('hidden');
-        }
-
-        function ShowApprovedbyHelpBlock() {
-            $('#ApprovedbyHelpBlock').removeAttr('hidden');
-        }
-
-        function HideControlNoHelpBlock() {
-            $('#tbControlNoHelpBlock').prop('hidden', true);
-        }
-
-        function ShowReassigntoHelpBlock() {
-            $('#ReassigntoHelpBlock').removeAttr('hidden');
-        }
-
-        function ShowDestinationAddressHelpBlock() {
-            if ($('.ddlDestinationAddress').val() != '') {
-                $('#DestinationAddressHelpBlock').removeAttr('hidden');
-            }
-        }
     </script>
 </asp:Content>
