@@ -953,7 +953,233 @@ public class Maintenance
             {
                 return null;
             }
-                
+        }
+    }
+        ////////////////////////////////////////////////////////////////////
+
+        public DataTable GetSuppliers_Test()
+        {
+            using (SqlCommand cmd = new SqlCommand("sp_GetSuppliers_Test", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                try
+                {
+                    if (conn.State == ConnectionState.Open)
+                    {
+                        da.Fill(dt);
+                        conn.Close();
+                    }
+                    else
+                    {
+                        conn.Open();
+                        da.Fill(dt);
+                        conn.Close();
+                    }
+                }
+                catch (SqlException sqlex)
+                {
+                    throw sqlex;
+                }
+                return dt;
+            }
+        }
+
+        public void AddSupplier_Test(SupplierDetails sd, string USERID)
+        {
+            using (SqlCommand cmd = new SqlCommand("sp_AddSupplier_Test", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.AddWithValue("@USERID", USERID);
+                cmd.Parameters.AddWithValue("@SUPPLIERNAME", sd.Supplier);
+                cmd.Parameters.AddWithValue("@SUPPLIERADDRESS", sd.Address);
+                cmd.Parameters.AddWithValue("@LOANO", sd.LOA);
+                cmd.Parameters.AddWithValue("@STOCKS", sd.Stocks);
+
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (SqlException sqlex)
+                {
+                    throw sqlex;
+                }
+            }
+        }
+
+        public void UpdateSupplier_Test(SupplierDetails sd, string USERID)
+        {
+            using (SqlCommand cmd = new SqlCommand("sp_UpdateSupplier_Test", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.AddWithValue("@USERID", USERID);
+                cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
+                cmd.Parameters.AddWithValue("@SUPPLIERNAME", sd.Supplier);
+                cmd.Parameters.AddWithValue("@SUPPLIERADDRESS", sd.Address);
+                cmd.Parameters.AddWithValue("@LOANO", sd.LOA);
+                cmd.Parameters.AddWithValue("@STOCKS", sd.Stocks);
+
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (SqlException sqlex)
+                {
+                    throw sqlex;
+                }
+            }
+        }
+
+        public void DeleteSupplier_Test(SupplierDetails sd, string USERID)
+        {
+            using (SqlCommand cmd = new SqlCommand("sp_DeleteSupplier_Test", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.AddWithValue("@USERID", USERID);
+                cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
+
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (SqlException sqlex)
+                {
+                    throw sqlex;
+                }
+            }
+        }
+
+    public DataTable GetLOA_Test()
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public void AddLOA_Test(LOADetails ld, string USERID)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_AddLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@USERID", USERID);
+            cmd.Parameters.AddWithValue("@LOANO", ld.LOANO);
+            cmd.Parameters.AddWithValue("@LOAEXP", ld.LOAEXP);
+            cmd.Parameters.AddWithValue("@SBNO", ld.SBNO);
+            cmd.Parameters.AddWithValue("@SBEXP", ld.SBEXP);
+            cmd.Parameters.AddWithValue("@DESCRIPTION", ld.DESCRIPTION);
+            cmd.Parameters.AddWithValue("@QTYLIMIT", ld.QTYLIMIT);
+            cmd.Parameters.AddWithValue("@UM", ld.UM);
+            cmd.Parameters.AddWithValue("@AMTLIMIT", ld.AMTLIMIT);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public void UpdateLOA_Test(LOADetails ld, string USERID)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_UpdateLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@USERID", USERID);
+            cmd.Parameters.AddWithValue("@LOAID", ld.LOAID);
+            cmd.Parameters.AddWithValue("@LOANO", ld.LOANO);
+            cmd.Parameters.AddWithValue("@LOAEXP", ld.LOAEXP);
+            cmd.Parameters.AddWithValue("@SBNO", ld.SBNO);
+            cmd.Parameters.AddWithValue("@SBEXP", ld.SBEXP);
+            cmd.Parameters.AddWithValue("@DESCRIPTION", ld.DESCRIPTION);
+            cmd.Parameters.AddWithValue("@QTYLIMIT", ld.QTYLIMIT);
+            cmd.Parameters.AddWithValue("@UM", ld.UM);
+            cmd.Parameters.AddWithValue("@AMTLIMIT", ld.AMTLIMIT);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public void DeleteLOA_Test(LOADetails ld, string USERID)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_DeleteLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@USERID", USERID);
+            cmd.Parameters.AddWithValue("@LOAID", ld.LOAID);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public DataTable GetLOAList()
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetLOAList", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
         }
     }
 }

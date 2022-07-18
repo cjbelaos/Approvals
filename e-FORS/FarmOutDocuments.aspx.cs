@@ -921,20 +921,4 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         }
 
     }
-
-    //protected void ddlControlNo_SelectedIndexChanged(object sender, EventArgs e)
-    //{
-    //    if (ddlControlNo.SelectedValue == "0")
-    //    {
-    //        divBtnAdd.Visible = false;
-    //    }
-    //}
-
-    //protected void btnAdd_Click(object sender, EventArgs e)
-    //{
-    //    List<string> MyList = new List<string>();
-    //    MyList.Add("HELLO");
-
-    //    lbControlNo.DataSource = MyList;
-    //}
 }

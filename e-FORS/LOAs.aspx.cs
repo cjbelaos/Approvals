@@ -26,14 +26,26 @@ public partial class LOAs : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static string GetLOAType()
+    public static string GetLOA()
     {
-        return JsonConvert.SerializeObject(maint.GetLOAType());
+        return JsonConvert.SerializeObject(maint.GetLOA_Test());
     }
 
     [WebMethod]
-    public static void SaveLOAType(string LOAType, string UserID)
+    public static void AddLOA(LOADetails ld)
     {
-        maint.SaveLOAType(LOAType, UserID);
+        maint.AddLOA_Test(ld, UserID);
+    }
+
+    [WebMethod]
+    public static void UpdateLOA(LOADetails ld)
+    {
+        maint.UpdateLOA_Test(ld, UserID);
+    }
+
+    [WebMethod]
+    public static void DeleteLOA(LOADetails ld)
+    {
+        maint.DeleteLOA_Test(ld, UserID);
     }
 }

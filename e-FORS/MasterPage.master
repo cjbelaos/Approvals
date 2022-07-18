@@ -322,7 +322,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                                <ul class="nav nav-treeview" hidden>
+                                <ul class="nav nav-treeview">
                                     <li class="nav-item">
                                         <a href="LOAs.aspx" class="nav-link <% Response.Write(LOAs); %>">
                                             <i class="far fa-circle nav-icon"></i>

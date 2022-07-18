@@ -36,24 +36,30 @@ public partial class Supplier : System.Web.UI.Page
     [WebMethod]
     public static string GetSuppliers()
     {
-        return JsonConvert.SerializeObject(maint.GetSuppliers());
+        return JsonConvert.SerializeObject(maint.GetSuppliers_Test());
     }
 
     [WebMethod]
     public static void AddSupplier(SupplierDetails sd)
     {
-        maint.AddSupplier(sd);
+        maint.AddSupplier_Test(sd, UserID);
     }
 
     [WebMethod]
     public static void UpdateSupplier(SupplierDetails sd)
     {
-        maint.UpdateSupplier(sd);
+        maint.UpdateSupplier_Test(sd, UserID);
     }
 
     [WebMethod]
     public static void DeleteSupplier(SupplierDetails sd)
     {
-        maint.DeleteSupplier(sd);
+        maint.DeleteSupplier_Test(sd, UserID);
+    }
+
+    [WebMethod]
+    public static string GetLOAList()
+    {
+        return JsonConvert.SerializeObject(maint.GetLOAList());
     }
 }

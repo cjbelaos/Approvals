@@ -12,7 +12,9 @@ public class SupplierDetails
     public string ID { get; set; }
     public string Supplier { get; set; }
     public string Address { get; set; }
-    
+    public string LOA { get; set; }
+    public string Stocks { get; set; }
+
 
     public SupplierDetails()
     {
