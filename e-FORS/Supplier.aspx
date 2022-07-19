@@ -57,8 +57,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Stocks</label>
-                                <input type="text" name="Stocks" id="txtStocks" class="form-control">
+                                <label>Quantity Left</label>
+                                <input type="text" name="QTYLEFT" id="txtQtyLeft" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
         var MainTable;
         let BtnClear = $('#btnClear');
         let LOANO = $('#selectLOA').val();
-        let STOCKS = $('#txtStocks').val();
+        let QTYLEFT = $('#txtQtyLeft').val();
         $(document).ready(function () {
             BtnClear.on('click', function () {
                 ClearFields();
@@ -144,14 +144,14 @@
                 var Supplier = data[Object.keys(data)[1]];
                 var Address = data[Object.keys(data)[2]];
                 var LOA = data[Object.keys(data)[3]];
-                var Stocks = data[Object.keys(data)[4]];
+                var QtyLeft = data[Object.keys(data)[4]];
                 console.log(Address);
 
                 $('#txtID').val(ID);
                 $('#txtSupplier').val(Supplier);
                 $('#txtAddress').val(Address);
                 $('#selectLOA').val(LOA).trigger('change');
-                $('#txtStocks').val(Stocks);
+                $('#txtQtyLeft').val(QtyLeft);
 
             }
             if (elem.hasClass('btn-delete-row')) {
@@ -195,7 +195,7 @@
                             { data: "SUPPLIERNAME", title: 'Supplier Name' },
                             { data: "SUPPLIERADDRESS", title: 'Supplier Address' },
                             { data: "LOANO", title: 'LOA No.' },
-                            { data: "STOCKS", title: 'Stocks' },
+                            { data: "QTYLEFT", title: 'Quantity Left' },
                             //{ data: "CREATEDDATE", title: 'Created Date' },
                             //{ data: "CREATEDBY", title: 'Created By.' },
                             //{ data: "UPDATEDDATE", title: 'Updated Date' },
@@ -225,7 +225,7 @@
             SupplierDetails.Supplier = $('#txtSupplier').val();
             SupplierDetails.Address = $('#txtAddress').val();
             SupplierDetails.LOA = $('#selectLOA').val();
-            SupplierDetails.Stocks = $('#txtStocks').val();
+            SupplierDetails.QtyLeft = $('#txtQtyLeft').val();
             $.ajax({
                 url: "Supplier.aspx/AddSupplier",
                 method: "POST",
@@ -258,12 +258,11 @@
             else {
                 SupplierDetails.LOA = LOANO;
             }
-            if (STOCKS == '') {
-                alert('yes');
-                SupplierDetails.Stocks = '0';
+            if (QTYLEFT == '') {
+                SupplierDetails.QtyLeft = '0';
             }
             else {
-                SupplierDetails.Stocks = STOCKS;
+                SupplierDetails.QtyLeft = QTYLEFT;
             }
             
             $.ajax({

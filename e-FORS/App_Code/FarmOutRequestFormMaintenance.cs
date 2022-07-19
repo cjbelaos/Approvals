@@ -45,11 +45,11 @@ public class FarmOutRequestFormMaintenance
         return ds;
     }
 
-    public DataTable GetSupplierAddress(string SupplierCode)
+    public DataTable GetSupplierAddress(string SupplierID)
     {
         SqlCommand cmd = new SqlCommand("GetSupplierAddress", conn);
         cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@SupplierCode", SupplierCode);
+        cmd.Parameters.AddWithValue("@SupplierID", SupplierID);
 
         SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();

@@ -556,7 +556,7 @@ public partial class Default : System.Web.UI.Page
         DataTable dt = maint.GetSuppliers();
         ddlSupplierName.DataSource = dt;
         ddlSupplierName.DataTextField = "SupplierName";
-        ddlSupplierName.DataValueField = "SupplierCode";
+        ddlSupplierName.DataValueField = "SupplierID";
         ddlSupplierName.DataBind();
         ddlSupplierName.Items.Insert(0, new ListItem("Choose...", ""));
     }
@@ -691,7 +691,11 @@ public partial class Default : System.Web.UI.Page
             tbActualDateofTransfer.Text = ds.Tables[0].DefaultView[0]["ActualDateOfTransfer"].ToString();
             tbTargetDateofReturn.Text = ds.Tables[0].DefaultView[0]["TargetDateOfReturn"].ToString();
             ddlPackagingUsed.SelectedValue = ds.Tables[0].DefaultView[0]["PackagingUsed"].ToString();
-            ddlSupplierName.SelectedValue = ds.Tables[0].DefaultView[0]["SupplierCode"].ToString();
+            if (ddlSupplierName.Items.FindByValue(ds.Tables[0].DefaultView[0]["SupplierID"].ToString()) == null)
+            {
+                ddlSupplierName.Items.Add(new ListItem(ds.Tables[0].DefaultView[0]["SupplierName"].ToString(), ds.Tables[0].DefaultView[0]["SupplierID"].ToString().ToUpper()));
+            }
+            ddlSupplierName.SelectedValue = ds.Tables[0].DefaultView[0]["SupplierID"].ToString();
             tbDestinationAddress.Text = ds.Tables[0].DefaultView[0]["DestinationAddress"].ToString();
             tbOriginofItem.Text = ds.Tables[0].DefaultView[0]["OriginOfItem"].ToString();
             tbDeliveryReceiptNo.Text = ds.Tables[0].DefaultView[0]["DeliveryReceiptNo"].ToString();

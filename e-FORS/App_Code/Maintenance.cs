@@ -682,133 +682,6 @@ public class Maintenance
         }
     }
 
-    public DataTable GetLOAType()
-    {
-        SqlCommand cmd = new SqlCommand("GetLOAType", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataTable dt = new DataTable();
-
-        conn.Open();
-
-        da.Fill(dt);
-
-        conn.Close();
-
-        return dt;
-    }
-
-    public void SaveLOAType(string LOAType, string UserID)
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_SaveLOAType", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            cmd.Parameters.AddWithValue("@LOAType", LOAType);
-            cmd.Parameters.AddWithValue("@UserID", UserID);
-
-            try
-            {
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-        }
-    }
-
-    public DataTable GetSuppliers()
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_GetSuppliers", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            try
-            {
-                if(conn.State == ConnectionState.Open)
-                {
-                    da.Fill(dt);
-                    conn.Close();
-                }
-                else
-                {
-                    conn.Open();
-                    da.Fill(dt);
-                    conn.Close();
-                }
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-            return dt;
-        }
-    }
-
-    public void AddSupplier(SupplierDetails sd)
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_AddSupplier", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            cmd.Parameters.AddWithValue("@UserID", sd.UserID);
-            cmd.Parameters.AddWithValue("@SupplierName", sd.Supplier);
-            cmd.Parameters.AddWithValue("@SupplierAddress", sd.Address);
-
-            try
-            {
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-        }
-    }
-
-    public void UpdateSupplier(SupplierDetails sd)
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_UpdateSupplier", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            cmd.Parameters.AddWithValue("@UserID", sd.UserID);
-            cmd.Parameters.AddWithValue("@ID", sd.ID);
-            cmd.Parameters.AddWithValue("@SupplierName", sd.Supplier);
-            cmd.Parameters.AddWithValue("@SupplierAddress", sd.Address);
-
-            try
-            {
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-        }
-    }
-
-    public void DeleteSupplier(SupplierDetails sd)
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_DeleteSupplier", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            cmd.Parameters.AddWithValue("@UserID", sd.UserID);
-            cmd.Parameters.AddWithValue("@ID", sd.ID);
-
-            try
-            {
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-        }
-    }
 
     public DataTable GetFarmOutDetailsCreatorandApprover(FarmOutDetails fo)
     {
@@ -955,11 +828,10 @@ public class Maintenance
             }
         }
     }
-        ////////////////////////////////////////////////////////////////////
 
-        public DataTable GetSuppliers_Test()
+        public DataTable GetSuppliers()
         {
-            using (SqlCommand cmd = new SqlCommand("sp_GetSuppliers_Test", conn) { CommandType = CommandType.StoredProcedure })
+            using (SqlCommand cmd = new SqlCommand("sp_GetSuppliers", conn) { CommandType = CommandType.StoredProcedure })
             {
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
@@ -985,9 +857,9 @@ public class Maintenance
             }
         }
 
-        public void AddSupplier_Test(SupplierDetails sd, string USERID)
+        public void AddSupplier(SupplierDetails sd, string USERID)
         {
-            using (SqlCommand cmd = new SqlCommand("sp_AddSupplier_Test", conn) { CommandType = CommandType.StoredProcedure })
+            using (SqlCommand cmd = new SqlCommand("sp_AddSupplier", conn) { CommandType = CommandType.StoredProcedure })
             {
                 cmd.Parameters.AddWithValue("@USERID", USERID);
                 cmd.Parameters.AddWithValue("@SUPPLIERNAME", sd.Supplier);
@@ -1008,9 +880,9 @@ public class Maintenance
             }
         }
 
-        public void UpdateSupplier_Test(SupplierDetails sd, string USERID)
+        public void UpdateSupplier(SupplierDetails sd, string USERID)
         {
-            using (SqlCommand cmd = new SqlCommand("sp_UpdateSupplier_Test", conn) { CommandType = CommandType.StoredProcedure })
+            using (SqlCommand cmd = new SqlCommand("sp_UpdateSupplier", conn) { CommandType = CommandType.StoredProcedure })
             {
                 cmd.Parameters.AddWithValue("@USERID", USERID);
                 cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
@@ -1032,9 +904,9 @@ public class Maintenance
             }
         }
 
-        public void DeleteSupplier_Test(SupplierDetails sd, string USERID)
+        public void DeleteSupplier(SupplierDetails sd, string USERID)
         {
-            using (SqlCommand cmd = new SqlCommand("sp_DeleteSupplier_Test", conn) { CommandType = CommandType.StoredProcedure })
+            using (SqlCommand cmd = new SqlCommand("sp_DeleteSupplier", conn) { CommandType = CommandType.StoredProcedure })
             {
                 cmd.Parameters.AddWithValue("@USERID", USERID);
                 cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
@@ -1052,9 +924,9 @@ public class Maintenance
             }
         }
 
-    public DataTable GetLOA_Test()
+    public DataTable GetLOA()
     {
-        using (SqlCommand cmd = new SqlCommand("sp_GetLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        using (SqlCommand cmd = new SqlCommand("sp_GetLOA", conn) { CommandType = CommandType.StoredProcedure })
         {
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
@@ -1080,9 +952,9 @@ public class Maintenance
         }
     }
 
-    public void AddLOA_Test(LOADetails ld, string USERID)
+    public void AddLOA(LOADetails ld, string USERID)
     {
-        using (SqlCommand cmd = new SqlCommand("sp_AddLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        using (SqlCommand cmd = new SqlCommand("sp_AddLOA", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@USERID", USERID);
             cmd.Parameters.AddWithValue("@LOANO", ld.LOANO);
@@ -1096,9 +968,17 @@ public class Maintenance
 
             try
             {
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
             }
             catch (SqlException sqlex)
             {
@@ -1107,9 +987,9 @@ public class Maintenance
         }
     }
 
-    public void UpdateLOA_Test(LOADetails ld, string USERID)
+    public void UpdateLOA(LOADetails ld, string USERID)
     {
-        using (SqlCommand cmd = new SqlCommand("sp_UpdateLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        using (SqlCommand cmd = new SqlCommand("sp_UpdateLOA", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@USERID", USERID);
             cmd.Parameters.AddWithValue("@LOAID", ld.LOAID);
@@ -1135,9 +1015,9 @@ public class Maintenance
         }
     }
 
-    public void DeleteLOA_Test(LOADetails ld, string USERID)
+    public void DeleteLOA(LOADetails ld, string USERID)
     {
-        using (SqlCommand cmd = new SqlCommand("sp_DeleteLOA_Test", conn) { CommandType = CommandType.StoredProcedure })
+        using (SqlCommand cmd = new SqlCommand("sp_DeleteLOA", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@USERID", USERID);
             cmd.Parameters.AddWithValue("@LOAID", ld.LOAID);

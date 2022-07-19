@@ -99,13 +99,14 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <button type="submit" id="btnAddLOA" class="btn btn-primary">Add</button>
+                            <button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+                            <button type="button" id="btnClear" class="btn btn-danger">Clear</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <table id="tableLOA" class="table table-bordered table-striped">
+                    <table id="tableLOA" class="table table-bordered table-striped" style="width:100%">
                     </table>
                 </div>
                 <div class="card-footer">
@@ -117,7 +118,12 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="script" runat="Server">
     <script type="text/javascript">
         var MainTable;
+        let BtnClear = $('#btnClear');
         $(document).ready(function () {
+            BtnClear.on('click', function () {
+                ClearFields();
+            })
+
             $('#LOAExpiryDate').datetimepicker({
                 format: 'L'
             });
@@ -242,11 +248,11 @@
                     }
                     MainTable = $("#tableLOA").DataTable({
                         paging: true,
-                        lengthChange: false,
+                        lengthChange: true,
                         ordering: true,
                         info: true,
-                        autoWidth: false,
-                        responsive: true,
+                        autoWidth: true,
+                        responsive: false,
                         buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
                         data: d,
                         columns: [
@@ -280,7 +286,6 @@
 
         function AddLOA(callback) {
             var LOADetails = {};
-            //LOADetails.USERID = $('#lblUserID').text();
             LOADetails.LOANO = $('#txtLOANo').val();
             LOADetails.LOAEXP = $('#txtLOAExpiryDate').val();
             LOADetails.SBNO = $('#txtSuretyBondNo').val();
@@ -302,6 +307,7 @@
                     }
                     alert('Item has been added successfully!');
                     GetLOA();
+                    ClearFields();
                 },
                 error: function (err) {
                     console.log(err);
@@ -311,7 +317,6 @@
 
         function UpdateLOA(callback) {
             var LOADetails = {};
-            //LOADetails.USERID = $('#lblUserID').val();
             LOADetails.LOAID = $('#txtID').val();
             LOADetails.LOANO = $('#txtLOANo').val();
             LOADetails.LOAEXP = $('#txtLOAExpiryDate').val();
@@ -334,6 +339,7 @@
                     }
                     alert('Item has been updated successfully!');
                     GetLOA();
+                    ClearFields();
                 },
                 error: function (err) {
                     console.log(err);
@@ -343,7 +349,6 @@
 
         function DeleteLOA(ID, callback) {
             var LOADetails = {};
-            //LOADetails.USERID = $('#lblUserID').text();
             LOADetails.LOAID = ID;
             $.ajax({
                 url: "LOAs.aspx/DeleteLOA",
