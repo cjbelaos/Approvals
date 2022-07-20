@@ -10,6 +10,7 @@ public class Items
 {
     public string ID { get; set; }
     public string ControlNo { get; set; }
+    public string TypeOfItem { get; set; }
     public string ItemCode { get; set; }
     public string ItemDescription { get; set; }
     public string Quantity { get; set; }

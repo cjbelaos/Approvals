@@ -48,4 +48,10 @@ public partial class LOAs : System.Web.UI.Page
     {
         maint.DeleteLOA(ld, UserID);
     }
+
+    [WebMethod]
+    public static string GetDivision()
+    {
+        return JsonConvert.SerializeObject(maint.GetDivision());
+    }
 }

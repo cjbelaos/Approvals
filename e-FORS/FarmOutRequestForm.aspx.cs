@@ -11,6 +11,7 @@ public partial class Default : System.Web.UI.Page
     private static readonly Maintenance maint = new Maintenance();
     private static readonly Items items = new Items();
     private static readonly FarmOutDetails fod = new FarmOutDetails();
+    private static readonly SupplierDetails sd = new SupplierDetails();
     public static string UserID;
     public static string UserName;
     public static string Message;
@@ -291,6 +292,7 @@ public partial class Default : System.Web.UI.Page
             else
             {
                 items.ControlNo = tbControlNo.Text;
+                items.TypeOfItem = ddlItemType.SelectedValue.ToString();
                 items.ItemCode = tbItemNo.Text;
                 items.ItemDescription = tbItemDescription.Text;
                 items.Quantity = tbQuantity.Text;
@@ -325,6 +327,7 @@ public partial class Default : System.Web.UI.Page
             {
                 items.ID = tbID.Text;
                 items.ControlNo = tbControlNo.Text;
+                items.TypeOfItem = ddlItemType.SelectedValue.ToString();
                 items.ItemCode = tbItemNo.Text;
                 items.ItemDescription = tbItemDescription.Text;
                 items.Quantity = tbQuantity.Text;
@@ -386,7 +389,7 @@ public partial class Default : System.Web.UI.Page
             fo.ActualDateOfTransfer = tbActualDateofTransfer.Text;
             fo.TargetDateOfReturn = tbTargetDateofReturn.Text;
             fo.PackagingUsed = ddlPackagingUsed.SelectedValue;
-            fo.SupplierCode = ddlSupplierName.SelectedValue;
+            fo.SupplierID = ddlSupplierName.SelectedValue;
             fo.SupplierName = ddlSupplierName.SelectedItem.ToString();
             fo.DestinationAddress = tbDestinationAddress.Text;
             fo.OriginOfItem = tbOriginofItem.Text;
@@ -428,6 +431,7 @@ public partial class Default : System.Web.UI.Page
             GridViewRow row = (GridViewRow)(((Button)g.CommandSource).NamingContainer);
             string index = g.CommandArgument.ToString();
 
+            Label lblTypeOfItem = (Label)row.FindControl("lblTypeOfItem");
             Label lblItemCode = (Label)row.FindControl("lblItemCode");
             Label lblItemDescription = (Label)row.FindControl("lblItemDescription");
             Label lblQuantity = (Label)row.FindControl("lblQuantity");
@@ -440,6 +444,7 @@ public partial class Default : System.Web.UI.Page
             Label lblDSRDRNo = (Label)row.FindControl("lblDSRDRNo");
 
             tbID.Text = index;
+            ddlItemType.SelectedValue = lblTypeOfItem.Text;
             tbItemNo.Text = lblItemCode.Text;
             tbItemDescription.Text = lblItemDescription.Text;
             tbQuantity.Text = lblQuantity.Text;
@@ -696,6 +701,9 @@ public partial class Default : System.Web.UI.Page
                 ddlSupplierName.Items.Add(new ListItem(ds.Tables[0].DefaultView[0]["SupplierName"].ToString(), ds.Tables[0].DefaultView[0]["SupplierID"].ToString().ToUpper()));
             }
             ddlSupplierName.SelectedValue = ds.Tables[0].DefaultView[0]["SupplierID"].ToString();
+            {
+                GetTypeOfItems();
+            }
             tbDestinationAddress.Text = ds.Tables[0].DefaultView[0]["DestinationAddress"].ToString();
             tbOriginofItem.Text = ds.Tables[0].DefaultView[0]["OriginOfItem"].ToString();
             tbDeliveryReceiptNo.Text = ds.Tables[0].DefaultView[0]["DeliveryReceiptNo"].ToString();
@@ -789,6 +797,21 @@ public partial class Default : System.Web.UI.Page
         {
             DataTable dt = frfm.GetSupplierAddress(ddlSupplierName.SelectedValue);
             tbDestinationAddress.Text = dt.Rows[0]["SupplierAddress"].ToString();
+
+            sd.ID = ddlSupplierName.SelectedValue.ToString();
+            DataTable dt1 = maint.GetItemType(sd);
+            if (dt1.Rows.Count > 0)
+            {
+                ddlItemType.DataSource = dt1;
+                ddlItemType.DataTextField = "DESCRIPTION";
+                ddlItemType.DataValueField = "DESCRIPTION";
+                ddlItemType.DataBind();
+                ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
+            }
+            else
+            {
+                ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
+            }
         }
         else
         {
@@ -824,6 +847,24 @@ public partial class Default : System.Web.UI.Page
     protected void LnkBtnBack_Click(object sender, EventArgs e)
     {
         Response.Redirect("FarmOutDocuments.aspx" + "?controlno=" + tbControlNo.Text);
+    }
+
+    private void GetTypeOfItems()
+    {
+        sd.ID = ddlSupplierName.Text;
+        DataTable dt1 = maint.GetItemType(sd);
+        if (dt1.Rows.Count > 0)
+        {
+            ddlItemType.DataSource = dt1;
+            ddlItemType.DataTextField = "DESCRIPTION";
+            ddlItemType.DataValueField = "DESCRIPTION";
+            ddlItemType.DataBind();
+            ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
+        }
+        else
+        {
+            ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
+        }
     }
 
     private void showAlert(string strType, string strTitle, string strMessage)

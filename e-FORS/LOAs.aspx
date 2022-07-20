@@ -29,10 +29,20 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Division</label>
+                                <select name="DIVISION" id="selectDivision" class="form-control select2">
+                                    <option selected value="0">Choose...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>LOA No.</label>
-                                <input type="text" name="LOANO" id="txtLOANo" class="form-control">
+                                <input type="text" name="LOANO" id="txtLOANo" class="form-control text-uppercase">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -53,7 +63,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Surety Bond No.</label>
-                                <input type="text" name="SBNO" id="txtSuretyBondNo" class="form-control">
+                                <input type="text" name="SBNO" id="txtSuretyBondNo" class="form-control text-uppercase">
                             </div>
                         </div>
 
@@ -74,13 +84,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Description</label>
-                                <input type="text" name="DESC" id="txtDescription" class="form-control">
+                                <input type="text" name="DESC" id="txtDescription" class="form-control text-uppercase">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Quantity Limit</label>
-                                <input type="text" name="QTY" id="txtQtyLIMIT" class="form-control">
+                                <input type="text" name="QTY" id="txtQtyLIMIT" class="form-control text-uppercase">
                             </div>
                         </div>
                     </div>
@@ -89,13 +99,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Unit of Measurement</label>
-                                <input type="text" name="UM" id="txtUM" class="form-control">
+                                <input type="text" name="UM" id="txtUM" class="form-control text-uppercase">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Amount Limit</label>
-                                <input type="text" name="AMT" id="txtAmtLimit" class="form-control">
+                                <input type="text" name="AMT" id="txtAmtLimit" class="form-control text-uppercase">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -117,9 +127,14 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="script" runat="Server">
     <script type="text/javascript">
+        $('.select2').select2();
+
         var MainTable;
         let BtnClear = $('#btnClear');
         $(document).ready(function () {
+            GetLOA();
+            GetDivision();
+
             BtnClear.on('click', function () {
                 ClearFields();
             })
@@ -143,6 +158,9 @@
             });
             $('#form1').validate({
                 rules: {
+                    DIVISION: {
+                        required: true,
+                    },
                     LOANO: {
                         required: true,
                     },
@@ -163,6 +181,9 @@
                     },
                 },
                 messages: {
+                    DIVISION: {
+                        required: "Please select DIVISION.",
+                    },
                     LOANO: {
                         required: "Please enter LOA.",
                     },
@@ -194,7 +215,6 @@
                     $(element).removeClass('is-invalid');
                 }
             });
-            GetLOA();
         });
 
         $(document).on('click', 'button', function (e) {
@@ -202,20 +222,25 @@
             if (elem.hasClass('btn-update-row')) {
                 var data = MainTable.row(elem.parents('tr')).data();
                 var ID = data[Object.keys(data)[0]];
-                var LOANO = data[Object.keys(data)[1]];
-                var LOAEXP = data[Object.keys(data)[2]];
-                var SBNO = data[Object.keys(data)[3]];
-                var SBEXP = data[Object.keys(data)[4]];
-                var DESC = data[Object.keys(data)[5]];
-                var QTYLIMIT = data[Object.keys(data)[6]];
-                var UM = data[Object.keys(data)[7]];
-                var AMTLIMIT = data[Object.keys(data)[8]];
-
+                var DIVISION = data[Object.keys(data)[1]];
+                if (DIVISION == '') {
+                    DIVISION = '0'
+                }
+                var LOANO = data[Object.keys(data)[2]];
+                var LOAEXP = data[Object.keys(data)[3]];
+                var SBNO = data[Object.keys(data)[4]];
+                var SBEXP = data[Object.keys(data)[5]];
+                var DESC = data[Object.keys(data)[6]];
+                var QTYLIMIT = data[Object.keys(data)[7]];
+                var UM = data[Object.keys(data)[8]];
+                var AMTLIMIT = data[Object.keys(data)[9]];
+                
                 $('#txtID').val(ID);
+                $('#selectDivision').val(DIVISION).trigger('change');
                 $('#txtLOANo').val(LOANO);
-                $('#txtLOAExpiryDate').datetimepicker({ format: 'L', date: LOAEXP });
+                $('#txtLOAExpiryDate').val(LOAEXP);
                 $('#txtSuretyBondNo').val(SBNO);
-                $('#txtSBExpiryDate').datetimepicker({ format: 'L', date: SBEXP });
+                $('#txtSBExpiryDate').val(SBEXP);
                 $('#txtDescription').val(DESC);
                 $('#txtQtyLIMIT').val(QTYLIMIT);
                 $('#txtUM').val(UM);
@@ -256,7 +281,8 @@
                         buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
                         data: d,
                         columns: [
-                            { data: "LOAID", title: 'ID' , visible: false, searchable: false},
+                            { data: "LOAID", title: 'ID', visible: false, searchable: false },
+                            { data: "DIVISION", title: 'Division' },
                             { data: "LOANO", title: 'LOA' },
                             { data: "LOAEXP", title: 'Expiry Date' },
                             { data: "SBNO", title: 'Surety Bond' },
@@ -286,14 +312,20 @@
 
         function AddLOA(callback) {
             var LOADetails = {};
+            if ($('#selectDivision').val() == '0') {
+                LOADetails.DIVISION = ''
+            }
+            else {
+                LOADetails.DIVISION = $('#selectDivision').val();
+            }
             LOADetails.LOANO = $('#txtLOANo').val();
             LOADetails.LOAEXP = $('#txtLOAExpiryDate').val();
             LOADetails.SBNO = $('#txtSuretyBondNo').val();
             LOADetails.SBEXP = $('#txtSBExpiryDate').val();
             LOADetails.DESCRIPTION = $('#txtDescription').val();
-            LOADetails.QTYLIMIT = $('#txtQtyLIMIT').val();
+            LOADetails.QTYLIMIT = accounting.unformat($('#txtQtyLIMIT').val());
             LOADetails.UM = $('#txtUM').val();
-            LOADetails.AMTLIMIT = $('#txtAmtLimit').val();
+            LOADetails.AMTLIMIT = accounting.unformat($('#txtAmtLimit').val());
             $.ajax({
                 url: "LOAs.aspx/AddLOA",
                 method: "POST",
@@ -318,14 +350,20 @@
         function UpdateLOA(callback) {
             var LOADetails = {};
             LOADetails.LOAID = $('#txtID').val();
+            if ($('#selectDivision').val() == '0') {
+                LOADetails.DIVISION = ''
+            }
+            else {
+                LOADetails.DIVISION = $('#selectDivision').val();
+            }
             LOADetails.LOANO = $('#txtLOANo').val();
             LOADetails.LOAEXP = $('#txtLOAExpiryDate').val();
             LOADetails.SBNO = $('#txtSuretyBondNo').val();
             LOADetails.SBEXP = $('#txtSBExpiryDate').val();
             LOADetails.DESCRIPTION = $('#txtDescription').val();
-            LOADetails.QTYLIMIT = $('#txtQtyLIMIT').val();
+            LOADetails.QTYLIMIT = accounting.unformat($('#txtQtyLIMIT').val());
             LOADetails.UM = $('#txtUM').val();
-            LOADetails.AMTLIMIT = $('#txtAmtLimit').val();
+            LOADetails.AMTLIMIT = accounting.unformat($('#txtAmtLimit').val());
             $.ajax({
                 url: "LOAs.aspx/UpdateLOA",
                 method: "POST",
@@ -370,8 +408,34 @@
             });
         }
 
+        function GetDivision(callback) {
+            $.ajax({
+                type: "POST",
+                url: "LOAs.aspx/GetDivision",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    for (var i in d) {
+                        $('<option/>', {
+                            value: d[i]['Description'],
+                            text: d[i]['Description']
+                        }).appendTo($("#selectDivision"));
+                    };
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        }
+
         function ClearFields() {
             $('#txtID').val('');
+            $('#selectDivision').val(0).trigger('change');
             $('#txtLOANo').val('');
             $('#txtLOAExpiryDate').val('');
             $('#txtSuretyBondNo').val('');

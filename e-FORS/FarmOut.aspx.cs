@@ -63,7 +63,7 @@ public partial class FarmOut : System.Web.UI.Page
         DataTable dt = maint.GetSuppliers();
         ddlSupplier.DataSource = dt;
         ddlSupplier.DataTextField = "SupplierName";
-        ddlSupplier.DataValueField = "SupplierCode";
+        ddlSupplier.DataValueField = "SupplierID";
         ddlSupplier.DataBind();
         ddlSupplier.Items.Insert(0, new ListItem("Choose...", ""));
     }

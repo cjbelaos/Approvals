@@ -62,4 +62,10 @@ public partial class Supplier : System.Web.UI.Page
     {
         return JsonConvert.SerializeObject(maint.GetLOAList());
     }
+
+    [WebMethod]
+    public static string GetZone()
+    {
+        return JsonConvert.SerializeObject(maint.GetZone());
+    }
 }

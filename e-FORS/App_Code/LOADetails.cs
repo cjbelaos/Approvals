@@ -10,6 +10,7 @@ public class LOADetails
 {
     public string USERID { get; set; }
     public string LOAID { get; set; }
+    public string DIVISION { get; set; }
     public string LOANO { get; set; }
     public string LOAEXP { get; set; }
     public string SBNO { get; set; }

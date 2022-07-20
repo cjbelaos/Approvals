@@ -172,7 +172,7 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@ActualDateOfTransfer", fo.ActualDateOfTransfer);
             cmd.Parameters.AddWithValue("@TargetDateOfReturn", fo.TargetDateOfReturn);
             cmd.Parameters.AddWithValue("@PackagingUsed", fo.PackagingUsed);
-            cmd.Parameters.AddWithValue("@SupplierCode", fo.SupplierCode);
+            cmd.Parameters.AddWithValue("@SupplierID", fo.SupplierID);
             cmd.Parameters.AddWithValue("@SupplierName", fo.SupplierName);
             cmd.Parameters.AddWithValue("@DestinationAddress", fo.DestinationAddress);
             cmd.Parameters.AddWithValue("@OriginOfItem", fo.OriginOfItem);
@@ -290,6 +290,7 @@ public class Maintenance
             using (var cmd = new SqlCommand("SaveItem", conn) { CommandType = CommandType.StoredProcedure })
             {
                 cmd.Parameters.AddWithValue("@ControlNo", i.ControlNo);
+                cmd.Parameters.AddWithValue("@TypeOfItem", i.TypeOfItem);
                 cmd.Parameters.AddWithValue("@ItemCode", i.ItemCode);
                 cmd.Parameters.AddWithValue("@ItemDescription", i.ItemDescription);
                 cmd.Parameters.AddWithValue("@Quantity", i.Quantity.ToString());
@@ -322,6 +323,7 @@ public class Maintenance
         {
             cmd.Parameters.AddWithValue("@ID", i.ID.ToString());
             cmd.Parameters.AddWithValue("@ControlNo", i.ControlNo);
+            cmd.Parameters.AddWithValue("@TypeOfItem", i.TypeOfItem);
             cmd.Parameters.AddWithValue("@ItemCode", i.ItemCode);
             cmd.Parameters.AddWithValue("@ItemDescription", i.ItemDescription);
             cmd.Parameters.AddWithValue("@Quantity", i.Quantity.ToString());
@@ -864,8 +866,8 @@ public class Maintenance
                 cmd.Parameters.AddWithValue("@USERID", USERID);
                 cmd.Parameters.AddWithValue("@SUPPLIERNAME", sd.Supplier);
                 cmd.Parameters.AddWithValue("@SUPPLIERADDRESS", sd.Address);
+                cmd.Parameters.AddWithValue("@ZONE", sd.Zone);
                 cmd.Parameters.AddWithValue("@LOANO", sd.LOA);
-                cmd.Parameters.AddWithValue("@STOCKS", sd.Stocks);
 
                 try
                 {
@@ -888,8 +890,8 @@ public class Maintenance
                 cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
                 cmd.Parameters.AddWithValue("@SUPPLIERNAME", sd.Supplier);
                 cmd.Parameters.AddWithValue("@SUPPLIERADDRESS", sd.Address);
+                cmd.Parameters.AddWithValue("@ZONE", sd.Zone);
                 cmd.Parameters.AddWithValue("@LOANO", sd.LOA);
-                cmd.Parameters.AddWithValue("@STOCKS", sd.Stocks);
 
                 try
                 {
@@ -957,6 +959,7 @@ public class Maintenance
         using (SqlCommand cmd = new SqlCommand("sp_AddLOA", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@USERID", USERID);
+            cmd.Parameters.AddWithValue("@DIVISION", ld.DIVISION);
             cmd.Parameters.AddWithValue("@LOANO", ld.LOANO);
             cmd.Parameters.AddWithValue("@LOAEXP", ld.LOAEXP);
             cmd.Parameters.AddWithValue("@SBNO", ld.SBNO);
@@ -993,6 +996,7 @@ public class Maintenance
         {
             cmd.Parameters.AddWithValue("@USERID", USERID);
             cmd.Parameters.AddWithValue("@LOAID", ld.LOAID);
+            cmd.Parameters.AddWithValue("@DIVISION", ld.DIVISION);
             cmd.Parameters.AddWithValue("@LOANO", ld.LOANO);
             cmd.Parameters.AddWithValue("@LOAEXP", ld.LOAEXP);
             cmd.Parameters.AddWithValue("@SBNO", ld.SBNO);
@@ -1039,6 +1043,65 @@ public class Maintenance
     {
         using (SqlCommand cmd = new SqlCommand("sp_GetLOAList", conn) { CommandType = CommandType.StoredProcedure })
         {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetItemType(SupplierDetails sd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetItemType", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetZone()
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetZone", conn) { CommandType = CommandType.StoredProcedure })
+        {
+
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
             try

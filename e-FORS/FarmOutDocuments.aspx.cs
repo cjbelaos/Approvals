@@ -60,7 +60,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         if (ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8106" || ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8112")
         {
             GetLOA();
-            GetSB();
         }
         else
         {
@@ -781,6 +780,8 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     {
         divLOA.Visible = true;
         divLOAExp.Visible = true;
+        divSB.Visible = true;
+        divSBExp.Visible = true;
 
         FarmOutDetails fo = new FarmOutDetails();
         fo.ControlNo = tbFarmOutControlNo.Text;
@@ -788,32 +789,15 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         DataTable dt = maint.GetLOAofSupplierInControlNo(fo);
         if (dt.Rows.Count > 0)
         {
-            tbLOANo.Text = dt.Rows[0]["LOANo"].ToString();
-            tbExpiryDate1.Text = dt.Rows[0]["ExpiryDate"].ToString();
+            tbLOANo.Text = dt.Rows[0]["LOANO"].ToString();
+            tbExpiryDate1.Text = dt.Rows[0]["LOAEXP"].ToString();
+            tbSBNo.Text = dt.Rows[0]["SBNO"].ToString();
+            tbExpiryDate2.Text = dt.Rows[0]["SBEXP"].ToString();
         }
         else
         {
             tbLOANo.Text = "";
             tbExpiryDate1.Text = "";
-        }
-    }
-
-    private void GetSB()
-    {
-        divSB.Visible = true;
-        divSBExp.Visible = true;
-
-        FarmOutDetails fo = new FarmOutDetails();
-        fo.ControlNo = tbFarmOutControlNo.Text;
-
-        DataTable dt = maint.GetSBofSupplierInControlNo(fo);
-        if (dt.Rows.Count > 0)
-        {
-            tbSBNo.Text = dt.Rows[0]["SuretyBondNo"].ToString();
-            tbExpiryDate2.Text = dt.Rows[0]["ExpiryDate"].ToString();
-        }
-        else
-        {
             tbSBNo.Text = "";
             tbExpiryDate2.Text = "";
         }
@@ -825,7 +809,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         divSB.Visible = false;
         divLOAExp.Visible = false;
         divSBExp.Visible = false;
-
     }
 
     public void SessionForm()

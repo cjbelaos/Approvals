@@ -33,7 +33,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Supplier</label>
-                                <input type="text" name="Supplier" id="txtSupplierCode" class="form-control">
+                                <input type="text" name="Supplier" id="txtID" class="form-control">
                             </div>
                         </div>
                         <div class="col-md-6">

@@ -35,30 +35,32 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Supplier</label>
-                                <input type="text" name="Supplier" id="txtSupplier" class="form-control">
+                                <input type="text" name="Supplier" id="txtSupplier" class="form-control text-uppercase">
                             </div>
 
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Address</label>
-                                <input type="text" name="Address" id="txtAddress" class="form-control">
+                                <input type="text" name="Address" id="txtAddress" class="form-control text-uppercase">
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>LOA No.</label>
-                                <select name="LOA" id="selectLOA" class="form-control select2">
+                                <label>Zone</label>
+                                <select name="LOA" id="selectZone" class="form-control select2" style="width: 100%">
                                     <option selected value="0">Choose...</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Quantity Left</label>
-                                <input type="text" name="QTYLEFT" id="txtQtyLeft" class="form-control">
+                                <label>LOA No.</label>
+                                <select name="LOA" id="selectLOA" class="form-control select2" style="width: 100%">
+                                    <option selected value="0">Choose...</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -76,6 +78,7 @@
                 </div>
             </div>
             <!-- /.card -->
+
         </div>
     </section>
 
@@ -83,14 +86,15 @@
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         var MainTable;
-        let BtnClear = $('#btnClear');
-        let LOANO = $('#selectLOA').val();
-        let QTYLEFT = $('#txtQtyLeft').val();
         $(document).ready(function () {
-            BtnClear.on('click', function () {
+            GetSuppliers();
+            GetLOAList();
+            GetZone();
+
+            $('#btnClear').on('click', function () {
                 ClearFields();
             })
-            
+
             $('.select2').select2();
 
             $.validator.setDefaults({
@@ -132,8 +136,6 @@
                     $(element).removeClass('is-invalid');
                 }
             });
-            GetSuppliers();
-            AddLOAList();
         })
 
         $(document).on('click', 'button', function (e) {
@@ -143,15 +145,19 @@
                 var ID = data[Object.keys(data)[0]];
                 var Supplier = data[Object.keys(data)[1]];
                 var Address = data[Object.keys(data)[2]];
-                var LOA = data[Object.keys(data)[3]];
-                var QtyLeft = data[Object.keys(data)[4]];
-                console.log(Address);
-
+                var Zone = data[Object.keys(data)[3]];
+                if (Zone == '') {
+                    Zone = '0'
+                }
+                var LOA = data[Object.keys(data)[4]];
+                if (LOA == '') {
+                    LOA = '0'
+                }
                 $('#txtID').val(ID);
                 $('#txtSupplier').val(Supplier);
                 $('#txtAddress').val(Address);
+                $('#selectZone').val(Zone).trigger('change');
                 $('#selectLOA').val(LOA).trigger('change');
-                $('#txtQtyLeft').val(QtyLeft);
 
             }
             if (elem.hasClass('btn-delete-row')) {
@@ -183,10 +189,10 @@
                     }
                     MainTable = $("#tableSupplier").DataTable({
                         paging: true,
-                        lengthChange: false,
+                        lengthChange: true,
                         ordering: true,
                         info: true,
-                        autoWidth: false,
+                        autoWidth: true,
                         responsive: true,
                         buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
                         data: d,
@@ -194,8 +200,8 @@
                             { data: "SUPPLIERID", title: 'Supplier ID', visible: false, searchable: false },
                             { data: "SUPPLIERNAME", title: 'Supplier Name' },
                             { data: "SUPPLIERADDRESS", title: 'Supplier Address' },
+                            { data: "ZONE", title: 'Zone' },
                             { data: "LOANO", title: 'LOA No.' },
-                            { data: "QTYLEFT", title: 'Quantity Left' },
                             //{ data: "CREATEDDATE", title: 'Created Date' },
                             //{ data: "CREATEDBY", title: 'Created By.' },
                             //{ data: "UPDATEDDATE", title: 'Updated Date' },
@@ -224,8 +230,9 @@
             SupplierDetails.UserID = $('#lblUserID').text();
             SupplierDetails.Supplier = $('#txtSupplier').val();
             SupplierDetails.Address = $('#txtAddress').val();
+            SupplierDetails.Zone = $('#selectZone').val();
             SupplierDetails.LOA = $('#selectLOA').val();
-            SupplierDetails.QtyLeft = $('#txtQtyLeft').val();
+
             $.ajax({
                 url: "Supplier.aspx/AddSupplier",
                 method: "POST",
@@ -252,19 +259,19 @@
             SupplierDetails.ID = $('#txtID').val();
             SupplierDetails.Supplier = $('#txtSupplier').val();
             SupplierDetails.Address = $('#txtAddress').val();
-            if (LOANO == 0) {
-                SupplierDetails.LOA = "";
+            if ($('#selectZone').val() == '0') {
+                SupplierDetails.Zone = ''
             }
             else {
-                SupplierDetails.LOA = LOANO;
+                SupplierDetails.Zone = $('#selectZone').val();
             }
-            if (QTYLEFT == '') {
-                SupplierDetails.QtyLeft = '0';
+            if ($('#selectLOA').val() == '0') {
+                SupplierDetails.LOA = ''
             }
             else {
-                SupplierDetails.QtyLeft = QTYLEFT;
+                SupplierDetails.LOA = $('#selectLOA').val();
             }
-            
+
             $.ajax({
                 url: "Supplier.aspx/UpdateSupplier",
                 method: "POST",
@@ -310,7 +317,7 @@
             });
         }
 
-        function AddLOAList(callback) {
+        function GetLOAList(callback) {
             $.ajax({
                 type: "POST",
                 url: "Supplier.aspx/GetLOAList",
@@ -319,7 +326,6 @@
                 dataType: "json",
                 success: function (e) {
                     var d = JSON.parse(e.d);
-                    console.log(d);
                     for (var i in d) {
                         $('<option/>', {
                             value: d[i]['LOANO'],
@@ -336,12 +342,38 @@
             });
         }
 
+        function GetZone(callback) {
+            $.ajax({
+                type: "POST",
+                url: "Supplier.aspx/GetZone",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    console.log(d);
+                    for (var i in d) {
+                        $('<option/>', {
+                            value: d[i]['ZONE'],
+                            text: d[i]['ZONE']
+                        }).appendTo($("#selectZone"));
+                    };
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        }
+
         function ClearFields() {
             $('#txtID').val('');
             $('#txtSupplier').val('');
             $('#txtAddress').val('');
             $('#selectLOA').val(0).trigger('change');
-            $('#txtStocks').val('');
+            $('#selectZone').val(0).trigger('change');
         }
     </script>
 </asp:Content>

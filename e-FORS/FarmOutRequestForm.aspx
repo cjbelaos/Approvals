@@ -230,6 +230,11 @@
                                                     <asp:Label ID="lblID" runat="server" Text='<%#Eval("ID") %>' Visible="false"></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Type of Item" ItemStyle-VerticalAlign="Middle">
+                                                <ItemTemplate>
+                                                    <asp:Label ID="lblTypeOfItem" runat="server" Text='<%#Eval("TypeOfItem") %>'></asp:Label>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Item/Part Code/Serial No." ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblItemCode" runat="server" Text='<%#Eval("ItemCode") %>'></asp:Label>
@@ -492,7 +497,6 @@
                                                 <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
                                             </div>
                                         </div>
-                                        <small id="CheckedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
                                     </div>
                                 </div>
                                 <!-- /.col -->
@@ -533,7 +537,6 @@
                                                 <asp:Button runat="server" ID="BtnConfirm3" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm3_OnClick" />
                                             </div>
                                         </div>
-                                        <small id="ApprovedbyHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
                                     </div>
                                 </div>
                                 <!-- /.col -->
@@ -586,21 +589,27 @@
             <div class="modal fade" id="modal">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header bg-primary">
                             <h4 class="modal-title">Item Information</h4>
                             <asp:Label runat="server" ID="lblMessage"></asp:Label>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
                         </div>
                         <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Type of Item</label>
+                                        <asp:DropDownList runat="server" ID="ddlItemType" CssClass="form-control select2"></asp:DropDownList>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <asp:TextBox runat="server" ID="tbID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbItemNo">Item/Part Code/Serial No.</label>
                                         <span style="color: #ff0000">*</span>
-                                        <asp:TextBox runat="server" ID="tbItemNo" CssClass="form-control" name="itemno"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbItemNo" CssClass="form-control text-uppercase" name="itemno"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -609,7 +618,7 @@
                                     <div class="form-group">
                                         <label for="tbItemDescription">Item Description</label>
                                         <span style="color: #ff0000">*</span>
-                                        <asp:TextBox runat="server" ID="tbItemDescription" CssClass="form-control" name="itemdescription"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbItemDescription" CssClass="form-control text-uppercase" name="itemdescription"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -622,7 +631,7 @@
                                     <div class="form-group">
                                         <label for="tbQuantity">Quantity</label>
                                         <span style="color: #ff0000">*</span>
-                                        <asp:TextBox runat="server" ID="tbQuantity" CssClass="form-control" name="quantity" onkeypress="return isNumberKey(event)"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbQuantity" CssClass="form-control text-uppercase" name="quantity" onkeypress="return isNumberKey(event)"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -631,7 +640,7 @@
                                     <div class="form-group">
                                         <label for="tbUnitofMeasurement">Unit of Measurement</label>
                                         <span style="color: #ff0000">*</span>
-                                        <asp:TextBox runat="server" ID="tbUnitofMeasurement" CssClass="form-control" name="unitofmeasurement"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbUnitofMeasurement" CssClass="form-control text-uppercase" name="unitofmeasurement"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -643,7 +652,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbAmount">Amount ($)</label>
-                                        <asp:TextBox runat="server" ID="tbAmount" CssClass="form-control" name="amount" onkeypress="return isNumberKey(event)"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbAmount" CssClass="form-control text-uppercase" name="amount" onkeypress="return isNumberKey(event)"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -651,7 +660,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbAssetNo">Fixed/Quasi Fixed Asset No.</label>
-                                        <asp:TextBox runat="server" ID="tbAssetNo" CssClass="form-control" name="assetno"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbAssetNo" CssClass="form-control text-uppercase" name="assetno"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -663,7 +672,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbOD">OD</label>
-                                        <asp:TextBox runat="server" ID="tbOD" CssClass="form-control" name="od"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbOD" CssClass="form-control text-uppercase" name="od"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -671,7 +680,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbContainer">Container</label>
-                                        <asp:TextBox runat="server" ID="tbContainer" CssClass="form-control" name="container"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbContainer" CssClass="form-control text-uppercase" name="container"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -683,7 +692,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbPEZASeal">PEZA Seal</label>
-                                        <asp:TextBox runat="server" ID="tbPEZASeal" CssClass="form-control" name="peza"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbPEZASeal" CssClass="form-control text-uppercase" name="peza"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -691,7 +700,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbDSRDRNo">DS/RDR Number</label>
-                                        <asp:TextBox runat="server" ID="tbDSRDRNo" CssClass="form-control" name="dsrdrno"></asp:TextBox>
+                                        <asp:TextBox runat="server" ID="tbDSRDRNo" CssClass="form-control text-uppercase" name="dsrdrno"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
