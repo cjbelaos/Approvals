@@ -298,7 +298,7 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="nav-item <% Response.Write(MaintenanceMenuOpen); %>">
+                            <li class="nav-item <% Response.Write(MaintenanceMenuOpen); %>" <% Response.Write(HideMaintenance); %>>
                                 <a href="#" class="nav-link <% Response.Write(Maintenance); %>">
                                     <i class="nav-icon fas fa-tools"></i>
                                     <p>

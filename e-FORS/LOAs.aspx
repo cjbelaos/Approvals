@@ -23,9 +23,14 @@
         <div class="container-fluid">
             <div class="card card-primary">
                 <div class="card-header">
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
                     <input type="text" name="ID" id="txtID" class="form-control" hidden>
                     <!--- ID -->
-                    <h3 class="card-title">LOA No</h3>
+                    <h3 class="card-title">LOA</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -116,7 +121,25 @@
                 </div>
 
                 <div class="card-body">
-                    <table id="tableLOA" class="table table-bordered table-striped" style="width:100%">
+                    <table id="tableLOA" class="table table-bordered table-striped" style="width: 100%">
+                    </table>
+                </div>
+
+                <div class="card-footer">
+                </div>
+            </div>
+
+            <div class="card card-primary">
+                <div class="card-header">
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                    <h3 class="card-title">Inventory</h3>
+                </div>
+                <div class="card-body">
+                    <table id="tableInventory" class="table table-bordered table-striped" style="width: 100%">
                     </table>
                 </div>
                 <div class="card-footer">
@@ -129,7 +152,8 @@
     <script type="text/javascript">
         $('.select2').select2();
 
-        var MainTable;
+        var LOATable;
+        var InventoryTable;
         let BtnClear = $('#btnClear');
         $(document).ready(function () {
             GetLOA();
@@ -220,7 +244,8 @@
         $(document).on('click', 'button', function (e) {
             var elem = $(this);
             if (elem.hasClass('btn-update-row')) {
-                var data = MainTable.row(elem.parents('tr')).data();
+                var data = LOATable.row(elem.parents('tr')).data();
+                console.log(data);
                 var ID = data[Object.keys(data)[0]];
                 var DIVISION = data[Object.keys(data)[1]];
                 if (DIVISION == '') {
@@ -232,9 +257,9 @@
                 var SBEXP = data[Object.keys(data)[5]];
                 var DESC = data[Object.keys(data)[6]];
                 var QTYLIMIT = data[Object.keys(data)[7]];
-                var UM = data[Object.keys(data)[8]];
-                var AMTLIMIT = data[Object.keys(data)[9]];
-                
+                var UM = data[Object.keys(data)[10]];
+                var AMTLIMIT = data[Object.keys(data)[11]];
+
                 $('#txtID').val(ID);
                 $('#selectDivision').val(DIVISION).trigger('change');
                 $('#txtLOANo').val(LOANO);
@@ -268,17 +293,16 @@
                     var d = JSON.parse(e.d);
                     var btnEdit = '<button type="button" class="btn btn-sm btn-primary btn-update-row" title="Update"><i class="fas fa-edit"></i></button>';
                     var btnDelete = '<button type="button" class="btn btn-sm btn-danger btn-delete-row" title="Delete"><i class="fas fa-trash"></i></button>';
-                    if (MainTable !== undefined && MainTable !== null) {
-                        MainTable.clear().destroy();
+                    if (LOATable !== undefined && LOATable !== null) {
+                        LOATable.clear().destroy();
                     }
-                    MainTable = $("#tableLOA").DataTable({
+                    LOATable = $("#tableLOA").DataTable({
                         paging: true,
                         lengthChange: true,
                         ordering: true,
                         info: true,
-                        autoWidth: true,
+                        autoWidth: false,
                         responsive: false,
-                        buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
                         data: d,
                         columns: [
                             { data: "LOAID", title: 'ID', visible: false, searchable: false },
@@ -301,6 +325,25 @@
                                     return btnDelete;
                                 }
                             },
+                        ]
+                    });
+                    InventoryTable = $("#tableInventory").DataTable({
+                        paging: true,
+                        lengthChange: true,
+                        ordering: true,
+                        info: true,
+                        autoWidth: false,
+                        responsive: false,
+                        data: d,
+                        columns: [
+                            { data: "DIVISION", title: 'Division' },
+                            { data: "LOANO", title: 'LOA' },
+                            { data: "QTYLIMIT", title: 'Qty Limit' },
+                            { data: "QTYUSED", title: 'Qty Used' },
+                            { data: "QTYLEFT", title: 'Qty Left' },
+                            { data: "AMTLIMIT", title: 'Amount Limit' },
+                            { data: "AMTUSED", title: 'Amount Used' },
+                            { data: "AMTLEFT", title: 'Amount Left' },
                         ]
                     });
                 },

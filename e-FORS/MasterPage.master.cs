@@ -18,6 +18,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
 
     public string HideAllTasks;
     public string HideFinishedTasks;
+    public string HideMaintenance;
 
     public string HideCountMyTasks;
 
@@ -147,6 +148,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
             {
                 HideAllTasks = "hidden";
                 HideFinishedTasks = "hidden";
+                HideMaintenance = "hidden";
             }
         }
     }
