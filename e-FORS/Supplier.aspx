@@ -46,24 +46,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Zone</label>
-                                <select name="LOA" id="selectZone" class="form-control select2" style="width: 100%">
-                                    <option selected value="0">Choose...</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>LOA No.</label>
-                                <select name="LOA" id="selectLOA" class="form-control select2" style="width: 100%">
-                                    <option selected value="0">Choose...</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                     <button type="submit" id="btnSave" class="btn btn-primary">Save</button>
                     <button type="button" id="btnClear" class="btn btn-danger">Clear</button>
                 </div>
@@ -88,8 +70,6 @@
         var MainTable;
         $(document).ready(function () {
             GetSuppliers();
-            GetLOAList();
-            GetZone();
 
             $('#btnClear').on('click', function () {
                 ClearFields();
@@ -145,20 +125,10 @@
                 var ID = data[Object.keys(data)[0]];
                 var Supplier = data[Object.keys(data)[1]];
                 var Address = data[Object.keys(data)[2]];
-                var Zone = data[Object.keys(data)[3]];
-                if (Zone == '') {
-                    Zone = '0'
-                }
-                var LOA = data[Object.keys(data)[4]];
-                if (LOA == '') {
-                    LOA = '0'
-                }
+
                 $('#txtID').val(ID);
                 $('#txtSupplier').val(Supplier);
                 $('#txtAddress').val(Address);
-                $('#selectZone').val(Zone).trigger('change');
-                $('#selectLOA').val(LOA).trigger('change');
-
             }
             if (elem.hasClass('btn-delete-row')) {
                 var data = MainTable.row(elem.parents('tr')).data();
@@ -200,12 +170,6 @@
                             { data: "SUPPLIERID", title: 'Supplier ID', visible: false, searchable: false },
                             { data: "SUPPLIERNAME", title: 'Supplier Name' },
                             { data: "SUPPLIERADDRESS", title: 'Supplier Address' },
-                            { data: "ZONE", title: 'Zone' },
-                            { data: "LOANO", title: 'LOA No.' },
-                            //{ data: "CREATEDDATE", title: 'Created Date' },
-                            //{ data: "CREATEDBY", title: 'Created By.' },
-                            //{ data: "UPDATEDDATE", title: 'Updated Date' },
-                            //{ data: "UPDATEDBY", title: 'Updated By' },
                             {
                                 data: 'SUPPLIERID', title: 'Edit', render: function (e) {
                                     return btnEdit;
@@ -216,7 +180,8 @@
                                     return btnDelete;
                                 }
                             },
-                        ]
+                        ],
+                        order: [[1, 'asc']],
                     });
                 },
                 error: function (err) {
@@ -227,11 +192,8 @@
 
         function AddSupplier(callback) {
             var SupplierDetails = {};
-            SupplierDetails.UserID = $('#lblUserID').text();
-            SupplierDetails.Supplier = $('#txtSupplier').val();
-            SupplierDetails.Address = $('#txtAddress').val();
-            SupplierDetails.Zone = $('#selectZone').val();
-            SupplierDetails.LOA = $('#selectLOA').val();
+            SupplierDetails.Supplier = $('#txtSupplier').val().toUpperCase();
+            SupplierDetails.Address = $('#txtAddress').val().toUpperCase();
 
             $.ajax({
                 url: "Supplier.aspx/AddSupplier",
@@ -257,20 +219,8 @@
         function UpdateSupplier(callback) {
             var SupplierDetails = {};
             SupplierDetails.ID = $('#txtID').val();
-            SupplierDetails.Supplier = $('#txtSupplier').val();
-            SupplierDetails.Address = $('#txtAddress').val();
-            if ($('#selectZone').val() == '0') {
-                SupplierDetails.Zone = ''
-            }
-            else {
-                SupplierDetails.Zone = $('#selectZone').val();
-            }
-            if ($('#selectLOA').val() == '0') {
-                SupplierDetails.LOA = ''
-            }
-            else {
-                SupplierDetails.LOA = $('#selectLOA').val();
-            }
+            SupplierDetails.Supplier = $('#txtSupplier').val().toUpperCase();
+            SupplierDetails.Address = $('#txtAddress').val().toUpperCase();
 
             $.ajax({
                 url: "Supplier.aspx/UpdateSupplier",
@@ -295,7 +245,6 @@
 
         function DeleteSupplier(ID, callback) {
             var SupplierDetails = {};
-            SupplierDetails.UserID = $('#lblUserID').text();
             SupplierDetails.ID = ID;
             $.ajax({
                 url: "Supplier.aspx/DeleteSupplier",
@@ -317,63 +266,10 @@
             });
         }
 
-        function GetLOAList(callback) {
-            $.ajax({
-                type: "POST",
-                url: "Supplier.aspx/GetLOAList",
-                data: "{}",
-                contentType: "application/json;charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    for (var i in d) {
-                        $('<option/>', {
-                            value: d[i]['LOANO'],
-                            text: d[i]['LOANO']
-                        }).appendTo($("#selectLOA"));
-                    };
-                    if (callback !== undefined) {
-                        callback(d);
-                    }
-                },
-                error: function (errormessage) {
-                    alert(errormessage.responseText);
-                }
-            });
-        }
-
-        function GetZone(callback) {
-            $.ajax({
-                type: "POST",
-                url: "Supplier.aspx/GetZone",
-                data: "{}",
-                contentType: "application/json;charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    console.log(d);
-                    for (var i in d) {
-                        $('<option/>', {
-                            value: d[i]['ZONE'],
-                            text: d[i]['ZONE']
-                        }).appendTo($("#selectZone"));
-                    };
-                    if (callback !== undefined) {
-                        callback(d);
-                    }
-                },
-                error: function (errormessage) {
-                    alert(errormessage.responseText);
-                }
-            });
-        }
-
         function ClearFields() {
             $('#txtID').val('');
             $('#txtSupplier').val('');
             $('#txtAddress').val('');
-            $('#selectLOA').val(0).trigger('change');
-            $('#selectZone').val(0).trigger('change');
         }
     </script>
 </asp:Content>

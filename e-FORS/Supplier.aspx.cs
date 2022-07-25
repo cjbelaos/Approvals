@@ -56,16 +56,4 @@ public partial class Supplier : System.Web.UI.Page
     {
         maint.DeleteSupplier(sd, UserID);
     }
-
-    [WebMethod]
-    public static string GetLOAList()
-    {
-        return JsonConvert.SerializeObject(maint.GetLOAList());
-    }
-
-    [WebMethod]
-    public static string GetZone()
-    {
-        return JsonConvert.SerializeObject(maint.GetZone());
-    }
 }

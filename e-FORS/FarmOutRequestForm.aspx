@@ -741,6 +741,7 @@
                             <div class="row">
                                 <asp:TextBox runat="server" ID="tbWorkFlowID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
                                 <asp:TextBox runat="server" ID="tbApproverID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="tbAssignedID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbComment">Comment</label>
@@ -1100,6 +1101,19 @@
             Toast.fire({
                 icon: 'success',
                 title: 'Items has been updated successfully.'
+            })
+        }
+
+        function ReassignToAlert() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'warning',
+                title: 'Please select re-assign to.'
             })
         }
 

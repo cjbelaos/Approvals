@@ -34,10 +34,18 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Supplier</label>
+                                <select name="Supplier" id="selectSupplier" class="form-control select2" style="width:100%">
+                                    <option selected value="0">Choose...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label>Division</label>
-                                <select name="DIVISION" id="selectDivision" class="form-control select2">
+                                <select name="DIVISION" id="selectDivision" class="form-control select2" style="width:100%">
                                     <option selected value="0">Choose...</option>
                                 </select>
                             </div>
@@ -120,8 +128,8 @@
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <table id="tableLOA" class="table table-bordered table-striped" style="width: 100%">
+                <div class="card-body" style="width:100%; overflow: scroll">
+                    <table id="tableLOA" class="table table-bordered table-striped" style="width: 100%; white-space: pre-wrap">
                     </table>
                 </div>
 
@@ -157,7 +165,8 @@
         let BtnClear = $('#btnClear');
         $(document).ready(function () {
             GetLOA();
-            GetDivision();
+            GetDivisionList();
+            GetSupplierList();
 
             BtnClear.on('click', function () {
                 ClearFields();
@@ -182,9 +191,6 @@
             });
             $('#form1').validate({
                 rules: {
-                    DIVISION: {
-                        required: true,
-                    },
                     LOANO: {
                         required: true,
                     },
@@ -205,9 +211,6 @@
                     },
                 },
                 messages: {
-                    DIVISION: {
-                        required: "Please select DIVISION.",
-                    },
                     LOANO: {
                         required: "Please enter LOA.",
                     },
@@ -247,20 +250,25 @@
                 var data = LOATable.row(elem.parents('tr')).data();
                 console.log(data);
                 var ID = data[Object.keys(data)[0]];
-                var DIVISION = data[Object.keys(data)[1]];
+                var SUPPLIER = data[Object.keys(data)[1]];
+                if (SUPPLIER == '') {
+                    SUPPLIER = '0'
+                }
+                var DIVISION = data[Object.keys(data)[3]];
                 if (DIVISION == '') {
                     DIVISION = '0'
                 }
-                var LOANO = data[Object.keys(data)[2]];
-                var LOAEXP = data[Object.keys(data)[3]];
-                var SBNO = data[Object.keys(data)[4]];
-                var SBEXP = data[Object.keys(data)[5]];
-                var DESC = data[Object.keys(data)[6]];
-                var QTYLIMIT = data[Object.keys(data)[7]];
-                var UM = data[Object.keys(data)[10]];
-                var AMTLIMIT = data[Object.keys(data)[11]];
+                var LOANO = data[Object.keys(data)[4]];
+                var LOAEXP = data[Object.keys(data)[5]];
+                var SBNO = data[Object.keys(data)[6]];
+                var SBEXP = data[Object.keys(data)[7]];
+                var DESC = data[Object.keys(data)[8]];
+                var QTYLIMIT = data[Object.keys(data)[9]];
+                var UM = data[Object.keys(data)[12]];
+                var AMTLIMIT = data[Object.keys(data)[13]];
 
                 $('#txtID').val(ID);
+                $('#selectSupplier').val(SUPPLIER).trigger('change');
                 $('#selectDivision').val(DIVISION).trigger('change');
                 $('#txtLOANo').val(LOANO);
                 $('#txtLOAExpiryDate').val(LOAEXP);
@@ -306,6 +314,8 @@
                         data: d,
                         columns: [
                             { data: "LOAID", title: 'ID', visible: false, searchable: false },
+                            { data: "SUPPLIERID", title: 'Supplier ID', visible: false, searchable: false },
+                            { data: "SUPPLIERNAME", title: 'Supplier' },
                             { data: "DIVISION", title: 'Division' },
                             { data: "LOANO", title: 'LOA' },
                             { data: "LOAEXP", title: 'Expiry Date' },
@@ -325,8 +335,12 @@
                                     return btnDelete;
                                 }
                             },
-                        ]
+                        ],
                     });
+
+                    if (InventoryTable !== undefined && InventoryTable !== null) {
+                        InventoryTable.clear().destroy();
+                    }
                     InventoryTable = $("#tableInventory").DataTable({
                         paging: true,
                         lengthChange: true,
@@ -336,6 +350,7 @@
                         responsive: false,
                         data: d,
                         columns: [
+                            { data: "SUPPLIERNAME", title: 'Supplier' },
                             { data: "DIVISION", title: 'Division' },
                             { data: "LOANO", title: 'LOA' },
                             { data: "QTYLIMIT", title: 'Qty Limit' },
@@ -355,19 +370,25 @@
 
         function AddLOA(callback) {
             var LOADetails = {};
+            if ($('#selectSupplier').val() == '0') {
+                LOADetails.SUPPLIERID = ''
+            }
+            else {
+                LOADetails.SUPPLIERID = $('#selectSupplier').val();
+            }
             if ($('#selectDivision').val() == '0') {
                 LOADetails.DIVISION = ''
             }
             else {
                 LOADetails.DIVISION = $('#selectDivision').val();
             }
-            LOADetails.LOANO = $('#txtLOANo').val();
+            LOADetails.LOANO = $('#txtLOANo').val().toUpperCase();
             LOADetails.LOAEXP = $('#txtLOAExpiryDate').val();
-            LOADetails.SBNO = $('#txtSuretyBondNo').val();
+            LOADetails.SBNO = $('#txtSuretyBondNo').val().toUpperCase();
             LOADetails.SBEXP = $('#txtSBExpiryDate').val();
-            LOADetails.DESCRIPTION = $('#txtDescription').val();
+            LOADetails.DESCRIPTION = $('#txtDescription').val().toUpperCase();
             LOADetails.QTYLIMIT = accounting.unformat($('#txtQtyLIMIT').val());
-            LOADetails.UM = $('#txtUM').val();
+            LOADetails.UM = $('#txtUM').val().toUpperCase();
             LOADetails.AMTLIMIT = accounting.unformat($('#txtAmtLimit').val());
             $.ajax({
                 url: "LOAs.aspx/AddLOA",
@@ -392,6 +413,12 @@
 
         function UpdateLOA(callback) {
             var LOADetails = {};
+            if ($('#selectSupplier').val() == '0') {
+                LOADetails.SUPPLIERID = ''
+            }
+            else {
+                LOADetails.SUPPLIERID = $('#selectSupplier').val();
+            }
             LOADetails.LOAID = $('#txtID').val();
             if ($('#selectDivision').val() == '0') {
                 LOADetails.DIVISION = ''
@@ -399,13 +426,13 @@
             else {
                 LOADetails.DIVISION = $('#selectDivision').val();
             }
-            LOADetails.LOANO = $('#txtLOANo').val();
+            LOADetails.LOANO = $('#txtLOANo').val().toUpperCase();
             LOADetails.LOAEXP = $('#txtLOAExpiryDate').val();
-            LOADetails.SBNO = $('#txtSuretyBondNo').val();
+            LOADetails.SBNO = $('#txtSuretyBondNo').val().toUpperCase();
             LOADetails.SBEXP = $('#txtSBExpiryDate').val();
-            LOADetails.DESCRIPTION = $('#txtDescription').val();
+            LOADetails.DESCRIPTION = $('#txtDescription').val().toUpperCase();
             LOADetails.QTYLIMIT = accounting.unformat($('#txtQtyLIMIT').val());
-            LOADetails.UM = $('#txtUM').val();
+            LOADetails.UM = $('#txtUM').val().toUpperCase();
             LOADetails.AMTLIMIT = accounting.unformat($('#txtAmtLimit').val());
             $.ajax({
                 url: "LOAs.aspx/UpdateLOA",
@@ -451,10 +478,10 @@
             });
         }
 
-        function GetDivision(callback) {
+        function GetDivisionList(callback) {
             $.ajax({
                 type: "POST",
-                url: "LOAs.aspx/GetDivision",
+                url: "LOAs.aspx/GetDivisionList",
                 data: "{}",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
@@ -465,6 +492,31 @@
                             value: d[i]['Description'],
                             text: d[i]['Description']
                         }).appendTo($("#selectDivision"));
+                    };
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        }
+
+        function GetSupplierList(callback) {
+            $.ajax({
+                type: "POST",
+                url: "LOAs.aspx/GetSupplierList",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    for (var i in d) {
+                        $('<option/>', {
+                            value: d[i]['SUPPLIERID'],
+                            text: d[i]['SUPPLIERNAME']
+                        }).appendTo($("#selectSupplier"));
                     };
                     if (callback !== undefined) {
                         callback(d);

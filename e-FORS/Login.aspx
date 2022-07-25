@@ -8,7 +8,7 @@
     <title>e-FORS | Login</title>
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link href="AdminLTE-3.2.0/plugins/fonts/Poppins.css" rel="stylesheet" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
     <!-- icheck bootstrap -->
@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/toastr/toastr.min.css">
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+
+    <link rel="shortcut icon" href="Images/e.ico" type="image/x-icon" />
 </head>
 <body class="hold-transition login-page">
     <form id="form1" method="post" runat="server">
@@ -27,7 +29,7 @@
             <ContentTemplate>
                 <div class="login-box">
                     <div class="login-logo">
-                        <a href="Login.aspx"><b>e-</b>FORS</a>
+                        <a href="Login.aspx" class="brand-link"><img src="Images/e.png"  alt="e-FORS Logo" class="brand-image float-none" style="opacity: .8"><b>-</b>FORS</a>
                     </div>
                     <!-- /.login-logo -->
                     <div class="card">

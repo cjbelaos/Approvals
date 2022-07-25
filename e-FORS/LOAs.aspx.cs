@@ -16,7 +16,11 @@ public partial class LOAs : System.Web.UI.Page
     {
         if (Session["UserID"] == null)
         {
-            Response.Redirect("Login.aspx");
+            Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
+            //not logged in
+            //Redirect to Login
+
+            Response.Redirect("Login.aspx?expired=1");
         }
         else
         {
@@ -50,8 +54,14 @@ public partial class LOAs : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static string GetDivision()
+    public static string GetDivisionList()
     {
         return JsonConvert.SerializeObject(maint.GetDivision());
+    }
+
+    [WebMethod]
+    public static string GetSupplierList()
+    {
+        return JsonConvert.SerializeObject(maint.GetSuppliers());
     }
 }

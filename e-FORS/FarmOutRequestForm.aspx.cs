@@ -12,6 +12,7 @@ public partial class Default : System.Web.UI.Page
     private static readonly Items items = new Items();
     private static readonly FarmOutDetails fod = new FarmOutDetails();
     private static readonly SupplierDetails sd = new SupplierDetails();
+    private static readonly LOADetails ld = new LOADetails();
     public static string UserID;
     public static string UserName;
     public static string Message;
@@ -106,6 +107,23 @@ public partial class Default : System.Web.UI.Page
 
     protected void BtnAdd_OnClick(object sender, EventArgs e)
     {
+        ddlItemType.Items.Clear();
+        sd.ID = ddlSupplierName.SelectedValue.ToString();
+        ld.DIVISION = ddlDivision.SelectedValue.ToString();
+        DataTable dt1 = maint.GetItemType(sd, ld);
+        if (dt1.Rows.Count > 0)
+        {
+            ddlItemType.DataSource = dt1;
+            ddlItemType.DataTextField = "DESCRIPTION";
+            ddlItemType.DataValueField = "DESCRIPTION";
+            ddlItemType.DataBind();
+            ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
+        }
+        else
+        {
+            ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
+        }
+
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
     }
 
@@ -211,8 +229,28 @@ public partial class Default : System.Web.UI.Page
         a.UserID = UserID;
         a.Comment = tbComment.Text;
         maint.Approval(a);
-        GetFarmOut();
+        
+        EmailDetails ed = new EmailDetails();
+        ed.CONTROLNO = tbControlNo.Text;
+        ed.FROM_EMAIL = UserID;
+        
+        if (tbApproverID.Text == "1")
+        {
+            ed.TO_EMAIL = ddlCheckedby.SelectedValue;
+        }
+        else if (tbApproverID.Text == "2")
+        {
+            ed.TO_EMAIL = ddlApprovedby.SelectedValue;
+        }
+        else
+        {
+            ed.TO_EMAIL = "LCS";
+        }
 
+        ed.EMAILTYPE = "Approval";
+        maint.SendEmail(ed);
+
+        GetFarmOut();
         DisableControl();
 
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
@@ -233,6 +271,24 @@ public partial class Default : System.Web.UI.Page
         a.UserID = UserID;
         a.Comment = tbRequestChangeComment.Text;
         maint.RequestChange(a);
+
+        EmailDetails ed = new EmailDetails();
+        ed.CONTROLNO = tbControlNo.Text;
+
+        if (tbApproverID.Text == "2")
+        {
+            ed.FROM_EMAIL = ddlCheckedby.SelectedValue;
+            ed.TO_EMAIL = ddlRequestedby.SelectedValue;
+        }
+        else if (tbApproverID.Text == "3")
+        {
+            ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString() + "," + ddlCheckedby.SelectedValue.ToString();
+            ed.TO_EMAIL = ddlRequestedby.SelectedValue;
+        }
+
+        ed.EMAILTYPE = "Request Change";
+        maint.SendEmail(ed);
+
         DisableControl();
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeFarmOutSuccessAlert();", true);
@@ -255,7 +311,7 @@ public partial class Default : System.Web.UI.Page
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalReassignTask').modal('show');", true);
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ShowReassigntoHelpBlock();", true);
+            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ReassignToAlert();", true);
         }
         else
         {
@@ -267,6 +323,24 @@ public partial class Default : System.Web.UI.Page
             a.Comment = tbRequestChangeComment.Text;
             string strReassignto = ddlReassignto.SelectedValue;
             maint.ReassignTask(a, strReassignto);
+
+            EmailDetails ed = new EmailDetails();
+            ed.CONTROLNO = tbControlNo.Text;
+
+            if (tbApproverID.Text == "2")
+            {
+                ed.FROM_EMAIL = ddlCheckedby.SelectedValue;
+                ed.TO_EMAIL = ddlReassignto.SelectedValue;
+            }
+            else if (tbApproverID.Text == "3")
+            {
+                ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString() + "," + ddlCheckedby.SelectedValue.ToString();
+                ed.TO_EMAIL = ddlReassignto.SelectedValue;
+            }
+
+            ed.EMAILTYPE = "Re-assign";
+            maint.SendEmail(ed);
+
             DisableControl();
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignFarmOutSuccessAlert();", true);
@@ -797,21 +871,6 @@ public partial class Default : System.Web.UI.Page
         {
             DataTable dt = frfm.GetSupplierAddress(ddlSupplierName.SelectedValue);
             tbDestinationAddress.Text = dt.Rows[0]["SupplierAddress"].ToString();
-
-            sd.ID = ddlSupplierName.SelectedValue.ToString();
-            DataTable dt1 = maint.GetItemType(sd);
-            if (dt1.Rows.Count > 0)
-            {
-                ddlItemType.DataSource = dt1;
-                ddlItemType.DataTextField = "DESCRIPTION";
-                ddlItemType.DataValueField = "DESCRIPTION";
-                ddlItemType.DataBind();
-                ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
-            }
-            else
-            {
-                ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
-            }
         }
         else
         {
@@ -851,8 +910,9 @@ public partial class Default : System.Web.UI.Page
 
     private void GetTypeOfItems()
     {
-        sd.ID = ddlSupplierName.Text;
-        DataTable dt1 = maint.GetItemType(sd);
+        sd.ID = ddlSupplierName.SelectedValue.ToString();
+        ld.DIVISION = ddlDivision.SelectedValue.ToString();
+        DataTable dt1 = maint.GetItemType(sd, ld);
         if (dt1.Rows.Count > 0)
         {
             ddlItemType.DataSource = dt1;
@@ -864,53 +924,6 @@ public partial class Default : System.Web.UI.Page
         else
         {
             ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
-        }
-    }
-
-    private void showAlert(string strType, string strTitle, string strMessage)
-    {
-        switch (strType)
-        {
-            case "error":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-error'});return false;});</script>";
-                break;
-            case "warning":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-warning'});return false;});</script>";
-                break;
-            case "success":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-success'});return false;});</script>";
-                break;
-            case "light":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-light'});return false;});</script>";
-                break;
-            default:
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'my-sticky-class'});return false;});</script>";
-                break;
-
-
-        }
-    }
-
-    private void ShowAlert(string strType, string strTitle, string strMessage)
-    {
-        switch (strType)
-        {
-            case "error":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-error'});return false;});</script>";
-                break;
-            case "warning":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-warning'});return false;});</script>";
-                break;
-            case "success":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-success'});return false;});</script>";
-                break;
-            case "light":
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'gritter-light'});return false;});</script>";
-                break;
-            default:
-                lblMessage.Text = "<script type='text/javascript'>$(document).ready(function() {var unique_id = $.gritter.add({title: '" + strTitle + "',text: '" + strMessage + "',sticky: false,time: 4000,class_name: 'my-sticky-class'});return false;});</script>";
-                break;
-
         }
     }
 }

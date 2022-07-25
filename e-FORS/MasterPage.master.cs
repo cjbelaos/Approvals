@@ -165,4 +165,12 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
             CountMyTasks = dt.DefaultView[0]["MyTasksCount"].ToString();
         }
     }
+
+    protected void BtnLogOut_Click(object sender, EventArgs e)
+    {
+        Session["UserID"] = null;
+        Session["UserName"] = null;
+        Session["Link"] = null;
+        Response.Redirect("Login.aspx");
+    }
 }

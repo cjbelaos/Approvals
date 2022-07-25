@@ -36,7 +36,14 @@ public partial class _Default : System.Web.UI.Page
     }
     protected void BtnLogin_Click(object sender, EventArgs e)
     {
-        Response.Redirect("Home.aspx");
+        if (Session["Link"] == null)
+        {
+            Response.Redirect("Home.aspx");
+        }
+        else
+        {
+            Response.Redirect(Session["Link"].ToString());
+        }
 
         //    if (tbUsername.Text != "" && tbPassword.Text != "")
         //    {

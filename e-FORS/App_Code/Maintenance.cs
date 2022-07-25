@@ -735,15 +735,23 @@ public class Maintenance
     {
         using (SqlCommand cmd = new SqlCommand("sp_GetLOAofSupplierInControlNo", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@ControlNo", fo.ControlNo);
+            cmd.Parameters.AddWithValue("@CONTROLNO", fo.ControlNo);
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
             try
             {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
             }
             catch (SqlException sqlex)
             {
@@ -866,8 +874,6 @@ public class Maintenance
                 cmd.Parameters.AddWithValue("@USERID", USERID);
                 cmd.Parameters.AddWithValue("@SUPPLIERNAME", sd.Supplier);
                 cmd.Parameters.AddWithValue("@SUPPLIERADDRESS", sd.Address);
-                cmd.Parameters.AddWithValue("@ZONE", sd.Zone);
-                cmd.Parameters.AddWithValue("@LOANO", sd.LOA);
 
                 try
                 {
@@ -890,8 +896,6 @@ public class Maintenance
                 cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
                 cmd.Parameters.AddWithValue("@SUPPLIERNAME", sd.Supplier);
                 cmd.Parameters.AddWithValue("@SUPPLIERADDRESS", sd.Address);
-                cmd.Parameters.AddWithValue("@ZONE", sd.Zone);
-                cmd.Parameters.AddWithValue("@LOANO", sd.LOA);
 
                 try
                 {
@@ -959,6 +963,7 @@ public class Maintenance
         using (SqlCommand cmd = new SqlCommand("sp_AddLOA", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@USERID", USERID);
+            cmd.Parameters.AddWithValue("@SUPPLIERID", ld.SUPPLIERID);
             cmd.Parameters.AddWithValue("@DIVISION", ld.DIVISION);
             cmd.Parameters.AddWithValue("@LOANO", ld.LOANO);
             cmd.Parameters.AddWithValue("@LOAEXP", ld.LOAEXP);
@@ -995,6 +1000,7 @@ public class Maintenance
         using (SqlCommand cmd = new SqlCommand("sp_UpdateLOA", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@USERID", USERID);
+            cmd.Parameters.AddWithValue("@SUPPLIERID", ld.SUPPLIERID);
             cmd.Parameters.AddWithValue("@LOAID", ld.LOAID);
             cmd.Parameters.AddWithValue("@DIVISION", ld.DIVISION);
             cmd.Parameters.AddWithValue("@LOANO", ld.LOANO);
@@ -1039,39 +1045,12 @@ public class Maintenance
         }
     }
 
-    public DataTable GetLOAList()
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_GetLOAList", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            try
-            {
-                if (conn.State == ConnectionState.Open)
-                {
-                    da.Fill(dt);
-                    conn.Close();
-                }
-                else
-                {
-                    conn.Open();
-                    da.Fill(dt);
-                    conn.Close();
-                }
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-            return dt;
-        }
-    }
-
-    public DataTable GetItemType(SupplierDetails sd)
+    public DataTable GetItemType(SupplierDetails sd, LOADetails ld)
     {
         using (SqlCommand cmd = new SqlCommand("sp_GetItemType", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@SUPPLIERID", sd.ID);
+            cmd.Parameters.AddWithValue("@DIVISION", ld.DIVISION);
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
@@ -1097,24 +1076,26 @@ public class Maintenance
         }
     }
 
-    public DataTable GetZone()
+    public void SendEmail(EmailDetails ed)
     {
-        using (SqlCommand cmd = new SqlCommand("sp_GetZone", conn) { CommandType = CommandType.StoredProcedure })
+        using (SqlCommand cmd = new SqlCommand("SEND_EMAIL", conn) { CommandType = CommandType.StoredProcedure })
         {
+            cmd.Parameters.AddWithValue("@CONTROLNO", ed.CONTROLNO);
+            cmd.Parameters.AddWithValue("@FROM", ed.FROM_EMAIL);
+            cmd.Parameters.AddWithValue("@TO", ed.TO_EMAIL);
+            cmd.Parameters.AddWithValue("@EMAILTYPE", ed.EMAILTYPE);
 
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
             try
             {
                 if (conn.State == ConnectionState.Open)
                 {
-                    da.Fill(dt);
+                    cmd.ExecuteNonQuery();
                     conn.Close();
                 }
                 else
                 {
                     conn.Open();
-                    da.Fill(dt);
+                    cmd.ExecuteNonQuery();
                     conn.Close();
                 }
             }
@@ -1122,7 +1103,6 @@ public class Maintenance
             {
                 throw sqlex;
             }
-            return dt;
         }
     }
 }

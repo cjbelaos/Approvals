@@ -9,6 +9,7 @@ using System.Web;
 public class LOADetails
 {
     public string USERID { get; set; }
+    public string SUPPLIERID { get; set; }
     public string LOAID { get; set; }
     public string DIVISION { get; set; }
     public string LOANO { get; set; }
