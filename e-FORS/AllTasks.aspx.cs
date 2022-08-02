@@ -38,8 +38,8 @@ public partial class AllTasks : System.Web.UI.Page
 
     private void GetAllTasks()
     {
-        DataView dv = maint.GetAllTasks();
-        gvAllTasks.DataSource = dv;
+        DataTable dt = maint.GetAllTasks();
+        gvAllTasks.DataSource = dt;
         gvAllTasks.DataBind();
 
         //Required for jQuery DataTables to work.

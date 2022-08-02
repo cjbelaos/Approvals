@@ -52,7 +52,6 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
     }
 
-
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["UserID"] == null)
@@ -168,9 +167,8 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
 
     protected void BtnLogOut_Click(object sender, EventArgs e)
     {
-        Session["UserID"] = null;
-        Session["UserName"] = null;
-        Session["Link"] = null;
+        Session.Clear();
+        Session.Abandon();
         Response.Redirect("Login.aspx");
     }
 }

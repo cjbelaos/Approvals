@@ -530,7 +530,7 @@
 
         function ClearFields() {
             $('#txtID').val('');
-            $('#selectDivision').val(0).trigger('change');
+            $('#selectSupplier').val(0).trigger('change');
             $('#txtLOANo').val('');
             $('#txtLOAExpiryDate').val('');
             $('#txtSuretyBondNo').val('');

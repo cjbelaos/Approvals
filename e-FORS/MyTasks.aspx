@@ -59,7 +59,7 @@
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Assigned Date" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblAssignedDate" runat="server" Text='<%#Eval("ASSIGNEDATE") %>'></asp:Label>
+                                                    <asp:Label ID="lblAssignedDate" runat="server" Text='<%#Eval("ASSIGNEDDATE") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Page ID" ItemStyle-VerticalAlign="Middle" Visible="false">

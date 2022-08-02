@@ -84,9 +84,38 @@ public class Maintenance
         return SqlHelper.ExecuteDataset(this.EPPIIIP, "LOGIN_GetUser", strSystemName, strUsername, strPassword, false).Tables[0].DefaultView;
     }
 
-    public DataView GetAllTasks()
+    public DataTable GetAllTasks()
     {
-        return SqlHelper.ExecuteDataset(EFORS, "GET_TASKLIST_ALL").Tables[0].DefaultView;
+        using (var cmd = new SqlCommand("GET_TASKLIST_ALL", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.CommandTimeout = 360000;
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dt;
+        }
     }
 
     public DataTable GetMyTasks(string UserID)
@@ -369,16 +398,30 @@ public class Maintenance
         SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("APPROVE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo.ToString());
-            cmd.Parameters.AddWithValue("@WORKFLOWID", a.WorkFlowID.ToString());
-            cmd.Parameters.AddWithValue("@APPROVERID", a.ApproverID.ToString());
-            cmd.Parameters.AddWithValue("@APPROVALCOMMENTS", a.Comment.ToString());
-            cmd.Parameters.AddWithValue("@UID", a.UserID.ToString());
+            cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo);
+            cmd.Parameters.AddWithValue("@WORKFLOWID", a.WorkFlowID);
+            cmd.Parameters.AddWithValue("@APPROVERID", a.ApproverID);
+            cmd.Parameters.AddWithValue("@APPROVALCOMMENTS", a.Comment);
+            cmd.Parameters.AddWithValue("@UID", a.UserID);
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
-
-            conn.Close();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
         }
     }
 
@@ -412,10 +455,24 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@REASSIGNEDTO", strReassignto);
             cmd.Parameters.AddWithValue("@UID", a.UserID.ToString());
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
-
-            conn.Close();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
         }
     }
 
@@ -695,9 +752,17 @@ public class Maintenance
             DataTable dt = new DataTable();
             try
             {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
             }
             catch (SqlException sqlex)
             {
@@ -718,9 +783,17 @@ public class Maintenance
             DataTable dt = new DataTable();
             try
             {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
             }
             catch (SqlException sqlex)
             {
@@ -1073,6 +1146,317 @@ public class Maintenance
                 throw sqlex;
             }
             return dt;
+        }
+    }
+
+    public DataTable GetFarmOutDocument(FarmOutDetails fd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetFarmOutDocument", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", fd.ControlNo);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetDocumentFormat()
+    {
+        using (SqlCommand cmd = new SqlCommand("GetDocumentFormattobeUsed", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetEPPIAuthorizedSignatory()
+    {
+        using (SqlCommand cmd = new SqlCommand("GetEPPIAuthorizedSignatory", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetPreparedby()
+    {
+        using (SqlCommand cmd = new SqlCommand("GetPreparedby", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public void SaveFarmOutDocuments(FarmOutDocumentDetails fdd)
+    {
+        using (SqlCommand cmd = new SqlCommand("SaveFarmOutDocuments", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@ControlNo", fdd.CONTROLNO);
+            cmd.Parameters.AddWithValue("@DocumentFormat", fdd.DOCFORMAT);
+            cmd.Parameters.AddWithValue("@PEZADocumentNo", fdd.PEZADOCNO);
+            cmd.Parameters.AddWithValue("@GatepassNo", fdd.GPNO);
+            cmd.Parameters.AddWithValue("@LOANo", fdd.LOANO);
+            cmd.Parameters.AddWithValue("@LOAExpiryDate", fdd.LOAEXP);
+            cmd.Parameters.AddWithValue("@SuretyBondNo", fdd.SBNO);
+            cmd.Parameters.AddWithValue("@SuretyExpiryDate", fdd.SBEXP);
+            cmd.Parameters.AddWithValue("@ContainerNo", fdd.CONTNO);
+            cmd.Parameters.AddWithValue("@PEZASeal", fdd.PEZASEAL);
+            cmd.Parameters.AddWithValue("@PlateNo", fdd.PLATENO);
+            cmd.Parameters.AddWithValue("@ControlNo8105", fdd.CN8105);
+            cmd.Parameters.AddWithValue("@EPPIAuthorizedSignatory", fdd.EPPIAS);
+            cmd.Parameters.AddWithValue("@PEZAExaminerSignatory", fdd.PEZAES);
+            cmd.Parameters.AddWithValue("@PEZAOICSignatory", fdd.PEZAOIC);
+            cmd.Parameters.AddWithValue("@CreatedBy", fdd.USERID);
+            cmd.Parameters.AddWithValue("@UpdatedBy", fdd.USERID);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public void SaveFarmOutDocumentsApproval(FarmOutDocumentDetails fdd)
+    {
+        using (var cmd = new SqlCommand("SaveFarmOutDocumentsApproval", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", fdd.CONTROLNO);
+            cmd.Parameters.AddWithValue("@Preparedby", fdd.PREPARED);
+            cmd.Parameters.AddWithValue("@Approvedby", fdd.APPROVED);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public void DeleteFile(FileDetails fd)
+    {
+        using (var cmd = new SqlCommand("sp_DeleteFile", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", fd.ControlNo);
+            cmd.Parameters.AddWithValue("@FILENAME", fd.FileName);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public Boolean FarmOutDocumentsControlNoChecking(FarmOutDocumentDetails fdd)
+    {
+        using (var cmd = new SqlCommand("FarmOutDocumentsControlNoChecking", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", fdd.CONTROLNO);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+
+            if (dt.Rows.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    public DataSet GetPEZASignatory()
+    {
+        SqlCommand cmd = new SqlCommand("GetPEZASignatory", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataSet ds = new DataSet();
+
+        if (conn.State == ConnectionState.Open)
+        {
+            da.Fill(ds);
+            conn.Close();
+        }
+        else
+        {
+            conn.Open();
+            da.Fill(ds);
+            conn.Close();
+        }
+        return ds;
+    }
+
+    public Boolean CheckPurposeOfItemIfWithLOA(FarmOutDocumentDetails fdd)
+    {
+        using (var cmd = new SqlCommand("CheckPurposeOfItemIfWithLOA", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", fdd.CONTROLNO);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+
+            if (dt.Rows.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 

@@ -43,7 +43,6 @@
                                                 <asp:LinkButton runat="server" ID="LnkBtnBack" CssClass="btn btn-info" Text="Back" OnClick="LnkBtnBack_Click" />
                                             </div>
                                         </div>
-                                        <small id="tbControlNoHelpBlock" class="form-text text-danger">This is auto-generated upon saving.</small>
                                     </div>
                                 </div>
                             </div>
@@ -51,6 +50,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Division</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlDivision" CssClass="form-control select2" Width="100%" name="division"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
@@ -76,6 +76,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Type of Item</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
                                         <asp:HiddenField runat="server" ID="hfTypeofItem" />
                                     </div>
@@ -84,6 +85,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Classification of Item</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlClassificationofItem" CssClass="form-control select2" Width="100%" name="classificationofitem"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
@@ -93,6 +95,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Purpose of Item</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlPurposeofItem" CssClass="form-control select2" Width="100%" name="purposeofitem" OnSelectedIndexChanged="ddlPurposeofItem_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
@@ -124,6 +127,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Bearer Name</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:TextBox runat="server" ID="tbBearerEmployeeName" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -176,6 +180,7 @@
                                     <!-- Date -->
                                     <div class="form-group">
                                         <label>Date Requested</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <div class="input-group date" id="DateRequested" data-target-input="nearest">
                                             <asp:TextBox runat="server" ID="tbDateRequested" CssClass="form-control datetimepicker-input" data-target="#DateRequested" name="daterequested"></asp:TextBox>
                                             <div class="input-group-append" data-target="#DateRequested" data-toggle="datetimepicker">
@@ -192,6 +197,7 @@
                                     <!-- Date -->
                                     <div class="form-group">
                                         <label>Actual Date of Transfer</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <div class="input-group date" id="ActualDateofTransfer" data-target-input="nearest">
                                             <asp:TextBox runat="server" ID="tbActualDateofTransfer" CssClass="form-control datetimepicker-input" data-target="#ActualDateofTransfer" name="actualdateoftransfer"></asp:TextBox>
                                             <div class="input-group-append" data-target="#ActualDateofTransfer" data-toggle="datetimepicker">
@@ -230,7 +236,7 @@
                                                     <asp:Label ID="lblID" runat="server" Text='<%#Eval("ID") %>' Visible="false"></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Type of Item" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="LOA Description" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblTypeOfItem" runat="server" Text='<%#Eval("TypeOfItem") %>'></asp:Label>
                                                 </ItemTemplate>
@@ -338,21 +344,21 @@
                                         </div>
                                         <div class="card">
                                             <div class="card-body p-0">
-                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless" AutoGenerateColumns="false" Visible="false">
+                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless" AutoGenerateColumns="false" Visible="false" OnRowCommand="gvFiles_RowCommand">
                                                     <Columns>
                                                         <asp:TemplateField ItemStyle-VerticalAlign="Middle">
                                                             <ItemTemplate>
-                                                                <asp:Button ID="BtnDelete" runat="server" Text="Delete"
-                                                                    CommandName="DeleteItem"
-                                                                    CommandArgument='<%#Eval("ID") %>'
-                                                                    OnClientClick="return confirm('Are you sure you want to delete product?')"
+                                                                <asp:Button ID="BtnDelete" runat="server" Text="Delete" AutoPostBack="true"
+                                                                    CommandName="Delete"
+                                                                    CommandArgument='<%#Eval("FileName") %>'
+                                                                    OnClientClick="return confirm('Are you sure you want to delete this file?')"
                                                                     CssClass="btn btn-danger btn-sm"
-                                                                    Width="70px" />
+                                                                    Width="70px"/>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
                                                         <asp:TemplateField HeaderText="File Name" ItemStyle-VerticalAlign="Middle">
                                                             <ItemTemplate>
-                                                                <asp:Label ID="lblFileName" runat="server" Text='<%#Eval("FileName") %>'></asp:Label>
+                                                                <asp:LinkButton ID="lblFileName" runat="server" Text='<%#Eval("FileName") %>' CommandArgument='<%#Bind("FileName") %>' CommandName="View" OnClick="lblFileName_Click"></asp:LinkButton>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
                                                     </Columns>
@@ -373,7 +379,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Supplier Name</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlSupplierName" CssClass="form-control select2" Width="100%" name="suppliername" OnSelectedIndexChanged="ddlSupplierName_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                                         <small id="ddlSupplierHelpBlock" class="form-text text-danger" hidden>Please  choose a supplier.</small>
                                     </div>
@@ -490,7 +496,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Checked by</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlCheckedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -530,7 +536,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Approved by</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -571,6 +577,7 @@
 
                         <div class="card-footer">
                             <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary BtnSave" Text="Save" OnClick="BtnSave_OnClick" Width="70px" />
+                            <asp:Button runat="server" ID="BtnPrint" CssClass="btn btn-info" Text="Print" OnClick="BtnPrint_Click" Width="70px" Visible="false"/>
                         </div>
                     </div>
                     <!-- /.card -->
@@ -598,6 +605,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Type of Item</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlItemType" CssClass="form-control select2"></asp:DropDownList>
                                     </div>
                                 </div>
@@ -608,7 +616,6 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbItemNo">Item/Part Code/Serial No.</label>
-                                        <span style="color: #ff0000">*</span>
                                         <asp:TextBox runat="server" ID="tbItemNo" CssClass="form-control text-uppercase" name="itemno"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -617,7 +624,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbItemDescription">Item Description</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:TextBox runat="server" ID="tbItemDescription" CssClass="form-control text-uppercase" name="itemdescription"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -630,7 +637,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbQuantity">Quantity</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:TextBox runat="server" ID="tbQuantity" CssClass="form-control text-uppercase" name="quantity" onkeypress="return isNumberKey(event)"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -639,7 +646,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbUnitofMeasurement">Unit of Measurement</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:TextBox runat="server" ID="tbUnitofMeasurement" CssClass="form-control text-uppercase" name="unitofmeasurement"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -728,24 +735,18 @@
     <asp:UpdatePanel ID="upModalConfirm" runat="server">
         <ContentTemplate>
             <!-- Modal -->
-            <div class="modal fade" id="modalConfirm">
-                <div class="modal-dialog">
+            <div class="modal fade" id="modalConfirm" data-backdrop="static">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Approve</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
                         <div class="modal-body">
                             <div class="row">
-                                <asp:TextBox runat="server" ID="tbWorkFlowID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
-                                <asp:TextBox runat="server" ID="tbApproverID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
-                                <asp:TextBox runat="server" ID="tbAssignedID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
-                                <div class="col-md-6">
+                                <asp:TextBox runat="server" ID="tbWorkFlowID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="tbApproverID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="tbAssignedID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
+                                <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="tbComment">Comment</label>
-                                        <asp:TextBox runat="server" ID="tbComment" CssClass="form-control" TextMode="MultiLine" Height="125px" Width="466px" name="Comment"></asp:TextBox>
+                                        <label class="col-form-label-sm">Comment</label>
+                                        <asp:TextBox runat="server" ID="tbComment" CssClass="form-control" TextMode="MultiLine"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -753,17 +754,17 @@
                             <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-success btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
-                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
-                            <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-info btn-sm" OnClick="BtnRequestChange_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-info btn-sm" OnClick="BtnReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-success btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="120px" />
+                            <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-primary btn-sm" OnClick="BtnRequestChange_OnClick" Width="120px" />
+                            <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-primary btn-sm" OnClick="BtnReassignTask_OnClick" Width="120px" />
+                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 120px">Cancel</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal -->
+            <!-- /.Modal -->
             </section>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -772,45 +773,42 @@
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalRequestChange" data-backdrop="static">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Request Change</h4>
+                            <h5 class="modal-title">Request Change</h5>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row mb-1">
-                                            <div class="col-md-3">
-                                                <label for="tbAssignedto">&nbsp; &nbsp; &nbsp;Assigned to:</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                <asp:TextBox runat="server" ID="tbAssignedto" CssClass="form-control" Enabled="false" Width="100%"></asp:TextBox>
-                                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label class="col-form-label-sm">Assigned</label>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <asp:TextBox runat="server" ID="tbRequestChangeComment" CssClass="form-control" TextMode="MultiLine" Height="125px" Width="466px" name="Comment"></asp:TextBox>
-                                            </div>
+                                        <div class="col-sm-9">
+                                            <asp:TextBox runat="server" ID="tbAssignedto" CssClass="form-control-sm" Enabled="false" Width="100%"></asp:TextBox>
                                         </div>
                                     </div>
-                                    <!-- /.form-group -->
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <asp:TextBox runat="server" ID="tbRequestChangeComment" CssClass="form-control" TextMode="MultiLine"></asp:TextBox>
+                                        </div>
+                                    </div>
                                 </div>
+                                <!-- /.form-group -->
                             </div>
-                            <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-primary btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="70px" />
+                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="70px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal -->
+            <!-- /.Modal -->
             </section>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -819,10 +817,10 @@
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalReassignTask" data-backdrop="static">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Re-assign Task</h4>
+                            <h5 class="modal-title">Re-assign Task</h5>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -830,22 +828,16 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="row mb-1">
-                                            <div class="col-md-4">
-                                                <label for="ddlReassignto">&nbsp; &nbsp; &nbsp;Re-assign to:</label>
+                                            <div class="col-sm-1">
+                                                <label class="col-form-label-sm">To</label>
                                             </div>
-                                            <div class="col-md-8">
-                                                <asp:DropDownList runat="server" ID="ddlReassignto" CssClass="form-control select2" Width="100%" name="reassignto"></asp:DropDownList>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label>&nbsp;</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <small id="ReassigntoHelpBlock" class="form-text text-danger" hidden>Required before saving.</small>
+                                            <div class="col-sm-11">
+                                                <asp:DropDownList runat="server" ID="ddlReassignto" CssClass="form-control-sm select2" Width="100%" name="reassignto"></asp:DropDownList>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <asp:TextBox runat="server" ID="tbReassigntoComment" CssClass="form-control" TextMode="MultiLine" Height="125px" Width="466px" name="Comment"></asp:TextBox>
+                                            <div class="col-sm-12">
+                                                <asp:TextBox runat="server" ID="tbReassigntoComment" CssClass="form-control" TextMode="MultiLine" placeholder="Comment"></asp:TextBox>
                                             </div>
                                         </div>
                                     </div>
@@ -854,15 +846,15 @@
 
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-primary btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="70px" />
+                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="70px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal -->
+            <!-- /.Modal -->
             </section>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -904,42 +896,6 @@
                 $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
             }
 
-            var x = $('#CheckedbyHelpBlock').attr('hidden')
-            if (typeof x == typeof undefined) {
-                $('#<%=ddlCheckedby.ClientID%>').on('change', function () {
-                    if ($('#<%=ddlCheckedby.ClientID%>').val() != '') {
-                        $('#CheckedbyHelpBlock').prop('hidden', true);
-                    }
-                    else {
-                        $('#CheckedbyHelpBlock').prop('hidden', false);
-                    }
-                });
-            }
-
-            var x = $('#ApprovedbyHelpBlock').attr('hidden')
-            if (typeof x == typeof undefined) {
-                $('#<%=ddlApprovedby.ClientID%>').on('change', function () {
-                    if ($('#<%=ddlApprovedby.ClientID%>').val() != '') {
-                        $('#ApprovedbyHelpBlock').prop('hidden', true);
-                    }
-                    else {
-                        $('#ApprovedbyHelpBlock').prop('hidden', false);
-                    }
-                });
-            }
-
-            var x = $('#ReassigntoHelpBlock').attr('hidden')
-            if (typeof x == typeof undefined) {
-                $('#<%=ddlReassignto.ClientID%>').on('change', function () {
-                    if ($('#<%=ddlReassignto.ClientID%>').val() != '') {
-                        $('#ReassigntoHelpBlock').prop('hidden', true);
-                    }
-                    else {
-                        $('#ReassigntoHelpBlock').prop('hidden', false);
-                    }
-                });
-            }
-
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
 
@@ -968,48 +924,6 @@
                 });
 
                 bsCustomFileInput.init();
-
-                if ($("#maincontent_tbControlNo").val() != '[AUTOMATIC]') {
-                    $('#tbControlNoHelpBlock').prop('hidden', true);
-                    var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
-                    $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
-                }
-
-                var x = $('#CheckedbyHelpBlock').attr('hidden')
-                if (typeof x == typeof undefined) {
-                    $('#<%=ddlCheckedby.ClientID%>').on('change', function () {
-                        if ($('#<%=ddlCheckedby.ClientID%>').val() != '') {
-                            $('#CheckedbyHelpBlock').prop('hidden', true);
-                        }
-                        else {
-                            $('#CheckedbyHelpBlock').prop('hidden', false);
-                        }
-                    });
-                }
-
-                var x = $('#ApprovedbyHelpBlock').attr('hidden')
-                if (typeof x == typeof undefined) {
-                    $('#<%=ddlApprovedby.ClientID%>').on('change', function () {
-                        if ($('#<%=ddlApprovedby.ClientID%>').val() != '') {
-                            $('#ApprovedbyHelpBlock').prop('hidden', true);
-                        }
-                        else {
-                            $('#ApprovedbyHelpBlock').prop('hidden', false);
-                        }
-                    });
-                }
-
-                var x = $('#ReassigntoHelpBlock').attr('hidden')
-                if (typeof x == typeof undefined) {
-                    $('#<%=ddlReassignto.ClientID%>').on('change', function () {
-                        if ($('#<%=ddlReassignto.ClientID%>').val() != '') {
-                            $('#ReassigntoHelpBlock').prop('hidden', true);
-                        }
-                        else {
-                            $('#ReassigntoHelpBlock').prop('hidden', false);
-                        }
-                    });
-                }
             }
         })
 

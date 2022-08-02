@@ -44,7 +44,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>Document Format to be Used</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlDocumentFormattobeUsed" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlDocumentFormattobeUsed_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                                         <div class="card">
                                             <div class="card-body p-0">
@@ -122,7 +122,7 @@
                                     <!-- /.form-group -->
                                     <div class="form-group">
                                         <label>EPPI Authorized Signatory</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlEPPIAuthorizedSignatory" CssClass="form-control select2" Width="100%"></asp:DropDownList>
                                     </div>
                                     <!-- /.form-group -->
@@ -177,7 +177,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Prepared by</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlPreparedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -212,7 +212,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Approved by</label>
-                                        <span style="color: #ff0000">*</span>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
@@ -263,31 +263,24 @@
         </ContentTemplate>
         <Triggers>
             <asp:AsyncPostBackTrigger ControlID="ddlDocumentFormattobeUsed" EventName="SelectedIndexChanged" />
-            <%--<asp:AsyncPostBackTrigger ControlID="ddlLOAType" EventName="SelectedIndexChanged" />--%>
-            <%--<asp:AsyncPostBackTrigger ControlID="ddlLOANo" EventName="SelectedIndexChanged" />--%>
         </Triggers>
     </asp:UpdatePanel>
 
     <asp:UpdatePanel ID="upModalConfirm" runat="server">
         <ContentTemplate>
             <!-- Modal -->
-            <div class="modal fade" id="modalConfirm">
-                <div class="modal-dialog">
+            <div class="modal fade" id="modalConfirm" data-backdrop="static">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Approve</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
                         <div class="modal-body">
                             <div class="row">
-                                <asp:TextBox runat="server" ID="tbWorkFlowID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
-                                <asp:TextBox runat="server" ID="tbApproverID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
-                                <div class="col-md-6">
+                                <asp:TextBox runat="server" ID="tbWorkFlowID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="tbApproverID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="tbAssignedID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
+                                <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="tbComment">Comment</label>
-                                        <asp:TextBox runat="server" ID="tbComment" CssClass="form-control" TextMode="MultiLine" Height="125px" Width="466px" name="Comment"></asp:TextBox>
+                                        <label class="col-form-label-sm">Comment</label>
+                                        <asp:TextBox runat="server" ID="tbComment" CssClass="form-control" TextMode="MultiLine"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -295,17 +288,17 @@
                             <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-info btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="110px" />
-                            <button type="button" class="btn btn-info btn-sm" data-dismiss="modal" style="width: 110px">Cancel</button>
-                            <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-info btn-sm" OnClick="BtnRequestChange_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-info btn-sm" OnClick="BtnReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-success btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="120px" />
+                            <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-primary btn-sm" OnClick="BtnRequestChange_OnClick" Width="120px" />
+                            <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-primary btn-sm" OnClick="BtnReassignTask_OnClick" Width="120px" />
+                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 120px">Cancel</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal -->
+            <!-- /.Modal -->
             </section>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -314,45 +307,42 @@
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalRequestChange" data-backdrop="static">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Request Change</h4>
+                            <h5 class="modal-title">Request Change</h5>
+                            </button>
                         </div>
                         <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row mb-1">
-                                            <div class="col-md-3">
-                                                <label for="tbAssignedto">&nbsp; &nbsp; &nbsp;Assigned to:</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                <asp:TextBox runat="server" ID="tbAssignedto" CssClass="form-control" Enabled="false" Width="100%"></asp:TextBox>
-                                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label class="col-form-label-sm">Assigned</label>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <asp:TextBox runat="server" ID="tbRequestChangeComment" CssClass="form-control" TextMode="MultiLine" Height="125px" Width="466px" name="Comment"></asp:TextBox>
-                                            </div>
+                                        <div class="col-sm-9">
+                                            <asp:TextBox runat="server" ID="tbAssignedto" CssClass="form-control-sm" Enabled="false" Width="100%"></asp:TextBox>
                                         </div>
                                     </div>
-                                    <!-- /.form-group -->
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <asp:TextBox runat="server" ID="tbRequestChangeComment" CssClass="form-control" TextMode="MultiLine"></asp:TextBox>
+                                        </div>
+                                    </div>
                                 </div>
+                                <!-- /.form-group -->
                             </div>
-                            <!-- /.row -->
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-primary btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="70px" />
+                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="70px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal -->
-
+            <!-- /.Modal -->
             </section>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -361,27 +351,27 @@
         <ContentTemplate>
             <!-- Modal -->
             <div class="modal fade" id="modalReassignTask" data-backdrop="static">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Re-assign Task</h4>
+                            <h5 class="modal-title">Re-assign Task</h5>
+                            </button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="row mb-1">
-                                            <div class="col-md-4">
-                                                <label for="ddlReassignto">&nbsp; &nbsp; &nbsp;Re-assign to:</label>
-                                                <span style="color: #ff0000">*</span>
+                                            <div class="col-sm-1">
+                                                <label class="col-form-label-sm">To</label>
                                             </div>
-                                            <div class="col-md-8">
-                                                <asp:DropDownList runat="server" ID="ddlReassignto" CssClass="form-control select2 ddlReassignto" Width="100%" name="reassignto"></asp:DropDownList>
+                                            <div class="col-sm-11">
+                                                <asp:DropDownList runat="server" ID="ddlReassignto" CssClass="form-control-sm select2" Width="100%" name="reassignto"></asp:DropDownList>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <asp:TextBox runat="server" ID="tbReassigntoComment" CssClass="form-control" TextMode="MultiLine" Height="125px" Width="466px" name="Comment"></asp:TextBox>
+                                            <div class="col-sm-12">
+                                                <asp:TextBox runat="server" ID="tbReassigntoComment" CssClass="form-control" TextMode="MultiLine" placeholder="Comment"></asp:TextBox>
                                             </div>
                                         </div>
                                     </div>
@@ -390,15 +380,15 @@
 
                         </div>
                         <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-info btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="110px" />
-                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-info btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="110px" />
+                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-primary btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="70px" />
+                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="70px" />
                         </div>
                     </div>
                     <!-- /.modal-content -->
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal -->
+            <!-- /.Modal -->
         </ContentTemplate>
     </asp:UpdatePanel>
 

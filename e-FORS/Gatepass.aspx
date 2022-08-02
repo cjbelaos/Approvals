@@ -95,77 +95,62 @@
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Requestor" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblRequestorEmployeeName" runat="server" Text='<%#Eval("RequestorEmployeeName") %>'></asp:Label>
+                                                    <asp:Label ID="lblRequestorEmployeeName" runat="server" Text='<%#Eval("REQUESTOR") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Bearer" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblBearerEmployeeName" runat="server" Text='<%#Eval("BearerEmployeeName") %>'></asp:Label>
+                                                    <asp:Label ID="lblBearerEmployeeName" runat="server" Text='<%#Eval("BEARER") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Destination" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblDestinationAddress" runat="server" Text='<%#Eval("DestinationAddress") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Address" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblOriginOfItem" runat="server" Text='<%#Eval("OriginOfItem") %>'></asp:Label>
+                                                    <asp:Label ID="lblDestinationAddress" runat="server" Text='<%#Eval("DESTINATION") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Description" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblItemDescription" runat="server" Text='<%#Eval("ItemDescription") %>'></asp:Label>
+                                                    <asp:Label ID="lblItemDescription" runat="server" Text='<%#Eval("DESCRIPTION") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="QTY." ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblQuantity" runat="server" Text='<%#Eval("Quantity") %>'></asp:Label>
+                                                    <asp:Label ID="lblQuantity" runat="server" Text='<%#Eval("QUANTITY") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="U/M" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblUnitOfMeasurement" runat="server" Text='<%#Eval("UnitOfMeasurement") %>'></asp:Label>
+                                                    <asp:Label ID="lblUnitOfMeasurement" runat="server" Text='<%#Eval("UM") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Value" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblAmount" runat="server" Text='<%#Eval("Amount") %>'></asp:Label>
+                                                    <asp:Label ID="lblAmount" runat="server" Text='<%#Eval("AMOUNT") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Purpose" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblPurposeOfItem" runat="server" Text='<%#Eval("PurposeOfItem") %>'></asp:Label>
+                                                    <asp:Label ID="lblPurposeOfItem" runat="server" Text='<%#Eval("PURPOSE") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Date Requested" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblDateRequested" runat="server" Text='<%#Eval("DateRequested") %>'></asp:Label>
+                                                    <asp:Label ID="lblDateRequested" runat="server" Text='<%#Eval("DATEREQUESTED") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Actual Date of Transfer" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblActualDateOfTransfer" runat="server" Text='<%#Eval("ActualDateOfTransfer") %>'></asp:Label>
+                                                    <asp:Label ID="lblActualDateOfTransfer" runat="server" Text='<%#Eval("ACTUALDATEOFTRANSFER") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Target Date of Return" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblTargetDateOfReturn" runat="server" Text='<%#Eval("TargetDateOfReturn") %>'></asp:Label>
+                                                    <asp:Label ID="lblTargetDateOfReturn" runat="server" Text='<%#Eval("TARGETDATEOFRETURN") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Prepared by" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
-                                                    <asp:Label ID="lblPREPAREDBY" runat="server" Text='<%#Eval("PREPAREDBY") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="DOCS Prepared" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblDOCUMENTFORMAT" runat="server" Text='<%#Eval("DOCUMENTFORMAT") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Gatepass Number" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblGATEPASSNO" runat="server" Text='<%#Eval("GATEPASSNO") %>'></asp:Label>
+                                                    <asp:Label ID="lblPREPAREDBY" runat="server" Text='<%#Eval("GATEPASSNO") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
                                         </Columns>

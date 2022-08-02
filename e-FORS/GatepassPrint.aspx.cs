@@ -9,7 +9,7 @@ public partial class GatepassPrint : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["ControlNo"].ToString() == null)
+        if (Session["ControlNo"] == null)
         {
             Response.Redirect("FarmOutDocuments.aspx?expired=1");
         }

@@ -107,10 +107,24 @@ public class FarmOutRequestFormMaintenance
         SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
 
-        conn.Open();
-        da.Fill(dt);
-        conn.Close();
-
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+                conn.Close();
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+                conn.Close();
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
         return dt;
     }
 

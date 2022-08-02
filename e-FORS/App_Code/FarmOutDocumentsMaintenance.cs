@@ -61,24 +61,24 @@ public class FarmOutDocumentsMaintenance
 
     }
 
-    public DataSet GetDocumentFormattobeUsed()
+    public DataTable GetDocumentFormattobeUsed()
     {
         SqlCommand cmd = new SqlCommand("GetDocumentFormattobeUsed", conn);
         cmd.CommandType = CommandType.StoredProcedure;
 
         SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataSet ds = new DataSet();
+        DataTable dt = new DataTable();
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(ds);
+                da.Fill(dt);
                 conn.Close();
             }
             else
             {
                 conn.Open();
-                da.Fill(ds);
+                da.Fill(dt);
 
                 conn.Close();
             }
@@ -88,7 +88,7 @@ public class FarmOutDocumentsMaintenance
         {
             ex.Message.ToString();
         }
-        return ds;
+        return dt;
     }
 
     public DataTable GetEPPIAuthorizedSignatory()
@@ -165,7 +165,6 @@ public class FarmOutDocumentsMaintenance
         string DocumentFormat,
         string PEZADocumentNo,
         string GatepassNo,
-        string LOAType,
         string LOANo,
         string LOAExpiryDate,
         string SuretyBondNo,
@@ -188,7 +187,6 @@ public class FarmOutDocumentsMaintenance
             cmd.Parameters.AddWithValue("@DocumentFormat", DocumentFormat);
             cmd.Parameters.AddWithValue("@PEZADocumentNo", PEZADocumentNo);
             cmd.Parameters.AddWithValue("@GatepassNo", GatepassNo);
-            cmd.Parameters.AddWithValue("@LOAType", LOAType);
             cmd.Parameters.AddWithValue("@LOANo", LOANo);
             cmd.Parameters.AddWithValue("@LOAExpiryDate", LOAExpiryDate);
             cmd.Parameters.AddWithValue("@SuretyBondNo", SuretyBondNo);
@@ -306,8 +304,6 @@ public class FarmOutDocumentsMaintenance
 
                 return ds;
             }
-
-
         }
     }
 
@@ -646,7 +642,7 @@ public class FarmOutDocumentsMaintenance
             conn.Close();
         }
 
-        if (dt.Rows[0]["LOANO"].ToString() != "")
+        if (dt.Rows.Count > 0)
         {
             return true;
         }

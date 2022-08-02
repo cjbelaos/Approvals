@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI;
 using System.Web;
 using System.IO;
+using System.Linq;
 
 public partial class Default : System.Web.UI.Page
 {
@@ -23,7 +24,6 @@ public partial class Default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-
         if (Session["UserID"] == null)
         {
             Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
@@ -53,9 +53,11 @@ public partial class Default : System.Web.UI.Page
                 GetCheckedby();
                 GetApprovedby();
                 GetItems();
+                GetFiles();
 
                 if (Request.QueryString["CONTROLNO"] != null)
                 {
+                    BtnPrint.Visible = true;
                     tbControlNo.Text = Request.QueryString["CONTROLNO"];
                     GetFarmOut();
                     if (frfm.FarmOutRequestFormApprovalChecking(tbControlNo.Text) == false)
@@ -66,11 +68,6 @@ public partial class Default : System.Web.UI.Page
                     {
                         LnkBtnBack.Visible = true;
                     }
-                    if (tbControlNo.Text != "[AUTOMATIC]")
-                    {
-                        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "HideControlNoHelpBlock()", true);
-                    }
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
                 }
                 else
                 {
@@ -91,10 +88,11 @@ public partial class Default : System.Web.UI.Page
                     GetCheckedby();
                     GetApprovedby();
                     GetItems();
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "RemoveTableBorder()", true);
+                    GetFiles();
                 }
             }
         }
+        GetFiles();
     }
 
     private void GetItems()
@@ -107,23 +105,33 @@ public partial class Default : System.Web.UI.Page
 
     protected void BtnAdd_OnClick(object sender, EventArgs e)
     {
-        ddlItemType.Items.Clear();
-        sd.ID = ddlSupplierName.SelectedValue.ToString();
-        ld.DIVISION = ddlDivision.SelectedValue.ToString();
-        DataTable dt1 = maint.GetItemType(sd, ld);
-        if (dt1.Rows.Count > 0)
+        FarmOutDocumentDetails fdd = new FarmOutDocumentDetails();
+        fdd.CONTROLNO = tbControlNo.Text;
+        bool x = maint.CheckPurposeOfItemIfWithLOA(fdd);
+        if (x == true)
         {
-            ddlItemType.DataSource = dt1;
-            ddlItemType.DataTextField = "DESCRIPTION";
-            ddlItemType.DataValueField = "DESCRIPTION";
-            ddlItemType.DataBind();
-            ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
+            ddlItemType.Items.Clear();
+            ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
         }
         else
         {
-            ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
+            ddlItemType.Items.Clear();
+            sd.ID = ddlSupplierName.SelectedValue.ToString();
+            ld.DIVISION = ddlDivision.SelectedValue.ToString();
+            DataTable dt1 = maint.GetItemType(sd, ld);
+            if (dt1.Rows.Count > 0)
+            {
+                ddlItemType.DataSource = dt1;
+                ddlItemType.DataTextField = "DESCRIPTION";
+                ddlItemType.DataValueField = "DESCRIPTION";
+                ddlItemType.DataBind();
+                ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
+            }
+            else
+            {
+                ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
+            }
         }
-
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
     }
 
@@ -229,11 +237,11 @@ public partial class Default : System.Web.UI.Page
         a.UserID = UserID;
         a.Comment = tbComment.Text;
         maint.Approval(a);
-        
+
         EmailDetails ed = new EmailDetails();
         ed.CONTROLNO = tbControlNo.Text;
         ed.FROM_EMAIL = UserID;
-        
+
         if (tbApproverID.Text == "1")
         {
             ed.TO_EMAIL = ddlCheckedby.SelectedValue;
@@ -250,10 +258,12 @@ public partial class Default : System.Web.UI.Page
         ed.EMAILTYPE = "Approval";
         maint.SendEmail(ed);
 
-        GetFarmOut();
-        DisableControl();
+        Page.Response.Redirect(Page.Request.Url.ToString(), true);
 
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+        //GetFarmOut();
+        //DisableControl();
+
+        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ApprovedFarmOutSuccessAlert();", true);
     }
 
@@ -289,8 +299,10 @@ public partial class Default : System.Web.UI.Page
         ed.EMAILTYPE = "Request Change";
         maint.SendEmail(ed);
 
-        DisableControl();
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+        Page.Response.Redirect(Page.Request.Url.ToString(), true);
+
+        //DisableControl();
+        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeFarmOutSuccessAlert();", true);
     }
     protected void BtnCancelRequestChange_OnClick(object sender, EventArgs e)
@@ -341,11 +353,13 @@ public partial class Default : System.Web.UI.Page
             ed.EMAILTYPE = "Re-assign";
             maint.SendEmail(ed);
 
-            DisableControl();
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignFarmOutSuccessAlert();", true);
+            Page.Response.Redirect(Page.Request.Url.ToString(), true);
+
+            //DisableControl();
+            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignFarmOutSuccessAlert();", true);
         }
-        
+
     }
     protected void BtnCancelReassignTask_OnClick(object sender, EventArgs e)
     {
@@ -357,7 +371,7 @@ public partial class Default : System.Web.UI.Page
     {
         if (string.IsNullOrEmpty(tbID.Text))
         {
-            if (tbItemNo.Text == "" || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "")
+            if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "")
             {
                 ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
@@ -367,16 +381,16 @@ public partial class Default : System.Web.UI.Page
             {
                 items.ControlNo = tbControlNo.Text;
                 items.TypeOfItem = ddlItemType.SelectedValue.ToString();
-                items.ItemCode = tbItemNo.Text;
-                items.ItemDescription = tbItemDescription.Text;
+                items.ItemCode = tbItemNo.Text.ToUpper();
+                items.ItemDescription = tbItemDescription.Text.ToUpper();
                 items.Quantity = tbQuantity.Text;
-                items.UnitOfMeasurement = tbUnitofMeasurement.Text;
+                items.UnitOfMeasurement = tbUnitofMeasurement.Text.ToUpper();
                 items.Amount = tbAmount.Text;
-                items.AssetNo = tbAssetNo.Text;
-                items.ODNo = tbOD.Text;
-                items.ContainerNo = tbContainer.Text;
-                items.PEZASeal = tbPEZASeal.Text;
-                items.DSRDRNo = tbDSRDRNo.Text;
+                items.AssetNo = tbAssetNo.Text.ToUpper();
+                items.ODNo = tbOD.Text.ToUpper();
+                items.ContainerNo = tbContainer.Text.ToUpper();
+                items.PEZASeal = tbPEZASeal.Text.ToUpper();
+                items.DSRDRNo = tbDSRDRNo.Text.ToUpper();
                 Message = maint.SaveItem(items, UserID);
                 GetItems();
                 ClearItemDetails();
@@ -399,25 +413,34 @@ public partial class Default : System.Web.UI.Page
         {
             try
             {
-                items.ID = tbID.Text;
-                items.ControlNo = tbControlNo.Text;
-                items.TypeOfItem = ddlItemType.SelectedValue.ToString();
-                items.ItemCode = tbItemNo.Text;
-                items.ItemDescription = tbItemDescription.Text;
-                items.Quantity = tbQuantity.Text;
-                items.UnitOfMeasurement = tbUnitofMeasurement.Text;
-                items.Amount = tbAmount.Text;
-                items.AssetNo = tbAssetNo.Text;
-                items.ODNo = tbOD.Text;
-                items.ContainerNo = tbContainer.Text;
-                items.PEZASeal = tbPEZASeal.Text;
-                items.DSRDRNo = tbDSRDRNo.Text;
-                maint.UpdateItem(items, UserName);
-                GetItems();
-                ClearItemDetails();
+                if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemNo.Text == "" || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "")
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
+                }
+                else
+                {
+                    items.ID = tbID.Text;
+                    items.ControlNo = tbControlNo.Text;
+                    items.TypeOfItem = ddlItemType.SelectedValue.ToString();
+                    items.ItemCode = tbItemNo.Text.ToUpper();
+                    items.ItemDescription = tbItemDescription.Text.ToUpper();
+                    items.Quantity = tbQuantity.Text;
+                    items.UnitOfMeasurement = tbUnitofMeasurement.Text.ToUpper();
+                    items.Amount = tbAmount.Text;
+                    items.AssetNo = tbAssetNo.Text.ToUpper();
+                    items.ODNo = tbOD.Text.ToUpper();
+                    items.ContainerNo = tbContainer.Text.ToUpper();
+                    items.PEZASeal = tbPEZASeal.Text.ToUpper();
+                    items.DSRDRNo = tbDSRDRNo.Text.ToUpper();
+                    maint.UpdateItem(items, UserName);
+                    GetItems();
+                    ClearItemDetails();
 
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "UpdateItemsSuccessAlert();", true);
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "UpdateItemsSuccessAlert();", true);
+                }
             }
             catch
             {
@@ -430,7 +453,9 @@ public partial class Default : System.Web.UI.Page
     protected void BtnSave_OnClick(object sender, EventArgs e)
     {
 
-        if (ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "" && ddlSupplierName.SelectedValue != "")
+        if (ddlDivision.SelectedValue != "" && ddlTypeofItem.SelectedValue != "" && ddlClassificationofItem.SelectedValue != "" &&
+            ddlPurposeofItem.SelectedValue != "" && tbBearerEmployeeName.Text != "" && tbDateRequested.Text != "" &&
+            tbActualDateofTransfer.Text != "" && ddlSupplierName.SelectedValue != "" && ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "")
         {
             Maintenance maint = new Maintenance();
             DataSet ds = new DataSet();
@@ -454,7 +479,7 @@ public partial class Default : System.Web.UI.Page
                 fo.PurposeOfItem = ddlPurposeofItem.SelectedValue;
             }
             fo.BearerEmployeeNo = tbBearerEmployeeNo.Text;
-            fo.BearerEmployeeName = tbBearerEmployeeName.Text;
+            fo.BearerEmployeeName = tbBearerEmployeeName.Text.ToUpper(); ;
             fo.RequestorEmployeeNo = tbEmployeeNo.Text;
             fo.RequestorEmployeeName = tbEmployeeName.Text;
             fo.Section = tbSection.Text;
@@ -466,13 +491,13 @@ public partial class Default : System.Web.UI.Page
             fo.SupplierID = ddlSupplierName.SelectedValue;
             fo.SupplierName = ddlSupplierName.SelectedItem.ToString();
             fo.DestinationAddress = tbDestinationAddress.Text;
-            fo.OriginOfItem = tbOriginofItem.Text;
-            fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text;
-            fo.InvoiceNo = tbInvoiceNo.Text;
-            fo.ContactPerson = tbContactPerson.Text;
-            fo.ContactNo = tbContactNo.Text;
-            fo.TelephoneNo = tbTelephoneNo.Text;
-            fo.FaxNo = tbFaxNo.Text;
+            fo.OriginOfItem = tbOriginofItem.Text.ToUpper();
+            fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text.ToUpper();
+            fo.InvoiceNo = tbInvoiceNo.Text.ToUpper();
+            fo.ContactPerson = tbContactPerson.Text.ToUpper();
+            fo.ContactNo = tbContactNo.Text.ToUpper();
+            fo.TelephoneNo = tbTelephoneNo.Text.ToUpper();
+            fo.FaxNo = tbFaxNo.Text.ToUpper();
             fo.ModeOfTransfer = ddlModeofTransfer.SelectedValue;
             fo.TypeOfTransfer = ddlTypeofTransfer.SelectedValue;
             ds = maint.SaveFarmOutRequestForm(fo, UserID);
@@ -538,7 +563,6 @@ public partial class Default : System.Web.UI.Page
             GridViewRow row = (GridViewRow)(((Button)g.CommandSource).NamingContainer);
             items.ID = g.CommandArgument.ToString();
             maint.DeleteItem(items);
-            GetItems();
         }
     }
 
@@ -750,12 +774,10 @@ public partial class Default : System.Web.UI.Page
                 ddlPurposeofItem.SelectedValue = "Others";
                 tbOthers.Text = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowOthers()", true);
-                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);
             }
             else
             {
                 ddlPurposeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
-                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);
             }
             tbBearerEmployeeNo.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeNo"].ToString();
             tbBearerEmployeeName.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeName"].ToString();
@@ -883,11 +905,6 @@ public partial class Default : System.Web.UI.Page
         if (ddlPurposeofItem.SelectedValue == "Others")
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowOthers()", true);
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);
-        }
-        else
-        {
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "PageScript();", true);
         }
     }
 
@@ -925,5 +942,56 @@ public partial class Default : System.Web.UI.Page
         {
             ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
         }
+    }
+
+    protected void lblFileName_Click(object sender, EventArgs g)
+    {
+        var TLink = (Control)sender;
+        GridViewRow row = (GridViewRow)TLink.NamingContainer;
+        LinkButton lnk = sender as LinkButton;
+        string FilePath = Server.MapPath("~/RelatedDocu/" + tbControlNo.Text + "/" +lnk.Text);
+        string filePath = "~/RelatedDocu/" + tbControlNo.Text + "/" + lnk.Text;
+  
+        if (File.Exists(FilePath))
+        {
+            Response.Redirect(filePath);
+        }
+        else
+        {
+            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
+        }
+    }
+
+    protected void gvFiles_RowCommand(object sender, GridViewCommandEventArgs g)
+    {
+        if (g.CommandName.Equals("Delete"))
+        {
+            GridViewRow row = (GridViewRow)(((Button)g.CommandSource).NamingContainer);
+            string index = g.CommandArgument.ToString();
+            string FilePath = Server.MapPath("~/RelatedDocu/" + tbControlNo.Text + "/" + index);
+
+            FileDetails fd = new FileDetails();
+            fd.ControlNo = tbControlNo.Text;
+            fd.FileName = index;
+
+            FileInfo file = new FileInfo(FilePath);
+            if (file.Exists)
+            {
+                file.Delete();
+                maint.DeleteFile(fd);
+                GetFiles();
+            }
+            else
+            {
+                maint.DeleteFile(fd);
+                GetFiles();
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
+            }
+        }
+    }
+
+    protected void BtnPrint_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("RequestFormPrint.aspx" + "?controlno=" + Request.QueryString["controlno"]);
     }
 }
