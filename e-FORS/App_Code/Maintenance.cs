@@ -876,7 +876,6 @@ public class Maintenance
             catch (SqlException sqlex)
             {
                 throw sqlex;
-                conn.Close();
             }
 
             return dt;

@@ -344,14 +344,16 @@
                                         </div>
                                         <div class="card">
                                             <div class="card-body p-0">
-                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless" AutoGenerateColumns="false" Visible="false" OnRowCommand="gvFiles_RowCommand">
+                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless" 
+                                                    AutoGenerateColumns="false" OnRowCommand="gvFiles_RowCommand" Visible="false">
                                                     <Columns>
                                                         <asp:TemplateField ItemStyle-VerticalAlign="Middle">
                                                             <ItemTemplate>
-                                                                <asp:Button ID="BtnDelete" runat="server" Text="Delete" AutoPostBack="true"
+                                                                <asp:Button ID="BtnDelete" runat="server" Text="Delete"
                                                                     CommandName="Delete"
                                                                     CommandArgument='<%#Eval("FileName") %>'
                                                                     OnClientClick="return confirm('Are you sure you want to delete this file?')"
+                                                                    
                                                                     CssClass="btn btn-danger btn-sm"
                                                                     Width="70px"/>
                                                             </ItemTemplate>

@@ -54,7 +54,6 @@ public partial class Default : System.Web.UI.Page
                 GetApprovedby();
                 GetItems();
                 GetFiles();
-
                 if (Request.QueryString["CONTROLNO"] != null)
                 {
                     BtnPrint.Visible = true;
@@ -88,11 +87,9 @@ public partial class Default : System.Web.UI.Page
                     GetCheckedby();
                     GetApprovedby();
                     GetItems();
-                    GetFiles();
                 }
             }
         }
-        GetFiles();
     }
 
     private void GetItems()
@@ -949,9 +946,9 @@ public partial class Default : System.Web.UI.Page
         var TLink = (Control)sender;
         GridViewRow row = (GridViewRow)TLink.NamingContainer;
         LinkButton lnk = sender as LinkButton;
-        string FilePath = Server.MapPath("~/RelatedDocu/" + tbControlNo.Text + "/" +lnk.Text);
+        string FilePath = Server.MapPath("~/RelatedDocu/" + tbControlNo.Text + "/" + lnk.Text);
         string filePath = "~/RelatedDocu/" + tbControlNo.Text + "/" + lnk.Text;
-  
+
         if (File.Exists(FilePath))
         {
             Response.Redirect(filePath);
@@ -960,6 +957,11 @@ public partial class Default : System.Web.UI.Page
         {
             ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
         }
+    }
+
+    protected void BtnPrint_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("RequestFormPrint.aspx" + "?controlno=" + Request.QueryString["controlno"]);
     }
 
     protected void gvFiles_RowCommand(object sender, GridViewCommandEventArgs g)
@@ -979,19 +981,18 @@ public partial class Default : System.Web.UI.Page
             {
                 file.Delete();
                 maint.DeleteFile(fd);
-                GetFiles();
             }
             else
             {
                 maint.DeleteFile(fd);
-                GetFiles();
                 ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
             }
         }
+        Page.Response.Redirect(Page.Request.Url.ToString(), true);
     }
 
-    protected void BtnPrint_Click(object sender, EventArgs e)
-    {
-        Response.Redirect("RequestFormPrint.aspx" + "?controlno=" + Request.QueryString["controlno"]);
-    }
+    //protected void BtnDelete_Click(object sender, EventArgs e)
+    //{
+    //    Page.Response.Redirect(Page.Request.Url.ToString(), true);
+    //}
 }

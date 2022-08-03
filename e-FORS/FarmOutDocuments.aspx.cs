@@ -40,7 +40,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 {
                     BtnSave.Enabled = true;
                     tbFarmOutControlNo.Text = Request.QueryString["controlno"].ToString();
-                    CheckIfWithLOA();
                     if (fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text) == true)
                     {
                         GetFarmOutDocument();
@@ -59,7 +58,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     {
         if (ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8106" || ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8112")
         {
-            GetLOA();
             CheckIfWithLOA();
         }
         else
@@ -311,10 +309,11 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         string ApproverID = tbApproverID.Text;
         string ApprovalComments = tbComment.Text;
         fodm.RequestChange(ControlNo, WorkFlowID, ApproverID, ApprovalComments, UserID);
-        Page.Response.Redirect(Page.Request.Url.ToString(), true);
-        //DisableForm();
-        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeAlert();", true);
+        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
+        GetFarmOutDocument();
+        DisableForm();
+        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeAlert();", true);
     }
     protected void BtnCancelRequestChange_OnClick(object sender, EventArgs e)
     {
@@ -345,10 +344,10 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             string ApprovalComments = tbComment.Text;
             string Reassignto = ddlReassignto.SelectedValue;
             fodm.ReassignTask(ControlNo, WorkFlowID, ApproverID, ApprovalComments, Reassignto, UserID);
-            Page.Response.Redirect(Page.Request.Url.ToString(), true);
-            //DisableForm();
-            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignAlert();", true);
+            //Page.Response.Redirect(Page.Request.Url.ToString(), true);
+            DisableForm();
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignAlert();", true);
         }
 
     }
@@ -371,7 +370,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             {
                 if (ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8106" || ddlDocumentFormattobeUsed.SelectedValue == "PEZA FORM 8112")
                 {
-                    GetLOA();
                     CheckIfWithLOA();
                 }
                 else
@@ -733,6 +731,10 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         if (x == true)
         {
             NOLOANOSB();
+        }
+        else
+        {
+            GetLOA();
         }
     }
 

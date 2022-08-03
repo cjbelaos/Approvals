@@ -260,8 +260,24 @@ public class FarmOutDocumentsMaintenance
             cmd.Parameters.AddWithValue("@REQUESTCHANGECOMMENT", ApprovalComments);
             cmd.Parameters.AddWithValue("@UID", UserID);
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
         }
     }
 
@@ -276,8 +292,24 @@ public class FarmOutDocumentsMaintenance
             cmd.Parameters.AddWithValue("@REASSIGNEDTO", Reassignto);
             cmd.Parameters.AddWithValue("@UID", UserID);
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
         }
     }
 
@@ -320,12 +352,22 @@ public class FarmOutDocumentsMaintenance
 
             try
             {
-                conn.Open();
-                da.Fill(ds);
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(ds);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(ds);
+                    conn.Close();
+                }
+                
             }
-            catch (Exception)
+            catch (SqlException sqlex)
             {
-
+                throw sqlex;
             }
         }
     }
