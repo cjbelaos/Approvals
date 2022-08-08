@@ -255,12 +255,12 @@ public partial class Default : System.Web.UI.Page
         ed.EMAILTYPE = "Approval";
         maint.SendEmail(ed);
 
-        Page.Response.Redirect(Page.Request.Url.ToString(), true);
+        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
 
-        //GetFarmOut();
-        //DisableControl();
+        GetFarmOut();
+        DisableControl();
 
-        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ApprovedFarmOutSuccessAlert();", true);
     }
 
@@ -296,10 +296,10 @@ public partial class Default : System.Web.UI.Page
         ed.EMAILTYPE = "Request Change";
         maint.SendEmail(ed);
 
-        Page.Response.Redirect(Page.Request.Url.ToString(), true);
+        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
 
-        //DisableControl();
-        //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+        DisableControl();
+        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeFarmOutSuccessAlert();", true);
     }
     protected void BtnCancelRequestChange_OnClick(object sender, EventArgs e)
@@ -350,11 +350,11 @@ public partial class Default : System.Web.UI.Page
             ed.EMAILTYPE = "Re-assign";
             maint.SendEmail(ed);
 
-            Page.Response.Redirect(Page.Request.Url.ToString(), true);
+            //Page.Response.Redirect(Page.Request.Url.ToString(), true);
 
-            //DisableControl();
-            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignFarmOutSuccessAlert();", true);
+            DisableControl();
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignFarmOutSuccessAlert();", true);
         }
 
     }
@@ -505,6 +505,7 @@ public partial class Default : System.Web.UI.Page
             a.Requestedby = ddlRequestedby.SelectedValue;
             a.Checkedby = ddlCheckedby.SelectedValue;
             a.Approvedby = ddlApprovedby.SelectedValue;
+            a.UserID = UserID;
             maint.SaveApproval(a);
             maint.SaveMirrorApproval(a);
 
@@ -990,9 +991,4 @@ public partial class Default : System.Web.UI.Page
         }
         Page.Response.Redirect(Page.Request.Url.ToString(), true);
     }
-
-    //protected void BtnDelete_Click(object sender, EventArgs e)
-    //{
-    //    Page.Response.Redirect(Page.Request.Url.ToString(), true);
-    //}
 }
