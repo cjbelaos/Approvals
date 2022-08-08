@@ -18,8 +18,8 @@ public partial class _Default : System.Web.UI.Page
             //Session["UserID"] = "";
             //Session["UserName"] = "";
 
-            Session["UserID"] = "B012128";
-            Session["UserName"] = "CHRIS JOHN BELAOS";
+            //Session["UserID"] = "B012128";
+            //Session["UserName"] = "CHRIS JOHN BELAOS";
 
             //Session["UserID"] = "D016023";
             //Session["UserName"] = "ROMMEL MAGCAWAS";
@@ -32,6 +32,9 @@ public partial class _Default : System.Web.UI.Page
 
             //Session["UserID"] = "D011094";
             //Session["UserName"] = "MARICAR MENDOZA";
+
+            Session["UserID"] = "B011828";
+            Session["UserName"] = "ISABEL OLAGUIR";
 
             //Session["UserID"] = "D016028";
             //Session["UserName"] = "LUZVIMINDA LUNA";
