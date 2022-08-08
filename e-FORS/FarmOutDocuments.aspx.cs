@@ -10,6 +10,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     private static readonly FarmOutDocumentsMaintenance fodm = new FarmOutDocumentsMaintenance();
     private static readonly Maintenance maint = new Maintenance();
     private static readonly FarmOutDocumentDetails fdd = new FarmOutDocumentDetails();
+    private static readonly Printed8112 p8112 = new Printed8112();
     public static string UserID;
     public static string UserName;
     public static string ControlNo;
@@ -125,6 +126,9 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             ddlControlNo.DataBind();
             ddlControlNo.Items.Insert(0, new ListItem("Choose...", ""));
 
+            GetCtrlNoPrinted8112();
+
+            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "GetControlNoPrinted8112();", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalPrint').modal('show');", true);
         }
     }
@@ -250,7 +254,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
                 string Preparedby = ddlPreparedby.SelectedValue;
                 string Approvedby = ddlApprovedby.SelectedValue;
-                fodm.SaveFarmOutDocumentsApproval(ControlNo, Preparedby, Approvedby);
+                fodm.SaveFarmOutDocumentsApproval(ControlNo, Preparedby, Approvedby, UserID);
                 ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveSuccessAlert();", true);
                 BtnConfirm1.Enabled = true;
         }
@@ -491,20 +495,11 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             var parsedDate = DateTime.Parse(Date);
             Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
 
+            Session["PreparedBy"] = ddlPreparedby.SelectedItem.ToString();
+            Session["ApprovedBy"] = ddlApprovedby.SelectedItem.ToString();
+
             FarmOutDetails fo = new FarmOutDetails();
             fo.ControlNo = ControlNo;
-
-            DataTable dt = maint.GetFarmOutDetailsCreatorandApprover(fo);
-            if (dt.Rows.Count > 0)
-            {
-                Session["PreparedBy"] = dt.Rows[0]["CREATEDBY"].ToString();
-                Session["ApprovedBy"] = dt.Rows[0]["EPPIAUTHORIZEDSIGNATORY"].ToString();
-            }
-            else
-            {
-                Session["PreparedBy"] = "";
-                Session["ApprovedBy"] = "";
-            }
 
             DataTable dt1 = maint.GetTotalQuantityWithUnitOfMeasurement(fo);
             if (dt1.Rows.Count > 0)
@@ -528,7 +523,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             
 
             DataTable dt3 = fodm.GetItemSealNo(ControlNo);
-            if (dt.Rows.Count > 0)
+            if (dt3.Rows.Count > 0)
             {
                 if (dt3.Rows[0]["SealNo"].ToString().Length == 0)
                 {
@@ -658,6 +653,13 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 ControlNos = ControlNos.Replace("','", ",");
             }
 
+            Printed8112 p8112 = new Printed8112();
+            p8112.CONTROLNO = tbFarmOutControlNo.Text;
+            p8112.SUBCONTROLNO = ControlNos;
+            p8112.USERID = UserID;
+            maint.AddPrinted8112(p8112);
+            
+
             Session["ControlNoS"] = ControlNos;
 
             Session["Dates"] = maint.Get8112Dates(ControlNos);
@@ -679,7 +681,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             var parsedDate = DateTime.Parse(Date);
             Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
 
-            Response.Redirect("PEZA8112Print.aspx" + "?controlno=" + ControlNo);
+            Response.Redirect("PEZA8112Print.aspx" + "?controlno=" + ControlNos);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalPrint", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
         }
     }
@@ -722,6 +724,17 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         divSB.Visible = false;
         divLOAExp.Visible = false;
         divSBExp.Visible = false;
+    }
+
+    private void GetCtrlNoPrinted8112()
+    {
+        p8112.CONTROLNO = tbFarmOutControlNo.Text;
+        DataTable dt = maint.GetCtrlNoPrinted8112(p8112);
+        if (dt.Rows.Count > 0)
+        {
+            hfControlNo.Value = dt.Rows[0]["PRINTEDCONTROLNO"].ToString();
+        }
+        
     }
 
     private void CheckIfWithLOA()
