@@ -529,6 +529,11 @@
         function SelectReassignToAlert() {
             toastr.error('Please select reassign to.')
         }
+
+        function GetControlNoPrinted8112() {
+            var ctrlno = ($('#<%=hfControlNo.ClientID%>').val().split(','));
+                $("#<%=ddlControlNo.ClientID%>").val(ctrlno).trigger('change');
+        }
     </script>
 </asp:Content>
 
