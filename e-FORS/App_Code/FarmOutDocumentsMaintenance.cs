@@ -339,13 +339,14 @@ public class FarmOutDocumentsMaintenance
         }
     }
 
-    public void SaveFarmOutDocumentsApproval(string ControlNo, string Preparedby, string Approvedby)
+    public void SaveFarmOutDocumentsApproval(string ControlNo, string Preparedby, string Approvedby, string UserID)
     {
         using (var cmd = new SqlCommand("SaveFarmOutDocumentsApproval", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
             cmd.Parameters.AddWithValue("@Preparedby", Preparedby);
             cmd.Parameters.AddWithValue("@Approvedby", Approvedby);
+            cmd.Parameters.AddWithValue("@UserID", UserID);
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
