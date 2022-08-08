@@ -481,8 +481,8 @@ public class Maintenance
         SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("SaveMirrorApproval", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@ControlNo", a.ControlNo.ToString());
-            cmd.Parameters.AddWithValue("@Createdby", a.Requestedby.ToString());
+            cmd.Parameters.AddWithValue("@ControlNo", a.ControlNo);
+            cmd.Parameters.AddWithValue("@Createdby", a.UserID);
 
             conn.Open();
             cmd.ExecuteNonQuery();
@@ -496,10 +496,11 @@ public class Maintenance
         SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("SaveApproval", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@ControlNo", a.ControlNo.ToString());
-            cmd.Parameters.AddWithValue("@11", a.Requestedby.ToString());
-            cmd.Parameters.AddWithValue("@12", a.Checkedby.ToString());
-            cmd.Parameters.AddWithValue("@13", a.Approvedby.ToString());
+            cmd.Parameters.AddWithValue("@ControlNo", a.ControlNo);
+            cmd.Parameters.AddWithValue("@Requestedby", a.Requestedby);
+            cmd.Parameters.AddWithValue("@Checkedby", a.Checkedby);
+            cmd.Parameters.AddWithValue("@Approvedby", a.Approvedby);
+            cmd.Parameters.AddWithValue("@UserID", a.UserID);
 
             conn.Open();
             cmd.ExecuteNonQuery();
@@ -1486,6 +1487,97 @@ public class Maintenance
             {
                 throw sqlex;
             }
+        }
+    }
+
+    public void AddPrinted8112(Printed8112 p8112)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_AddPrinted8112", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", p8112.CONTROLNO);
+            cmd.Parameters.AddWithValue("@SUBCONTROLNO", p8112.SUBCONTROLNO);
+            cmd.Parameters.AddWithValue("@USERID", p8112.USERID);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
+    public DataTable GetCtrlNoPrinted8112(Printed8112 p8112)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetCtrlNoPrinted8112", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", p8112.CONTROLNO);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetSumofQty8112Items(Printed8112 p8112)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetSumofQty8112Items", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", p8112.CONTROLNO);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
         }
     }
 }
