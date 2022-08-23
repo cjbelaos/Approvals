@@ -1,28 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Linq;
 using System.Web;
 using System.Web.Services;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 public partial class MasterPage2 : System.Web.UI.MasterPage
 {
     private static readonly Maintenance maint = new Maintenance();
 
     public static string UserID;
+    public static string Link;
 
     public string serviceName;
 
+    public string HideFarmOutDocuments;
     public string HideAllTasks;
     public string HideFinishedTasks;
+    public string HideReports;
     public string HideMaintenance;
 
     public string HideCountMyTasks;
 
     public string CountMyTasks = "0";
+    public string TaskorTasks;
+    public string TaskList;
 
     public string FormsMenuOpen = "";
     public string Forms = "";
@@ -64,13 +66,13 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         {
             if (!this.Page.IsPostBack)
             {
+                Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
                 lblUserName.Text = ToTitleCase(Session["UserName"].ToString());
                 lblUserID.Text = Session["UserID"].ToString();
-                UserID = Session["UserID"].ToString();   
+                UserID = Session["UserID"].ToString();
             }
-
             GetMyTasksCount();
-
+            GetMyTasks();
             serviceName = System.Web.VirtualPathUtility.GetFileName(System.Web.HttpContext.Current.Request.Url.AbsolutePath);
 
             if (serviceName == "FarmOutRequestForm.aspx")
@@ -78,7 +80,6 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 FormsMenuOpen = "menu-open";
                 Forms = "active";
                 FarmOutRequestForm = "active";
-                
             }
             else if (serviceName == "FarmOutDocuments.aspx")
             {
@@ -142,12 +143,14 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 LOAs = "active";
             }
 
-            bool x = maint.CheckAuthorization(lblUserID.Text);
-            if (x == false)
+            bool isAuthorized = maint.CheckAuthorization(lblUserID.Text);
+            if (isAuthorized == false)
             {
+                HideFarmOutDocuments = "hidden";
                 HideAllTasks = "hidden";
                 HideFinishedTasks = "hidden";
                 HideMaintenance = "hidden";
+                HideReports = "hidden";
             }
         }
     }
@@ -162,6 +165,84 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         else
         {
             CountMyTasks = dt.DefaultView[0]["MyTasksCount"].ToString();
+            if (Convert.ToInt32(CountMyTasks) > 1)
+            {
+                TaskorTasks = " Tasks";
+            }
+            else
+            {
+                TaskorTasks = " Task";
+            }
+        }
+    }
+
+    public void GetMyTasks()
+    {
+        DataTable dt = maint.GetMyTasks(lblUserID.Text);
+
+        foreach (DataRow row in dt.Rows)
+        {
+            String ControlNo = (string)row[0];
+            DateTime Created = (DateTime)row[9];
+            String PageName = (string)row[10];
+            Int32 interval = (int)Math.Round((DateTime.Now - Created).TotalSeconds);
+
+            string TimeLapse;
+            if (interval >= 60)
+            {
+                interval = (int)Math.Round((DateTime.Now - Created).TotalMinutes);
+                if (interval >= 60)
+                {
+                    interval = (int)Math.Round((DateTime.Now - Created).TotalHours);
+                    if (interval >= 24)
+                    {
+                        interval = (int)Math.Round((DateTime.Now - Created).TotalDays);
+                        if (interval > 1)
+                        {
+                            TimeLapse = interval.ToString() + " days";
+                        }
+                        else
+                        {
+                            TimeLapse = interval.ToString() + " day";
+                        }
+                    }
+                    else
+                    {
+                        if (interval > 1)
+                        {
+                            TimeLapse = interval.ToString() + " hours";
+                        }
+                        else
+                        {
+                            TimeLapse = interval.ToString() + " hour";
+                        }
+                    }
+                }
+                else
+                {
+                    if (interval > 1)
+                    {
+                        TimeLapse = interval.ToString() + " minutes";
+                    }
+                    else
+                    {
+                        TimeLapse = interval.ToString() + " minute";
+                    }
+                }
+            }
+            else
+            {
+                if (interval > 1)
+                {
+                    TimeLapse = interval.ToString() + " seconds";
+                }
+                else
+                {
+                    TimeLapse = interval.ToString() + " second";
+                }
+            }
+
+            TaskList += "<a href = \""+PageName+"?controlno="+ControlNo+ "\" class=\"dropdown-item\" style=\"color: #007bff\"><i class=\"fas fa-thumbtack\"></i> &nbsp;" + ControlNo + "<span class=\"float-right text-muted text-sm\">"+TimeLapse+"</span></a>";
         }
     }
 

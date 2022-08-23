@@ -12,6 +12,7 @@ public class ReportDetails
     public string Supplier { get; set; }
     public string DateFrom { get; set; }
     public string DateTo { get; set; }
+    public string LOANo { get; set; }
 
     public ReportDetails()
     {

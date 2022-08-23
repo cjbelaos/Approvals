@@ -57,31 +57,44 @@ public class Maintenance
         return SqlHelper.ExecuteDataset(this.EPPIIIP, "LOGIN_GetUser", strSystemName, strUsername, "", true).Tables[0].DefaultView;
     }
 
-    public DataView GetUser(string strSystemName, string strUsername, string strPassword)
+    public DataTable GetUser(LoginDetails ld)
     {
-        //using (var cmd = new SqlCommand("LOGIN_GetUser", SqlConEPPIIIP) { CommandType = CommandType.StoredProcedure })
-        //{
-        //    cmd.Parameters.AddWithValue("@system_name", strSystemName);
-        //    cmd.Parameters.AddWithValue("@user_id", strUsername);
-        //    cmd.Parameters.AddWithValue("@password", strPassword);
-        //    cmd.Parameters.AddWithValue("@LDAP", true);
+        using (var cmd = new SqlCommand("LOGIN_GetUser", SqlConEPPIIIP) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@system_name", ld.system);
+            cmd.Parameters.AddWithValue("@user_id", ld.username);
+            cmd.Parameters.AddWithValue("@password", ld.password);
+            cmd.Parameters.AddWithValue("@LDAP", ld.ldap);
 
-        //    cmd.CommandTimeout = 360000;
+            cmd.CommandTimeout = 300;
 
-        //    SqlDataAdapter da = new SqlDataAdapter(cmd);
-        //    DataSet ds = new DataSet();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
 
-        //    conn.Open();
-
-        //    da.Fill(ds);
-        //    cmd.ExecuteNonQuery();
-
-        //    conn.Close();
-
-        //    return ds;
-        //}
-
-        return SqlHelper.ExecuteDataset(this.EPPIIIP, "LOGIN_GetUser", strSystemName, strUsername, strPassword, false).Tables[0].DefaultView;
+            try
+            {
+                if (SqlConEPPIIIP.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    SqlConEPPIIIP.Open();
+                    da.Fill(dt);
+                    cmd.ExecuteNonQuery();
+                } 
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                SqlConEPPIIIP.Close();
+            }
+            return dt;
+        }
     }
 
     public DataTable GetAllTasks()
@@ -176,7 +189,83 @@ public class Maintenance
             {
                 throw sqlex;
             }
+            finally
+            {
+                conn.Close();
+            }
             return dataTable;
+        }
+    }
+
+    public Boolean FinishTaskChecking(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("FinishTaskChecking", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public DataTable GetAssignedForRequestChange(FarmOutDocumentDetails fod)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetAssignedForRequestChange", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", fod.CONTROLNO);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dt;
         }
     }
 
@@ -315,7 +404,6 @@ public class Maintenance
         string Message = "";
         try
         {
-            SqlDataAdapter da = new SqlDataAdapter();
             using (var cmd = new SqlCommand("SaveItem", conn) { CommandType = CommandType.StoredProcedure })
             {
                 cmd.Parameters.AddWithValue("@ControlNo", i.ControlNo);
@@ -332,9 +420,25 @@ public class Maintenance
                 cmd.Parameters.AddWithValue("@DSRDRNo", i.DSRDRNo);
                 cmd.Parameters.AddWithValue("@CreatedBy", strUsername);
 
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
+                try
+                {
+                    if (conn.State == ConnectionState.Open)
+                    {
+                        cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                    else
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                }
+                catch (SqlException sqlex)
+                {
+                    Message = sqlex.Message.ToString();
+                }
+                return Message;
             }
         }
         catch (Exception ex)
@@ -347,7 +451,6 @@ public class Maintenance
 
     public void UpdateItem(Items i, string strUsername)
     {
-        SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("UpdateItem", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@ID", i.ID.ToString());
@@ -367,9 +470,17 @@ public class Maintenance
 
             try
             {
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
             }
             catch (Exception ex)
             {
@@ -381,21 +492,36 @@ public class Maintenance
 
     public void DeleteItem(Items i)
     {
-        SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("DeleteItem", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@ID", i.ID.ToString());
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
-
-            conn.Close();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+           finally
+            {
+                conn.Close();
+            }
         }
     }
 
     public void Approval(Approval a)
     {
-        SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("APPROVE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo);
@@ -425,9 +551,39 @@ public class Maintenance
         }
     }
 
+    public string GetRequestCreator(string ControlNo)
+    {
+        using (var cmd = new SqlCommand("sp_GetRequestCreator", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt.Rows[0]["ASSIGNEDUSERID"].ToString();
+        }
+    }
+
     public void RequestChange(Approval a)
     {
-        SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("REQUEST_CHANGE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo.ToString());
@@ -445,7 +601,6 @@ public class Maintenance
 
     public void ReassignTask(Approval a, string strReassignto)
     {
-        SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("REASSIGN_TASK_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo.ToString());
@@ -478,7 +633,6 @@ public class Maintenance
 
     public void SaveMirrorApproval(Approval a)
     {
-        SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("SaveMirrorApproval", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@ControlNo", a.ControlNo);
@@ -493,7 +647,6 @@ public class Maintenance
 
     public void SaveApproval(Approval a)
     {
-        SqlDataAdapter da = new SqlDataAdapter();
         using (var cmd = new SqlCommand("SaveApproval", conn) { CommandType = CommandType.StoredProcedure })
         {
             cmd.Parameters.AddWithValue("@ControlNo", a.ControlNo);
@@ -742,6 +895,46 @@ public class Maintenance
         }
     }
 
+    public Boolean CheckIfBypassAccount(LoginDetails ld)
+    {
+        SqlCommand cmd = new SqlCommand("CheckIfBypassAccount", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@username", ld.username);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 
     public DataTable GetFarmOutDetailsCreatorandApprover(FarmOutDetails fo)
     {
@@ -870,15 +1063,24 @@ public class Maintenance
             DataTable dt = new DataTable();
             try
             {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
             }
             catch (SqlException sqlex)
             {
                 throw sqlex;
             }
-
+            finally
+            {
+                conn.Close();
+            }
             return dt;
         }
     }
@@ -893,14 +1095,25 @@ public class Maintenance
             DataTable dt = new DataTable();
             try
             {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }   
             }
             catch (SqlException sqlex)
             {
                 throw sqlex;
             }
+            finally
+            {
+                conn.Close();
+            }
+
             if (dt.Rows.Count > 0)
             {
                 return dt.Rows[0]["ACTUALDELIVERYDATES"].ToString();
@@ -1468,6 +1681,7 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@FROM", ed.FROM_EMAIL);
             cmd.Parameters.AddWithValue("@TO", ed.TO_EMAIL);
             cmd.Parameters.AddWithValue("@EMAILTYPE", ed.EMAILTYPE);
+            cmd.Parameters.AddWithValue("@COMMENT", ed.COMMENT);
 
             try
             {
@@ -1578,6 +1792,72 @@ public class Maintenance
                 throw sqlex;
             }
             return dt;
+        }
+    }
+
+    public DataTable GetMultipleUOM(FarmOutDocumentDetails fdd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetMultipleUOM", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", fdd.CONTROLNO);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public DataSet GetLOAReport(ReportDetails rd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetLOAReport", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@SECTION", rd.Section);
+            cmd.Parameters.AddWithValue("@SUPPLIER", rd.Supplier);
+            cmd.Parameters.AddWithValue("@DATEFROM", rd.DateFrom);
+            cmd.Parameters.AddWithValue("@DATETO", rd.DateTo);
+            cmd.Parameters.AddWithValue("@LOANO", rd.LOANo);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(ds);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(ds);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return ds;
         }
     }
 }

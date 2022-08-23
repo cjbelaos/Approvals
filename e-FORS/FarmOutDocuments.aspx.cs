@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 public partial class FarmOutDocuments : System.Web.UI.Page
 {
+    private static readonly FarmOutRequestFormMaintenance frfm = new FarmOutRequestFormMaintenance();
     private static readonly FarmOutDocumentsMaintenance fodm = new FarmOutDocumentsMaintenance();
     private static readonly Maintenance maint = new Maintenance();
     private static readonly FarmOutDocumentDetails fdd = new FarmOutDocumentDetails();
@@ -14,6 +15,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     public static string UserID;
     public static string UserName;
     public static string ControlNo;
+    public bool isSaved;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -36,23 +38,52 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 GetEPPIAuthorizedSignatory();
                 GetPEZASignatory();
                 GetPreparedby();
+                
+                ddlPreparedby.SelectedValue = UserID;
 
                 if (Request.QueryString["controlno"] != null)
                 {
                     BtnSave.Enabled = true;
                     tbFarmOutControlNo.Text = Request.QueryString["controlno"].ToString();
-                    if (fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text) == true)
+                    //GetFiles();
+                    isSaved = fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text);
+                    if (isSaved == true)
                     {
                         GetFarmOutDocument();
+                        bool isFinish = maint.FinishTaskChecking(tbFarmOutControlNo.Text);
+                        if (isFinish == true)
+                        {
+                            BtnPrintRF.Visible = true;
+                            string ControlNo = tbFarmOutControlNo.Text;
+                            DataTable dt = frfm.GetFiles(ControlNo);
+                            if (dt.Rows.Count > 0)
+                            {
+                                gvFiles.DataSource = dt;
+                                gvFiles.DataBind();
+                                divFiles.Visible = true;
+                            }
+                        }
+                        else
+                        {
+                            BtnPrintRF.Visible = false;
+                        }
                     }
-                    ddlPreparedby.SelectedValue = UserID;
                 }
                 else
                 {
                     LnkBtnView.Visible = false;
                 }
+
+                LoginDetails login = new LoginDetails();
+                login.username = Session["UserID"].ToString();
+                bool bypass = maint.CheckIfBypassAccount(login);
+                if (bypass == true)
+                {
+                    EnableControl();
+                }
             }
         }
+        (this.Master as MasterPage2).GetMyTasks();
     }
 
     protected void ddlDocumentFormattobeUsed_SelectedIndexChanged(object sender, EventArgs e)
@@ -124,7 +155,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             ddlControlNo.DataTextField = "CONTROLNO";
             ddlControlNo.DataValueField = "CONTROLNO";
             ddlControlNo.DataBind();
-            ddlControlNo.Items.Insert(0, new ListItem("Choose...", ""));
 
             GetCtrlNoPrinted8112();
 
@@ -266,18 +296,15 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void BtnConfirm1_OnClick(object sender, EventArgs e)
     {
-        if (fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text) == true)
-        {
-            tbWorkFlowID.Text = "2";
-            tbApproverID.Text = "1";
-            BtnRequestChange.Visible = false;
-            BtnReassignTask.Visible = false;
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
-        }
-        else
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ConfirmFailedAlert();", true);
-        }
+        BtnReassignTask.Visible = false;
+        FarmOutDocumentDetails fod = new FarmOutDocumentDetails();
+        fod.CONTROLNO = tbFarmOutControlNo.Text;
+        DataTable dt = maint.GetAssignedForRequestChange(fod);
+        tbAssigned.Text = dt.Rows[0]["APOACCOUNT"].ToString();
+        tbAssignedto.Text = dt.Rows[0]["NAME"].ToString();
+        tbWorkFlowID.Text = "2";
+        tbApproverID.Text = "1";
+        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
     }
 
     protected void BtnConfirm2_OnClick(object sender, EventArgs e)
@@ -289,16 +316,33 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void BtnApprove_OnClick(object sender, EventArgs e)
     {
-        string ControlNo = tbFarmOutControlNo.Text;
-        string WorkFlowID = tbWorkFlowID.Text;
-        string ApproverID = tbApproverID.Text;
-        string ApprovalComments = tbComment.Text;
-        fodm.Approval(ControlNo, WorkFlowID, ApproverID, ApprovalComments, UserID);
-        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
-        GetFarmOutDocument();
-        DisableForm();
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ApprovedAlert();", true);
+        isSaved = fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text);
+        if (isSaved == true)
+        {
+            string ControlNo = tbFarmOutControlNo.Text;
+            string WorkFlowID = tbWorkFlowID.Text;
+            string ApproverID = tbApproverID.Text;
+            string ApprovalComments = tbComment.Text;
+            fodm.Approval(ControlNo, WorkFlowID, ApproverID, ApprovalComments, UserID);
+
+            EmailDetails ed = new EmailDetails();
+            ed.CONTROLNO = tbFarmOutControlNo.Text;
+            ed.FROM_EMAIL = ddlPreparedby.SelectedValue;
+            ed.TO_EMAIL = ddlApprovedby.SelectedValue;
+            ed.EMAILTYPE = "Approval";
+            ed.COMMENT = tbComment.Text;
+            maint.SendEmail(ed);
+
+            GetFarmOutDocument();
+            DisableForm();
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ApprovedAlert();", true);
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ConfirmFailedAlert();", true);
+        }
     }
 
     protected void BtnRequestChange_OnClick(object sender, EventArgs e) 
@@ -311,9 +355,27 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         string ControlNo = tbFarmOutControlNo.Text;
         string WorkFlowID = tbWorkFlowID.Text;
         string ApproverID = tbApproverID.Text;
-        string ApprovalComments = tbComment.Text;
+        string ApprovalComments = tbRequestChangeComment.Text;
         fodm.RequestChange(ControlNo, WorkFlowID, ApproverID, ApprovalComments, UserID);
-        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
+
+        EmailDetails ed = new EmailDetails();
+        ed.CONTROLNO = tbFarmOutControlNo.Text;
+
+        if (tbApproverID.Text == "1")
+        {
+            ed.FROM_EMAIL = ddlPreparedby.SelectedValue;
+            ed.TO_EMAIL = maint.GetRequestCreator(tbFarmOutControlNo.Text);
+        }
+        else
+        {
+            ed.FROM_EMAIL = ddlApprovedby.SelectedValue;
+            ed.TO_EMAIL = ddlPreparedby.SelectedValue;
+        }
+
+        ed.EMAILTYPE = "Request Change";
+        ed.COMMENT = tbRequestChangeComment.Text;
+        maint.SendEmail(ed);
+
         GetFarmOutDocument();
         DisableForm();
         ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
@@ -333,7 +395,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void BtnSaveReassignTask_OnClick(object sender, EventArgs e)
     {
-        
         if (ddlReassignto.SelectedValue == "")
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
@@ -345,10 +406,19 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             string ControlNo = tbFarmOutControlNo.Text;
             string WorkFlowID = tbWorkFlowID.Text;
             string ApproverID = tbApproverID.Text;
-            string ApprovalComments = tbComment.Text;
+            string ApprovalComments = tbReassigntoComment.Text;
             string Reassignto = ddlReassignto.SelectedValue;
             fodm.ReassignTask(ControlNo, WorkFlowID, ApproverID, ApprovalComments, Reassignto, UserID);
-            //Page.Response.Redirect(Page.Request.Url.ToString(), true);
+
+            EmailDetails ed = new EmailDetails();
+            ed.CONTROLNO = tbFarmOutControlNo.Text;
+            ed.FROM_EMAIL = ddlApprovedby.SelectedValue;
+            ed.TO_EMAIL = ddlReassignto.SelectedValue;
+            ed.EMAILTYPE = "Re-assign";
+            ed.COMMENT = tbReassigntoComment.Text;
+            maint.SendEmail(ed);
+
+            GetFarmOutDocument();
             DisableForm();
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignAlert();", true);
@@ -447,7 +517,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         ddlDocumentFormattobeUsed.Enabled = false;
         tbPEZADocumentNo.Enabled = false;
         tbGatepassNo.Enabled = false;
-        tbLOAType.Enabled = false;
         tbLOANo.Enabled = false;
         tbSBNo.Enabled = false;        
         tbContainerNo.Enabled = false;
@@ -460,6 +529,35 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         BtnConfirm1.Enabled = false;
         BtnConfirm2.Enabled = false;
         BtnSave.Enabled = false;
+    }
+
+    private void EnableControl()
+    {
+        tbLOANo.Visible = true;
+        tbSBNo.Visible = true;
+        tbExpiryDate1.Visible = true;
+        tbExpiryDate2.Visible = true;
+
+        tbFarmOutControlNo.Enabled = true;
+        ddlDocumentFormattobeUsed.Enabled = true;
+        tbPEZADocumentNo.Enabled = true;
+        tbGatepassNo.Enabled = true;
+        tbLOANo.Enabled = true;
+        tbSBNo.Enabled = true;
+        tbExpiryDate1.Enabled = true;
+        tbExpiryDate2.Enabled = true;
+        tbContainerNo.Enabled = true;
+        tbPEZASeal.Enabled = true;
+        tbPlateNo.Enabled = true;
+        tb8105ControlNo.Enabled = true;
+        ddlEPPIAuthorizedSignatory.Enabled = true;
+        tbPEZAExaminerSignatory.Enabled = true;
+        tbPEZAOICSignatory.Enabled = true;
+        ddlPreparedby.Enabled = true;
+        ddlApprovedby.Enabled = true;
+        BtnConfirm1.Enabled = true;
+        BtnConfirm2.Enabled = true;
+        BtnSave.Enabled = true;
     }
 
     protected void GrvPrint_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -585,7 +683,25 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             {
                 Session["SealNo"] = "";
             }
-            
+
+            fdd.CONTROLNO = tbFarmOutControlNo.Text; 
+            DataTable dt4 = maint.GetMultipleUOM(fdd);
+            if (dt4.Rows.Count > 0)
+            {
+                if (dt4.Rows[0]["UnitOfMeasurement"].ToString().Length == 0)
+                {
+                    Session["UOM"] = "";
+                }
+                else
+                {
+                    Session["UOM"] = dt4.Rows[0]["UnitOfMeasurement"].ToString();
+                }
+            }
+            else
+            {
+                Session["UOM"] = "";
+            }
+
             string Date = txtDate.Text;
             var parsedDate = DateTime.Parse(Date);
             Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
@@ -629,7 +745,25 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             {
                 Session["TotalQuantity"] = "";
             }
-            
+
+            fdd.CONTROLNO = tbFarmOutControlNo.Text;
+            DataTable dt2 = maint.GetMultipleUOM(fdd);
+            if (dt2.Rows.Count > 0)
+            {
+                if (dt2.Rows[0]["UnitOfMeasurement"].ToString().Length == 0)
+                {
+                    Session["UOM"] = "";
+                }
+                else
+                {
+                    Session["UOM"] = dt2.Rows[0]["UnitOfMeasurement"].ToString();
+                }
+            }
+            else
+            {
+                Session["UOM"] = "";
+            }
+
             string Date = txtDate.Text;
             var parsedDate = DateTime.Parse(Date);
             Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
@@ -649,7 +783,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             }
             else
             {
-                ControlNos = hfControlNo.Value;
+                ControlNos = tbFarmOutControlNo.Text + "," + hfControlNo.Value;
                 ControlNos = ControlNos.Replace("','", ",");
             }
 
@@ -843,5 +977,39 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             ddlApprovedby.Text = Session["Approved"].ToString();
         }
 
+    }
+
+    protected void BtnPrintRF_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("RequestFormPrint.aspx" + "?controlno=" + Request.QueryString["controlno"]);
+    }
+
+    private void GetFiles()
+    {
+        string ControlNo = tbFarmOutControlNo.Text;
+        DataTable dt = frfm.GetFiles(ControlNo);
+        if (dt.Rows.Count > 0)
+        {
+            gvFiles.DataSource = dt;
+            gvFiles.DataBind();
+        }
+    }
+
+    protected void lblFileName_Click(object sender, EventArgs g)
+    {
+        var TLink = (Control)sender;
+        GridViewRow row = (GridViewRow)TLink.NamingContainer;
+        LinkButton lnk = sender as LinkButton;
+        string FilePath = Server.MapPath("~/RelatedDocu/" + tbFarmOutControlNo.Text + "/" + lnk.Text);
+        string filePath = "~/RelatedDocu/" + tbFarmOutControlNo.Text + "/" + lnk.Text;
+
+        if (File.Exists(FilePath))
+        {
+            Response.Redirect(filePath);
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "FileNotExistAlert();", true);
+        }
     }
 }

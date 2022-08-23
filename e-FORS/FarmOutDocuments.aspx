@@ -38,6 +38,7 @@
                                             <asp:TextBox runat="server" ID="tbFarmOutControlNo" CssClass="form-control" Enabled="false"></asp:TextBox>
                                             <div class="input-group-append">
                                                 <asp:LinkButton runat="server" ID="LnkBtnView" CssClass="btn btn-info" Text="View" OnClick="LnkBtnView_Click" />
+                                                <asp:Button runat="server" ID="BtnPrintRF" CssClass="btn btn-info" Text="Print" OnClick="BtnPrintRF_Click" Visible="false"/>
                                             </div>
                                         </div>
                                     </div>
@@ -70,6 +71,24 @@
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
+                                <div runat="server" id="divFiles" class="col-md-6" Visible="false">
+                                    <label>Attached Files</label>
+                                    <div class="card">
+                                            <div class="card-body p-0">
+                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless table-hover table-striped"
+                                                    AutoGenerateColumns="false">
+                                                    <HeaderStyle CssClass="thead-light" />
+                                                    <Columns>
+                                                        <asp:TemplateField HeaderText="File Name" ItemStyle-VerticalAlign="Middle">
+                                                            <ItemTemplate>
+                                                                <asp:LinkButton ID="lblFileName" runat="server" Text='<%#Eval("FileName") %>' CommandArgument='<%#Bind("FileName") %>' CommandName="View" OnClick="lblFileName_Click"></asp:LinkButton>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+                                                    </Columns>
+                                                </asp:GridView>
+                                            </div>
+                                        </div>
+                                </div>
                             </div>
 
                             <div class="row">
@@ -77,16 +96,6 @@
                                     <div class="form-group">
                                         <label>Gatepass No.</label>
                                         <asp:TextBox runat="server" ID="tbGatepassNo" CssClass="form-control"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label id="lblLOAType" hidden>LOA Type</label>
-                                        <asp:TextBox runat="server" ID="tbLOAType" CssClass="form-control" Visible="false"></asp:TextBox>
-                                        <%--<asp:DropDownList runat="server" ID="ddlLOAType" CssClass="form-control select2" Width="100%" OnSelectedIndexChanged="ddlLOAType_SelectedIndexChanged" AutoPostBack="true" Enabled="false"></asp:DropDownList>--%>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -181,7 +190,7 @@
                                         <div class="input-group">
                                             <asp:DropDownList runat="server" ID="ddlPreparedby" CssClass="form-control select2"></asp:DropDownList>
                                             <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm1_OnClick" />
+                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-warning" Text="Confirm" OnClick="BtnConfirm1_OnClick" />
                                             </div>
                                         </div>
                                     </div>
@@ -321,6 +330,7 @@
                                             <label class="col-form-label-sm">Assigned</label>
                                         </div>
                                         <div class="col-sm-9">
+                                            <asp:TextBox runat="server" ID="tbAssigned" CssClass="form-control-sm" Enabled="false" Visible="false" Width="100%"></asp:TextBox>
                                             <asp:TextBox runat="server" ID="tbAssignedto" CssClass="form-control-sm" Enabled="false" Width="100%"></asp:TextBox>
                                         </div>
                                     </div>
@@ -440,7 +450,7 @@
     <script type="text/javascript">
         $(function () {
             $('#<%=ddlControlNo.ClientID%>').on('change', function () {
-                x = $('#<%=tbFarmOutControlNo.ClientID%>').val() + ',' + $(this).val();
+                x = $(this).val();
                 array = x + ""
                 $('#<%=hfControlNo.ClientID%>').val(array);
             });
@@ -462,7 +472,7 @@
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
             function EndRequestHandler(sender, args) {
                 $('#<%=ddlControlNo.ClientID%>').on('change', function () {
-                    x = $('#<%=tbFarmOutControlNo.ClientID%>').val() + ',' + $(this).val();
+                    x = $(this).val();
                     //x = $(this).val();
                     array = x + ""
                     $('#<%=hfControlNo.ClientID%>').val(array);
@@ -510,6 +520,19 @@
             })
         }
 
+        function FileNotExistAlert() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'error',
+                title: 'File not exist! Maybe it is remove or replace.'
+            })
+        }
+
         function ApprovedAlert() {
             toastr.success('Task successfully approve!')
         }
@@ -532,6 +555,7 @@
 
         function GetControlNoPrinted8112() {
             var ctrlno = ($('#<%=hfControlNo.ClientID%>').val().split(','));
+            console.log(ctrlno);
                 $("#<%=ddlControlNo.ClientID%>").val(ctrlno).trigger('change');
         }
     </script>

@@ -86,7 +86,8 @@
                                     <div class="form-group">
                                         <label>Classification of Item</label>
                                         <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:DropDownList runat="server" ID="ddlClassificationofItem" CssClass="form-control select2" Width="100%" name="classificationofitem"></asp:DropDownList>
+                                        <asp:DropDownList runat="server" ID="ddlClassificationofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="classificationofitem"></asp:DropDownList>
+                                        <asp:HiddenField runat="server" ID="hfClassificationofItem" />
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -226,6 +227,7 @@
                         <div class="card-body">
                             <div class="row mb-1">
                                 <asp:Button runat="server" ID="BtnAdd" Text="Add" CssClass="btn btn-primary BtnAdd" Enabled="false" OnClick="BtnAdd_OnClick" Width="70px" />
+                                <span style="color: #ff0000; font-weight: bold">&nbsp; * Maximum of 6 Items</span>
                             </div>
                             <div class="row">
                                 <div class="table-responsive">
@@ -344,8 +346,8 @@
                                         </div>
                                         <div class="card">
                                             <div class="card-body p-0">
-                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless" 
-                                                    AutoGenerateColumns="false" OnRowCommand="gvFiles_RowCommand" Visible="false">
+                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless"
+                                                    AutoGenerateColumns="false" OnRowCommand="gvFiles_RowCommand" OnRowDataBound="gvFiles_RowDataBound" Visible="false">
                                                     <Columns>
                                                         <asp:TemplateField ItemStyle-VerticalAlign="Middle">
                                                             <ItemTemplate>
@@ -353,9 +355,8 @@
                                                                     CommandName="Delete"
                                                                     CommandArgument='<%#Eval("FileName") %>'
                                                                     OnClientClick="return confirm('Are you sure you want to delete this file?')"
-                                                                    
                                                                     CssClass="btn btn-danger btn-sm"
-                                                                    Width="70px"/>
+                                                                    Width="70px" />
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
                                                         <asp:TemplateField HeaderText="File Name" ItemStyle-VerticalAlign="Middle">
@@ -579,7 +580,7 @@
 
                         <div class="card-footer">
                             <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary BtnSave" Text="Save" OnClick="BtnSave_OnClick" Width="70px" />
-                            <asp:Button runat="server" ID="BtnPrint" CssClass="btn btn-info" Text="Print" OnClick="BtnPrint_Click" Width="70px" Visible="false"/>
+                            <asp:Button runat="server" ID="BtnPrint" CssClass="btn btn-info" Text="Print" OnClick="BtnPrint_Click" Width="70px" Visible="false" />
                         </div>
                     </div>
                     <!-- /.card -->
@@ -771,6 +772,90 @@
         </ContentTemplate>
     </asp:UpdatePanel>
 
+    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+        <ContentTemplate>
+
+            <div class="modal fade" id="modalMon">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Attention!</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>This is to notify that your Farm-Out Request will be process on the next processing which is Monday.</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+            </section>
+        </ContentTemplate>
+    </asp:UpdatePanel>
+
+    <asp:UpdatePanel ID="upWed" runat="server">
+        <ContentTemplate>
+
+            <div class="modal fade" id="modalWed">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Attention!</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>This is to notify that your Farm-Out Request will be process on the next processing which is Wednesday.</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+            </section>
+        </ContentTemplate>
+    </asp:UpdatePanel>
+
+    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+        <ContentTemplate>
+
+            <div class="modal fade" id="modalFri">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Attention!</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>This is to notify that your Farm-Out Request will be process on the next processing which is Friday.</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+            </section>
+        </ContentTemplate>
+    </asp:UpdatePanel>
+
     <asp:UpdatePanel ID="upRequestChange" runat="server">
         <ContentTemplate>
             <!-- Modal -->
@@ -875,6 +960,15 @@
             var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
             $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
 
+            $('#<%=ddlClassificationofItem.ClientID%>').on('change', function () {
+                x = $(this).val();
+                array = x + ""
+                $('#<%=hfClassificationofItem.ClientID%>').val(array);
+            });
+
+            var items = ($('#<%=hfClassificationofItem.ClientID%>').val().split(','));
+            $("#<%=ddlClassificationofItem.ClientID%>").val(items).trigger('change');
+
             //Initialize Select2 Elements
             $('.select2').select2()
 
@@ -909,6 +1003,15 @@
 
                 var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
                 $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
+
+                $('#<%=ddlClassificationofItem.ClientID%>').on('change', function () {
+                    x = $(this).val();
+                    array = x + ""
+                    $('#<%=hfClassificationofItem.ClientID%>').val(array);
+                });
+
+                var items = ($('#<%=hfClassificationofItem.ClientID%>').val().split(','));
+                $("#<%=ddlClassificationofItem.ClientID%>").val(items).trigger('change');
 
                 //Initialize Select2 Elements
                 $('.select2').select2()
@@ -1033,6 +1136,19 @@
             })
         }
 
+        function MaxNoItemsAlert() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'warning',
+                title: 'Cannot Add more than 6 Items!'
+            })
+        }
+
         function ApprovedFarmOutSuccessAlert() {
             toastr.success('Task successfully approve!')
         }
@@ -1047,6 +1163,10 @@
 
         function FailedAlert() {
             toastr.error('Please save Farm-Out First!')
+        }
+
+        function NoItemsAlert() {
+            toastr.error('No items added, Please add items first!')
         }
 
         //Function to allow only Decimal values to textbox

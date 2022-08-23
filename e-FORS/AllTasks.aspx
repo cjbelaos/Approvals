@@ -35,35 +35,35 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="table-responsive">
-                                    <asp:GridView runat="server" ID="gvAllTasks" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false">
+                                    <asp:GridView runat="server" ID="gvAllTasks" CssClass="table table-bordered table-condensed table-hover table-sm primary" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false">
                                         <HeaderStyle CssClass="thead-light" HorizontalAlign="Center" />
                                         <Columns>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="ControlNo." ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Control No." ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:LinkButton ID="lbControlNo" runat="server" Text='<%#Eval("CONTROLNO") %>' CommandArgument='<%#Bind("controlno") %>' CommandName="Edit" Font-Bold="true" ForeColor="#cc0000" OnClick="lbControlNo_OnClick"></asp:LinkButton>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Division" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Division" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblDivision" runat="server" Text='<%#Eval("DIVISION") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Process Name" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Process Name" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblProcessName" runat="server" Text='<%#Eval("PROCESSNAME") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Assigned Username" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Assigned Username" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblAssignedUsername" runat="server" Text='<%#Eval("ASSIGNEDUSERNAME") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Assigned Date" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Assigned Date" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblAssignedDate" runat="server" Text='<%#Eval("ASSIGNEDDATE") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Page ID" ItemStyle-VerticalAlign="Middle" Visible="false">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Page ID" ItemStyle-VerticalAlign="Middle" Visible="false">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblPageID" runat="server" Text='<%#Eval("PAGEID") %>'></asp:Label>
                                                 </ItemTemplate>

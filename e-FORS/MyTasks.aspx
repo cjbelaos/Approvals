@@ -37,7 +37,7 @@
                                     <asp:GridView runat="server" ID="gvMyTasks" CssClass="table table-bordered table-condensed table-hover table-sm primary" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false">
                                         <HeaderStyle CssClass="thead-light" HorizontalAlign="Center" />
                                         <Columns>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="ControlNo." ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Control No." ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:LinkButton ID="lbControlNo" runat="server" Text='<%#Eval("CONTROLNO") %>' CommandArgument='<%#Bind("controlno") %>' CommandName="Edit" Font-Bold="true" ForeColor="#cc0000" OnClick="lbControlNo_OnClick"></asp:LinkButton>
                                                 </ItemTemplate>

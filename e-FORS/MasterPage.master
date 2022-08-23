@@ -11,6 +11,8 @@
     <link href="AdminLTE-3.2.0/plugins/fonts/Poppins.css" rel="stylesheet" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/ionicons/ionicons.min.css" />
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Toastr -->
@@ -29,9 +31,14 @@
 
     <link rel="shortcut icon" href="Images/e.ico" type="image/x-icon" />
 
+    <asp:ContentPlaceHolder ID="style" runat="server">
+    </asp:ContentPlaceHolder>
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
-    <form id="form1" runat="server">
+    <form id="form1" runat="server" defaultbutton="btnDisableEnter">
+        <asp:Button ID="btnDisableEnter" runat="server" Text="" OnClientClick="return false;" Style="display: none;" />
+
         <div class="wrapper">
 
             <!-- Preloader -->
@@ -53,56 +60,21 @@
 
                 <!-- Right navbar links -->
                 <ul class="navbar-nav ml-auto">
-                    <!-- Navbar Search -->
-                    <li class="nav-item">
-                        <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                            <i class="fas fa-search"></i>
-                        </a>
-                        <div class="navbar-search-block">
-                            <form class="form-inline">
-                                <div class="input-group input-group-sm">
-                                    <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-navbar" type="submit">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                        <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </li>
 
                     <!-- Notifications Dropdown Menu -->
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <label id="time" class="nav-link"></label>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-toggle="dropdown" href="#">
                             <i class="far fa-bell"></i>
-                            <span class="badge badge-warning navbar-badge">15</span>
+                            <span class="badge badge-warning navbar-badge"><% Response.Write(CountMyTasks); %></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                            <span class="dropdown-item dropdown-header">15 Notifications</span>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="width: 1000px; overflow-y: scroll; float: right; height: 500px;">
+                            <span class="dropdown-item dropdown-header"><% Response.Write(CountMyTasks); %> <% Response.Write(TaskorTasks); %></span>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-envelope mr-2"></i>4 new messages
-           
-                            <span class="float-right text-muted text-sm">3 mins</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-users mr-2"></i>8 friend requests
-           
-                            <span class="float-right text-muted text-sm">12 hours</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-file mr-2"></i>3 new reports
-           
-                            <span class="float-right text-muted text-sm">2 days</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                            <% Response.Write(TaskList); %>
+                            <a href="MyTasks.aspx" class="dropdown-item dropdown-footer">See My Tasks</a>
                         </div>
                     </li>
                     <li class="nav-item">
@@ -116,7 +88,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <asp:Button runat="server" ID="BtnLogOut" CssClass="btn btn-danger" Text="Logout" OnClick="BtnLogOut_Click"/>
+                        <asp:Button runat="server" ID="BtnLogOut" CssClass="btn btn-danger" Text="Logout" OnClick="BtnLogOut_Click" />
                     </li>
                 </ul>
             </nav>
@@ -148,18 +120,6 @@
                         </div>
                     </div>
 
-                    <!-- SidebarSearch Form -->
-                    <div class="form-inline">
-                        <div class="input-group" data-widget="sidebar-search">
-                            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                            <div class="input-group-append">
-                                <button class="btn btn-sidebar">
-                                    <i class="fas fa-search fa-fw"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Sidebar Menu -->
                     <nav class="mt-2">
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -180,7 +140,7 @@
                                             <p>Farm-out Request Form</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li class="nav-item" <% Response.Write(HideFarmOutDocuments); %>>
                                         <a href="FarmOutDocuments.aspx" class="nav-link <% Response.Write(FarmOutDocuments); %>">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Farm-out Documents</p>
@@ -218,7 +178,7 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="nav-item <% Response.Write(ReportsMenuOpen); %>">
+                            <li class="nav-item <% Response.Write(ReportsMenuOpen); %>" <% Response.Write(HideReports); %>>
                                 <a href="#" class="nav-link <% Response.Write(Reports); %>">
                                     <i class="nav-icon fas fa-file-alt"></i>
                                     <p>
@@ -315,6 +275,75 @@
         </div>
         <!-- ./wrapper -->
 
+        <!-- modal -->
+        <div class="modal fade" id="modalMon">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Attention!</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>This is to notify that your Farm-Out Request will be process on the next processing day which is Monday.</p>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- modal -->
+        <div class="modal fade" id="modalWed">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Attention!</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>This is to notify that your Farm-Out Request will be process on the next processing day which is Wednesday.</p>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- modal -->
+        <div class="modal fade" id="modalFri">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Attention!</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>This is to notify that your Farm-Out Request will be process on the next processing day which is Wednesday.</p>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
         <!-- jQuery -->
         <script src="AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
         <!-- Bootstrap 4 -->
@@ -351,11 +380,119 @@
         <script src="AdminLTE-3.2.0/plugins/accounting/accounting.min.js"></script>
         <!-- datetime -->
         <script src="AdminLTE-3.2.0/plugins/datetime/datetime.js"></script>
+        <!-- jquery-session -->
+        <script src="AdminLTE-3.2.0/plugins/jquery-session/jquery.session.js"></script>
         <!-- AdminLTE App -->
         <script src="AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
         <!-- AdminLTE for demo purposes -->
         <script src="AdminLTE-3.2.0/dist/js/demo.js"></script>
         <!-- Script -->
+        <script type="text/javascript">
+            $(document).ready(function () {
+                window.setInterval(function () {
+                    GetSessionPopupChecker(function (e) {
+                        SessionPopupChecker = e;
+                        var PopupChecker = SessionPopupChecker["PopupChecker"];
+                        console.log(PopupChecker);
+
+                        const dt = new Date();
+                        var time = dt.toLocaleTimeString();
+                        $('#time').text(time);
+
+                        var day = dt.getDay();
+
+                        if (day === 2
+                            && moment().isSameOrAfter(moment({ hour: 16, minute: 1, second: 0 }))
+                            && moment().isBefore(moment({ hour: 24, minute: 0, second: 0 }))
+                            && PopupChecker === "0") {
+                            $('#modalFri').modal('show');
+                            SetSessionPopupChecker();
+                        }
+                        else
+                            if (day === 3
+                                && moment().isSameOrAfter(moment({ hour: 0, minute: 0, second: 0 }))
+                                && moment().isBefore(moment({ hour: 8, minute: 0, second: 0 }))
+                                && $.session.get('PopupChecker') === '0') {
+                                $('#modalFri').modal('show');
+                                SetSessionPopupChecker();
+                            }
+
+                        if (day === 4
+                            && moment().isSameOrAfter(moment({ hour: 4, minute: 1, second: 0 }))
+                            && moment().isBefore(moment({ hour: 24, minute: 0, second: 0 }))
+                            && PopupChecker === "0") {
+                            $('#modalMon').modal('show');
+                            SetSessionPopupChecker();
+                        }
+                        else
+                            if (day === 5
+                                && moment().isSameOrAfter(moment({ hour: 0, minute: 0, second: 0 }))
+                                && moment().isBefore(moment({ hour: 8, minute: 0, second: 0 }))
+                                && $.session.get('PopupChecker') === '0') {
+                                $('#modalMon').modal('show');
+                                SetSessionPopupChecker();
+                            }
+
+                        if (day === 5
+                            && moment().isSameOrAfter(moment({ hour: 10, minute: 01, second: 0 }))
+                            && moment().isBefore(moment({ hour: 24, minute: 0, second: 0 }))
+                            && PopupChecker === "0") {
+                            $('#modalWed').modal('show');
+                            SetSessionPopupChecker();
+                        }
+                        else
+                            if (day === 6
+                                && moment().isSameOrAfter(moment({ hour: 0, minute: 0, second: 0 }))
+                                && moment().isBefore(moment({ hour: 8, minute: 0, second: 0 }))
+                                && $.session.get('PopupChecker') === '0') {
+                                $('#modalWed').modal('show');
+                                SetSessionPopupChecker();
+                            }
+                    });
+                }, 1000);
+            });
+            function GetSessionPopupChecker(callback) {
+                $.ajax({
+                    type: "POST",
+                    url: "PopupChecker.asmx/GetSessionPopupChecker",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        var d = JSON.parse(r.d);
+                        Session = d;
+                        if (callback !== undefined) {
+                            callback(d);
+                        }
+                    },
+                    failure: function (r) {
+                        ShowError(r);
+                    },
+                    error: function (r) {
+                        ShowError(r);
+                    }
+                });
+            }
+
+            function SetSessionPopupChecker(callback) {
+                $.ajax({
+                    type: "POST",
+                    url: "PopupChecker.asmx/SetSessionPopupChecker",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        var d = JSON.parse(r.d);
+                        if (callback !== undefined) {
+                            callback(d);
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                });
+            }
+        </script>
         <asp:ContentPlaceHolder ID="script" runat="server">
         </asp:ContentPlaceHolder>
         <!-- /.script -->

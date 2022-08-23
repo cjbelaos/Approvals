@@ -38,32 +38,32 @@
                                     <asp:GridView runat="server" ID="gvFinishedTasks" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false">
                                         <HeaderStyle CssClass="thead-light" HorizontalAlign="Center" />
                                         <Columns>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Control No." ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Control No." ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:LinkButton ID="lblControlNo" runat="server" Text='<%#Eval("CONTROLNO") %>' Font-Bold="true" ForeColor="#cc0000" OnClick="lblControlNo_Click"></asp:LinkButton>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Approved by" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Approved by" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblApprovedBy" runat="server" Text='<%#Eval("APPROVEDBY") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Approved Date" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Approved Date" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblApprovedDate" runat="server" Text='<%#Eval("APPROVEDDATE") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Created by" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Created by" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblCreatedBy" runat="server" Text='<%#Eval("CREATEDBY") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Created Date" ItemStyle-VerticalAlign="Middle">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Created Date" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblCreatedDate" runat="server" Text='<%#Eval("CREATEDDATE") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Page ID" ItemStyle-VerticalAlign="Middle" Visible="false">
+                                            <asp:TemplateField ItemStyle-HorizontalAlign="Left" HeaderText="Page ID" ItemStyle-VerticalAlign="Middle" Visible="false">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblPageID" runat="server" Text='<%#Eval("PAGEID") %>'></asp:Label>
                                                 </ItemTemplate>

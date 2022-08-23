@@ -12,6 +12,8 @@ public class EmailDetails
     public string FROM_EMAIL { get; set; }
     public string TO_EMAIL { get; set; }
     public string EMAILTYPE { get; set; }
+    public string COMMENT { get; set; }
+
     public EmailDetails()
     {
         //

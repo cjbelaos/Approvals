@@ -9,7 +9,7 @@ public partial class TestPrint : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["ControlNo"].ToString() == null)
+        if (Session["ControlNo"] == null)
         {
             Response.Redirect("FarmOutDocuments.aspx?expired=1");
         }
@@ -22,6 +22,7 @@ public partial class TestPrint : System.Web.UI.Page
                 string AuthorizedOfficial = Session["AuthorizedOffical"].ToString();
                 string ContainerNo = Session["ContainerNo"].ToString();
                 string SealNo = Session["SealNo"].ToString();
+                string UOM = Session["UOM"].ToString();
                 string WithContainer = Session["WithContainer"].ToString();
                 string WithLOA = Session["WithLOA"].ToString();
                 string WithItemContainer = Session["WithItemContainer"].ToString();
@@ -55,6 +56,7 @@ public partial class TestPrint : System.Web.UI.Page
                 reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
                 reportDocument.SetParameterValue("@ContainerNo", ContainerNo);
                 reportDocument.SetParameterValue("@SealNo", SealNo);
+                reportDocument.SetParameterValue("@UOM", UOM);
                 reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
 
                 //Load the report by setting the report source

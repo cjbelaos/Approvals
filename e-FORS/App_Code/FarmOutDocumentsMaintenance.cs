@@ -99,13 +99,20 @@ public class FarmOutDocumentsMaintenance
         SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
 
-        conn.Open();
+        if (conn.State == ConnectionState.Open)
+        {
+            da.Fill(dt);
 
-        da.Fill(dt);
+            return dt;
+        }
+        else
+        {
+            conn.Open();
+            da.Fill(dt);
+            conn.Close();
 
-        conn.Close();
-
-        return dt;
+            return dt;
+        }
     }
 
     public DataTable GetLOANo(string LOAType)
@@ -572,46 +579,6 @@ public class FarmOutDocumentsMaintenance
             {
                 return false;
             }
-        }
-    }
-
-    public Boolean FinishTaskChecking(string ControlNo)
-    {
-        SqlCommand cmd = new SqlCommand("FinishTaskChecking", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataTable dt = new DataTable();
-
-        try
-        {
-            if (conn.State == ConnectionState.Open)
-            {
-                da.Fill(dt);
-            }
-            else
-            {
-                conn.Open();
-                da.Fill(dt);
-            }
-        }
-        catch (SqlException sqlex)
-        {
-            throw sqlex;
-        }
-        finally
-        {
-            conn.Close();
-        }
-
-        if(dt.Rows.Count > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 
