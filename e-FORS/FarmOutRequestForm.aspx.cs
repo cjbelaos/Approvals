@@ -4,7 +4,6 @@ using System.Web.UI.WebControls;
 using System.Web.UI;
 using System.Web;
 using System.IO;
-using System.Linq;
 
 public partial class Default : System.Web.UI.Page
 {
@@ -38,6 +37,7 @@ public partial class Default : System.Web.UI.Page
             {
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
+
                 GetUserInfo();
                 AddDivision();
                 AddNatureofItem();
@@ -54,6 +54,7 @@ public partial class Default : System.Web.UI.Page
                 GetApprovedby();
                 GetItems();
                 GetFiles();
+
                 if (Request.QueryString["CONTROLNO"] != null)
                 {
                     BtnPrint.Visible = true;
@@ -376,7 +377,7 @@ public partial class Default : System.Web.UI.Page
         }
 
         ed.EMAILTYPE = "Request Change";
-        ed.EMAILTYPE = tbRequestChangeComment.Text;
+        ed.COMMENT = tbRequestChangeComment.Text;
         maint.SendEmail(ed);
 
         //Page.Response.Redirect(Page.Request.Url.ToString(), true);
@@ -419,7 +420,7 @@ public partial class Default : System.Web.UI.Page
             {
                 a.UserID = ddlApprovedby.SelectedValue;
             }
-            a.Comment = tbRequestChangeComment.Text;
+            a.Comment = tbReassigntoComment.Text;
             string strReassignto = ddlReassignto.SelectedValue;
             maint.ReassignTask(a, strReassignto);
 
@@ -438,7 +439,7 @@ public partial class Default : System.Web.UI.Page
             }
 
             ed.EMAILTYPE = "Re-assign";
-            ed.COMMENT = tbRequestChangeComment.Text;
+            ed.COMMENT = tbReassigntoComment.Text;
             maint.SendEmail(ed);
 
             //Page.Response.Redirect(Page.Request.Url.ToString(), true);
@@ -924,7 +925,11 @@ public partial class Default : System.Web.UI.Page
             lblDate3.Text = ds.Tables[0].DefaultView[2]["ACTIONDATE"].ToString();
             tbAssignedto.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeName"].ToString();
 
-            if (ddlRequestedby.SelectedValue != UserID || UserID != ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper())
+            if ((ddlRequestedby.SelectedValue != UserID || UserID != ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) && 
+                (ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "1" || 
+                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "3" || 
+                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "5" || 
+                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "7"))
             {
                 DisableControl();
             }
@@ -934,13 +939,21 @@ public partial class Default : System.Web.UI.Page
                 BtnConfirm1.Enabled = true;
             }
 
-            if (ddlCheckedby.SelectedValue == UserID && ddlCheckedby.SelectedValue == ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper())
+            if ((ddlCheckedby.SelectedValue == UserID && ddlCheckedby.SelectedValue == ds.Tables[0].DefaultView[1]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) &&
+                (ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "1" ||
+                ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "3" ||
+                ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "5" ||
+                ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "7"))
             {
                 DisableControl();
                 BtnConfirm2.Enabled = true;
             }
 
-            if (ddlApprovedby.SelectedValue == UserID && ddlApprovedby.SelectedValue == ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper())
+            if ((ddlApprovedby.SelectedValue == UserID && ddlApprovedby.SelectedValue == ds.Tables[0].DefaultView[2]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) &&
+                (ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "1" ||
+                ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "3" ||
+                ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "5" ||
+                ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "7"))
             {
                 DisableControl();
                 BtnConfirm3.Enabled = true;

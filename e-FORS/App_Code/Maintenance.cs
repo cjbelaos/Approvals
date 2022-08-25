@@ -1029,29 +1029,6 @@ public class Maintenance
         }
     }
 
-    public DataTable GetSBofSupplierInControlNo(FarmOutDetails fo)
-    {
-        using (SqlCommand cmd = new SqlCommand("sp_GetSBofSupplierInControlNo", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            cmd.Parameters.AddWithValue("@ControlNo", fo.ControlNo);
-
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            try
-            {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-
-            return dt;
-        }
-    }
-
     public DataTable GetControlNoOf8112WithSameLOA(string LOA, string CTRLNO)
     {
         using (SqlCommand cmd = new SqlCommand("sp_GetControlNoOf8112WithSameLOA", conn) { CommandType = CommandType.StoredProcedure })

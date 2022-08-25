@@ -16,9 +16,9 @@ public partial class _Default : System.Web.UI.Page
 
         if (!this.Page.IsPostBack)
         {
-            Session["UserID"] = "";
-            Session["UserName"] = "";
-            Session["PopupChecker"] = "";
+            //Session["UserID"] = "";
+            //Session["UserName"] = "";
+            //Session["PopupChecker"] = "";
 
             //Session["UserID"] = "B012128";
             //Session["UserName"] = "CHRIS JOHN BELAOS";

@@ -56,10 +56,11 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["UserID"] == null)
+        if (Session["UserID"] == null || Session["UserID"].ToString() == "")
         {
             //not logged in
             //Redirect to Login
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "SessionExpired();", true);
             Response.Redirect("Login.aspx?expired=1");
         }
         else
@@ -183,8 +184,8 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         foreach (DataRow row in dt.Rows)
         {
             String ControlNo = (string)row[0];
-            DateTime Created = (DateTime)row[9];
-            String PageName = (string)row[10];
+            DateTime Created = (DateTime)row[11];
+            String PageName = (string)row[12];
             Int32 interval = (int)Math.Round((DateTime.Now - Created).TotalSeconds);
 
             string TimeLapse;

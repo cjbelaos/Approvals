@@ -25,7 +25,11 @@ public class PopupChecker : System.Web.Services.WebService
     [WebMethod(EnableSession = true)]
     public string GetSessionPopupChecker()
     {
-        if (Session["PopupChecker"].ToString() == "")
+        if (Session["PopupChecker"] == null)
+        {
+            Session["PopupChecker"] = "0";
+        }
+        else
         {
             Session["PopupChecker"] = "0";
         }

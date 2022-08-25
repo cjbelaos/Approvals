@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 using System.IO;
-using System.Data.OleDb;
-using System.Text;
-using System.Net.Mail;
-using System.Drawing;
 using System.Globalization;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -226,8 +221,6 @@ public partial class Testing : System.Web.UI.Page
 
     protected void BtnSave_Click(object sender, EventArgs e)
     {
-        //DownloadTemplate();
-
         ReportDetails rd = new ReportDetails();
         rd.Supplier = ddlSupplier.SelectedValue;
         rd.Section = tbSection.Text;
@@ -240,17 +233,54 @@ public partial class Testing : System.Web.UI.Page
         DataSet ds1 = new DataSet();
 
         var result = from rows in dt.AsEnumerable()
-                     group rows by new { TypeOfItem = rows["TYPEOFITEM"] } into grp
+                     group rows by new { TypeOfItem = rows["LOANO"] } into grp
                      select grp;
 
         foreach (var item in result)
         {
             ds1.Tables.Add(item.CopyToDataTable());
+
+            string LOANo = hfFileName.Value;
+            string FileName = LOANo.Replace("/", "-");
+            string Path = @"~\Reports\LOA\" + FileName + ".xlsx";
+
+            FileInfo CreatedFile = new FileInfo(Path);
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var excel = new ExcelPackage(CreatedFile))
+            {
+                ExcelWorksheet ws;
+                foreach (DataTable dt1 in ds1.Tables)
+                {
+                    ws = excel.Workbook.Worksheets.Add(dt1.Rows[0]["TYPEOFITEM"].ToString());
+                    ws.Cells.AutoFitColumns();
+                    ws.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    ws.Cells[1, 1].LoadFromDataTable(dt1, true, OfficeOpenXml.Table.TableStyles.Light8);
+                    ws.Column(1).Style.Numberformat.Format = DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
+                }
+                excel.SaveAs(Path);
+            }
         }
 
-        string LOANo = hfFileName.Value;
-        string FileName = LOANo.Replace("/", "-");
-        createExcelFile(ds1, Server.MapPath(@"~\Reports\LOA\" + FileName + ".xlsx"));
+        //string LOANo = hfFileName.Value;
+        //string FileName = LOANo.Replace("/", "-");
+        //string Path = @"~\Reports\LOA\" + FileName + ".xlsx";
+
+        //FileInfo CreatedFile = new FileInfo(Path);
+        //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        //using (var excel = new ExcelPackage(CreatedFile))
+        //{
+        //    ExcelWorksheet ws;
+        //    foreach (DataTable dt1 in ds1.Tables)
+        //    {
+        //        ws = excel.Workbook.Worksheets.Add(dt1.Rows[0]["TYPEOFITEM"].ToString());
+        //        ws.Cells.AutoFitColumns();
+        //        ws.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        //        ws.Cells[1, 1].LoadFromDataTable(dt1, true, OfficeOpenXml.Table.TableStyles.Light8);
+        //        ws.Column(1).Style.Numberformat.Format = DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
+        //    }
+        //    excel.SaveAs(Path);
+        //}
+        //Response.Redirect(Path);
     }
 
     public Boolean createExcelFile(DataSet ds1, String FullFilePathName)
@@ -287,7 +317,9 @@ public partial class Testing : System.Web.UI.Page
                             ws.PrinterSettings.Orientation = eOrientation.Landscape;
                         }
                         ws.Cells.AutoFitColumns();
+                        ws.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                         ws.Cells[1, 1].LoadFromDataTable(Table, ISNew, OfficeOpenXml.Table.TableStyles.Light8);
+                        ws.Column(1).Style.Numberformat.Format = DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
                     }
                     else
                     {
@@ -301,9 +333,44 @@ public partial class Testing : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-
             throw ex;
         }
         return IsDone;
+    }
+
+    public void SendToBrowser()
+    {
+        using (ExcelPackage excelPackage = new ExcelPackage())
+        {
+            //create the WorkSheet
+            ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+
+            //add some text to cell A1
+            worksheet.Cells["A1"].Value = "My second EPPlus spreadsheet!";
+
+            //convert the excel package to a byte array
+            byte[] bin = excelPackage.GetAsByteArray();
+
+            //clear the buffer stream
+            Response.ClearHeaders();
+            Response.Clear();
+            Response.Buffer = true;
+
+            //set the correct contenttype
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            //set the correct length of the data being send
+            Response.AddHeader("content-length", bin.Length.ToString());
+
+            //set the filename for the excel package
+            Response.AddHeader("content-disposition", "attachment; filename=\"ExcelDemo.xlsx\"");
+
+            //send the byte array to the browser
+            Response.OutputStream.Write(bin, 0, bin.Length);
+
+            //cleanup
+            Response.Flush();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+        }
     }
 }

@@ -15,7 +15,7 @@ public partial class MyTasks : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if(Session["UserID"] == null)
+        if (Session["UserID"] == null)
         {
             Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
             //not logged in

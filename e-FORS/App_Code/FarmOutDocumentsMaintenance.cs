@@ -413,39 +413,6 @@ public class FarmOutDocumentsMaintenance
         return ds;
     }
 
-    public DataSet PrintLOA8106(string ControlNo)
-    {
-        SqlCommand cmd = new SqlCommand("PrintLOA8106", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataSet ds = new DataSet();
-
-        try
-        {
-            if (conn.State != ConnectionState.Open)
-            {
-                conn.Open();
-                da.Fill(ds);
-            }
-            else
-            {
-                da.Fill(ds);
-            }
-
-        }
-        catch (SqlException sqlex)
-        {
-            throw sqlex;
-        }
-        finally
-        {
-            conn.Close();
-        }
-        return ds;
-    }
-
     public DataTable GetAuthorizedOfficial(string APOAccount)
     {
         SqlCommand cmd = new SqlCommand("GetAuthorizedOfficial", conn);
