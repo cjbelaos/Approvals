@@ -372,7 +372,7 @@ public partial class Default : System.Web.UI.Page
         }
         else if (tbApproverID.Text == "3")
         {
-            ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString() + "," + ddlCheckedby.SelectedValue.ToString();
+            ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString();
             ed.TO_EMAIL = ddlRequestedby.SelectedValue;
         }
 
@@ -434,7 +434,7 @@ public partial class Default : System.Web.UI.Page
             }
             else if (tbApproverID.Text == "3")
             {
-                ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString() + "," + ddlCheckedby.SelectedValue.ToString();
+                ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString();
                 ed.TO_EMAIL = ddlReassignto.SelectedValue;
             }
 
@@ -542,10 +542,10 @@ public partial class Default : System.Web.UI.Page
 
     protected void BtnSave_OnClick(object sender, EventArgs e)
     {
-
         if (ddlDivision.SelectedValue != "" && hfTypeofItem.Value != "" && hfClassificationofItem.Value != "" &&
-            ddlPurposeofItem.SelectedValue != "" && tbBearerEmployeeName.Text != "" && tbDateRequested.Text != "" &&
-            tbActualDateofTransfer.Text != "" && ddlSupplierName.SelectedValue != "" && ddlCheckedby.SelectedValue != "" && ddlApprovedby.SelectedValue != "")
+            ((ddlPurposeofItem.SelectedValue != "" && ddlPurposeofItem.SelectedValue  != "Others") || (ddlPurposeofItem.SelectedValue == "Others" && tbOthers.Text != "")) && tbBearerEmployeeName.Text != "" && tbDateRequested.Text != "" &&
+            tbActualDateofTransfer.Text != "" && ddlSupplierName.SelectedValue != "" && ddlCheckedby.SelectedValue != "" && 
+            ddlApprovedby.SelectedValue != "")
         {
             Maintenance maint = new Maintenance();
             DataSet ds = new DataSet();
@@ -874,11 +874,11 @@ public partial class Default : System.Web.UI.Page
             {
                 ddlPurposeofItem.SelectedValue = "Others";
                 tbOthers.Text = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowOthers()", true);
+                divOthers.Visible = true;
             }
             else
             {
-                ddlPurposeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
+                divOthers.Visible = false;
             }
             tbBearerEmployeeNo.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeNo"].ToString();
             tbBearerEmployeeName.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeName"].ToString();
@@ -1067,7 +1067,11 @@ public partial class Default : System.Web.UI.Page
     {
         if (ddlPurposeofItem.SelectedValue == "Others")
         {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "text", "ShowOthers()", true);
+            divOthers.Visible = true;
+        }
+        else
+        {
+            divOthers.Visible = false;
         }
     }
 

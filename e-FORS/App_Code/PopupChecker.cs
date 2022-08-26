@@ -29,6 +29,10 @@ public class PopupChecker : System.Web.Services.WebService
         {
             Session["PopupChecker"] = "0";
         }
+        else if (Session["PopupChecker"].ToString() == "1")
+        {
+            Session["PopupChecker"] = "1";
+        }
         else
         {
             Session["PopupChecker"] = "0";

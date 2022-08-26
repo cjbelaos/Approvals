@@ -1,8 +1,7 @@
-﻿using System;
-using System.Data;
+﻿using Newtonsoft.Json;
+using System;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using System.Web.Services;
 
 public partial class AllTasks : System.Web.UI.Page
 {
@@ -22,43 +21,14 @@ public partial class AllTasks : System.Web.UI.Page
         }
         else
         {
-            if (!Page.IsPostBack)
-            {
-                UserID = Session["UserID"].ToString();
-                UserName = Session["UserName"].ToString();
-
-                GetAllTasks();
-            }
+            UserID = Session["UserID"].ToString();
+            UserName = Session["UserName"].ToString();
         }
-        
-        //Required for jQuery DataTables to work.
-        gvAllTasks.UseAccessibleHeader = true;
-        gvAllTasks.HeaderRow.TableSection = TableRowSection.TableHeader;
     }
 
-    private void GetAllTasks()
+    [WebMethod]
+    public static string GetAllTasks()
     {
-        DataTable dt = maint.GetAllTasks();
-        gvAllTasks.DataSource = dt;
-        gvAllTasks.DataBind();
-
-        //Required for jQuery DataTables to work.
-        gvAllTasks.UseAccessibleHeader = true;
-        gvAllTasks.HeaderRow.TableSection = TableRowSection.TableHeader;
-    }
-
-    protected void GridView_RowDataBound(object sender, GridViewRowEventArgs e)
-    {
-        this.gvAllTasks.Columns[5].Visible = false;
-    }
-
-    protected void lbControlNo_OnClick(object sender, EventArgs e)
-    {
-        var TLink = (Control)sender;
-        GridViewRow row = (GridViewRow)TLink.NamingContainer;
-        LinkButton lnk = sender as LinkButton;
-        Label lbl = (Label)row.FindControl("lblPageID");
-
-        Response.Redirect(lbl.Text + "?controlno=" + lnk.Text);
+        return JsonConvert.SerializeObject(maint.GetAllTasks());
     }
 }

@@ -319,20 +319,41 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         isSaved = fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text);
         if (isSaved == true)
         {
-            string ControlNo = tbFarmOutControlNo.Text;
-            string WorkFlowID = tbWorkFlowID.Text;
-            string ApproverID = tbApproverID.Text;
-            string ApprovalComments = tbComment.Text;
-            fodm.Approval(ControlNo, WorkFlowID, ApproverID, ApprovalComments, UserID);
+            LCApproval la = new LCApproval();
+            la.ControlNo = tbFarmOutControlNo.Text;
+            la.WorkFlowID = tbWorkFlowID.Text;
+            la.ApproverID = tbApproverID.Text;
+            la.Comment = tbComment.Text;
 
-            EmailDetails ed = new EmailDetails();
-            ed.CONTROLNO = tbFarmOutControlNo.Text;
-            ed.FROM_EMAIL = ddlPreparedby.SelectedValue;
-            ed.TO_EMAIL = ddlApprovedby.SelectedValue;
-            ed.EMAILTYPE = "Approval";
-            ed.COMMENT = tbComment.Text;
-            maint.SendEmail(ed);
+            if (tbApproverID.Text == "1")
+            {
+                la.UserID = ddlPreparedby.SelectedValue;
+            }
+            else
+            {
+                la.UserID = ddlApprovedby.SelectedValue;
+            }
+            fodm.Approval(la);
 
+            if (tbApproverID.Text == "1")
+            {
+                EmailDetails ed = new EmailDetails();
+                ed.CONTROLNO = tbFarmOutControlNo.Text;
+                ed.FROM_EMAIL = ddlPreparedby.SelectedValue;
+                ed.TO_EMAIL = ddlApprovedby.SelectedValue;
+                ed.EMAILTYPE = "Approval";
+                ed.COMMENT = tbComment.Text;
+                maint.SendEmail(ed);
+            }
+            else
+            {
+                EmailDetails ed = new EmailDetails();
+                ed.CONTROLNO = tbFarmOutControlNo.Text;
+                ed.FROM_EMAIL = ddlApprovedby.SelectedValue;
+                ed.TO_EMAIL = maint.GetRequestCreator(tbFarmOutControlNo.Text);
+                maint.SendEmailRequestApproved(ed);
+            }
+            
             GetFarmOutDocument();
             DisableForm();
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
@@ -352,11 +373,21 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
     protected void BtnSaveRequestChange_OnClick(object sender, EventArgs e)
     {
-        string ControlNo = tbFarmOutControlNo.Text;
-        string WorkFlowID = tbWorkFlowID.Text;
-        string ApproverID = tbApproverID.Text;
-        string ApprovalComments = tbRequestChangeComment.Text;
-        fodm.RequestChange(ControlNo, WorkFlowID, ApproverID, ApprovalComments, UserID);
+        LCApproval la = new LCApproval();
+        la.ControlNo = tbFarmOutControlNo.Text;
+        la.WorkFlowID = tbWorkFlowID.Text;
+        la.ApproverID = tbApproverID.Text;
+        la.Comment = tbRequestChangeComment.Text;
+
+        if (tbApproverID.Text == "1")
+        {
+            la.UserID = ddlPreparedby.SelectedValue;
+        }
+        else
+        {
+            la.UserID = ddlApprovedby.SelectedValue;
+        }
+        fodm.RequestChange(la);
 
         EmailDetails ed = new EmailDetails();
         ed.CONTROLNO = tbFarmOutControlNo.Text;
@@ -403,12 +434,14 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         }
         else
         {
-            string ControlNo = tbFarmOutControlNo.Text;
-            string WorkFlowID = tbWorkFlowID.Text;
-            string ApproverID = tbApproverID.Text;
-            string ApprovalComments = tbReassigntoComment.Text;
+            LCApproval la = new LCApproval();
+            la.ControlNo = tbFarmOutControlNo.Text;
+            la.WorkFlowID = tbWorkFlowID.Text;
+            la.ApproverID = tbApproverID.Text;
+            la.Comment = tbReassigntoComment.Text;
+            la.UserID = ddlApprovedby.SelectedValue;
             string Reassignto = ddlReassignto.SelectedValue;
-            fodm.ReassignTask(ControlNo, WorkFlowID, ApproverID, ApprovalComments, Reassignto, UserID);
+            fodm.ReassignTask(la, Reassignto);
 
             EmailDetails ed = new EmailDetails();
             ed.CONTROLNO = tbFarmOutControlNo.Text;
@@ -866,7 +899,14 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         DataTable dt = maint.GetCtrlNoPrinted8112(p8112);
         if (dt.Rows.Count > 0)
         {
-            hfControlNo.Value = dt.Rows[0]["PRINTEDCONTROLNO"].ToString();
+            if (tbFarmOutControlNo.Text == dt.Rows[0]["PRINTEDCONTROLNO"].ToString())
+            {
+                hfControlNo.Value = "";
+            }
+            else
+            {
+                hfControlNo.Value = dt.Rows[0]["PRINTEDCONTROLNO"].ToString();
+            }
         }
         
     }

@@ -60,7 +60,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         {
             //not logged in
             //Redirect to Login
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "SessionExpired();", true);
+            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "SessionExpired();", true);
             Response.Redirect("Login.aspx?expired=1");
         }
         else

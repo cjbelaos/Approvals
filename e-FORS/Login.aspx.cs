@@ -18,7 +18,7 @@ public partial class _Default : System.Web.UI.Page
         {
             //Session["UserID"] = "";
             //Session["UserName"] = "";
-            //Session["PopupChecker"] = "";
+            Session["PopupChecker"] = "";
 
             //Session["UserID"] = "B012128";
             //Session["UserName"] = "CHRIS JOHN BELAOS";

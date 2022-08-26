@@ -1681,6 +1681,35 @@ public class Maintenance
         }
     }
 
+    public void SendEmailRequestApproved(EmailDetails ed)
+    {
+        using (SqlCommand cmd = new SqlCommand("SendEmailRequestApproved", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", ed.CONTROLNO);
+            cmd.Parameters.AddWithValue("@FROM", ed.FROM_EMAIL);
+            cmd.Parameters.AddWithValue("@TO", ed.TO_EMAIL);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+        }
+    }
+
     public void AddPrinted8112(Printed8112 p8112)
     {
         using (SqlCommand cmd = new SqlCommand("sp_AddPrinted8112", conn) { CommandType = CommandType.StoredProcedure })

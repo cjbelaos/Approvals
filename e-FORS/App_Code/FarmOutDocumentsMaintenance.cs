@@ -226,15 +226,15 @@ public class FarmOutDocumentsMaintenance
             conn.Close();
         }
     }
-    public void Approval(string ControlNo, string WorkFlowID, string ApproverID, string ApprovalComments, string UserID)
+    public void Approval(LCApproval la)
     {
         using (var cmd = new SqlCommand("APPROVE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
-            cmd.Parameters.AddWithValue("@WORKFLOWID", WorkFlowID);
-            cmd.Parameters.AddWithValue("@APPROVERID", ApproverID);
-            cmd.Parameters.AddWithValue("@APPROVALCOMMENTS", ApprovalComments);
-            cmd.Parameters.AddWithValue("@UID", UserID);
+            cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
+            cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
+            cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
+            cmd.Parameters.AddWithValue("@APPROVALCOMMENTS", la.Comment);
+            cmd.Parameters.AddWithValue("@UID", la.UserID);
 
             try
             {
@@ -257,15 +257,15 @@ public class FarmOutDocumentsMaintenance
         }
     }
 
-    public void RequestChange(string ControlNo, string WorkFlowID, string ApproverID, string ApprovalComments, string UserID)
+    public void RequestChange(LCApproval la)
     {
         using (var cmd = new SqlCommand("REQUEST_CHANGE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
-            cmd.Parameters.AddWithValue("@WORKFLOWID", WorkFlowID);
-            cmd.Parameters.AddWithValue("@APPROVERID", ApproverID);
-            cmd.Parameters.AddWithValue("@REQUESTCHANGECOMMENT", ApprovalComments);
-            cmd.Parameters.AddWithValue("@UID", UserID);
+            cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
+            cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
+            cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
+            cmd.Parameters.AddWithValue("@REQUESTCHANGECOMMENT", la.Comment);
+            cmd.Parameters.AddWithValue("@UID", la.UserID);
 
             try
             {
@@ -288,16 +288,16 @@ public class FarmOutDocumentsMaintenance
         }
     }
 
-    public void ReassignTask(string ControlNo, string WorkFlowID, string ApproverID, string ApprovalComments, string Reassignto, string UserID)
+    public void ReassignTask(LCApproval la, string Reassignto)
     {
         using (var cmd = new SqlCommand("REASSIGN_TASK_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
-            cmd.Parameters.AddWithValue("@WORKFLOWID", WorkFlowID);
-            cmd.Parameters.AddWithValue("@APPROVERID", ApproverID);
-            cmd.Parameters.AddWithValue("@REASSIGNEDCOMMENTS", ApprovalComments);
+            cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
+            cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
+            cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
+            cmd.Parameters.AddWithValue("@REASSIGNEDCOMMENTS", la.Comment);
             cmd.Parameters.AddWithValue("@REASSIGNEDTO", Reassignto);
-            cmd.Parameters.AddWithValue("@UID", UserID);
+            cmd.Parameters.AddWithValue("@UID", la.UserID);
 
             try
             {

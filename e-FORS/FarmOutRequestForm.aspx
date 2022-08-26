@@ -102,7 +102,7 @@
                                     <!-- /.form-group -->
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group" id="Others" hidden>
+                                    <div runat="server" class="form-group" id="divOthers" visible="false">
                                         <label>Others</label>
                                         <asp:TextBox runat="server" ID="tbOthers" CssClass="form-control"></asp:TextBox>
                                     </div>
@@ -1187,10 +1187,6 @@
 
         function ModalErrorPrevention() {
             $("#modalRequestChange").modal({ backdrop: "static ", keyboard: false });
-        }
-
-        function ShowOthers() {
-            $('#Others').removeAttr('hidden');
         }
 
     </script>
