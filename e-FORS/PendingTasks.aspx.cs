@@ -3,12 +3,11 @@ using System;
 using System.Web;
 using System.Web.Services;
 
-public partial class Testing : System.Web.UI.Page
+public partial class PendingTasks : System.Web.UI.Page
 {
     private static readonly Maintenance maint = new Maintenance();
     public static string UserID;
     public static string UserName;
-
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["UserID"] == null)
@@ -25,16 +24,9 @@ public partial class Testing : System.Web.UI.Page
             UserName = Session["UserName"].ToString();
         }
     }
-
     [WebMethod]
-    public static string GetFinished8112Tasks()
+    public static string GetPendingTasks(string user)
     {
-        return JsonConvert.SerializeObject(maint.GetFinished8112Tasks());
-    }
-
-
-    protected void btnPrint_Click(object sender, EventArgs e)
-    {
-
+        return JsonConvert.SerializeObject(maint.GetPendingTasks(user));
     }
 }

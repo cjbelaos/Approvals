@@ -1,6 +1,8 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="MyTasks.aspx.cs" Inherits="MyTasks" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="MyPendingTasks.aspx.cs" Inherits="MyPendingTasks" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="maincontent" runat="Server">
+<asp:Content ID="Content1" ContentPlaceHolderID="style" Runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="maincontent" Runat="Server">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -10,7 +12,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                        <li class="breadcrumb-item active">My Tasks</li>
+                        <li class="breadcrumb-item active">Pending Tasks</li>
                     </ol>
                 </div>
             </div>
@@ -24,12 +26,12 @@
 
             <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">My Tasks</h3>
+                    <h3 class="card-title">Pending Tasks</h3>
                 </div>
                 <!-- /.card-header -->
 
                 <div class="card-body" style="width: 100%; overflow: scroll">
-                    <table id="tableAllTasks" class="table table-bordered table-striped table-sm" style="white-space: nowrap; font-size: 13px; width: 1020px;">
+                    <table id="tableMyPendingTasks" class="table table-bordered table-striped table-sm">
                     </table>
                 </div>
                 <!-- /.card-body -->
@@ -42,7 +44,7 @@
         </div>
     </section>
 </asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="script" runat="Server">
+<asp:Content ID="Content3" ContentPlaceHolderID="script" Runat="Server">
     <script type="text/javascript">
         var MainTable;
         $(document).ready(function () {
@@ -50,7 +52,7 @@
                 Session = e;
                 var user_id = Session["UserID"];
                 console.log(user_id);
-                GetMyTasks(user_id);
+                GetMyPendingTasks(user_id);
             });
             function GetSession(callback) {
                 $.ajax({
@@ -75,9 +77,9 @@
                     }
                 });
             }
-            function GetMyTasks(user_id, callback) {
+            function GetMyPendingTasks(user_id, callback) {
                 $.ajax({
-                    url: "MyTasks.aspx/GetMyTasks",
+                    url: "MyPendingTasks.aspx/GetMyPendingTasks",
                     type: "POST",
                     data: JSON.stringify ({ user: user_id }),
                     contentType: "application/json;charset=utf-8",
@@ -90,7 +92,7 @@
                         if (MainTable !== undefined && MainTable !== null) {
                             MainTable.clear().destroy();
                         }
-                        MainTable = $("#tableAllTasks").DataTable({
+                        MainTable = $("#tableMyPendingTasks").DataTable({
                             paging: true,
                             lengthChange: true,
                             ordering: true,
@@ -101,11 +103,12 @@
                             data: d,
                             columns: [
                                 { data: "CONTROLNO", title: 'Control No.' },
-                                { data: "SupplierName", title: 'Supplier' },
-                                { data: "DestinationAddress", title: 'Address' },
-                                { data: "DOCUMENTFORMAT", title: 'Format' },
+                                { data: "SUPPLIER", title: 'Supplier' },
+                                { data: "ADDRESS", title: 'Address' },
+                                { data: "PURPOSE", title: 'Purpose' },
                                 { data: "DIVISION", title: 'Division' },
                                 { data: "PROCESSNAME", title: 'Task' },
+                                { data: "ASSIGNEDUSERNAME", title: 'Assigned' },
                                 {
                                     data: "ASSIGNEDDATE", title: 'Assigned Date', render: function (e) {
                                         return moment(e).format("L");
@@ -113,7 +116,7 @@
                                 },
                                 { data: "PAGEID", title: 'Page', visible: false, searchable: false },
                             ],
-                            order: [[6, 'desc']],
+                            order: [[8, 'desc']],
                             columnDefs: [
                                 {
                                     targets: 0,
@@ -130,7 +133,6 @@
                 });
             }
         });
-
     </script>
 </asp:Content>
 

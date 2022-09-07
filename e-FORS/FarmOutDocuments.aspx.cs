@@ -43,6 +43,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
                 if (Request.QueryString["controlno"] != null)
                 {
+                    BtnCancel.Visible = true;
                     BtnSave.Enabled = true;
                     tbFarmOutControlNo.Text = Request.QueryString["controlno"].ToString();
                     //GetFiles();
@@ -626,7 +627,15 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             var parsedDate = DateTime.Parse(Date);
             Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
 
-            Session["PreparedBy"] = ddlPreparedby.SelectedItem.ToString();
+            string FullName = ddlPreparedby.SelectedItem.ToString();
+            string[] Names = FullName.Split(' ');
+            for (int i = 0; i < Names.Length - 1; i++)
+            {
+                Names[i] = Names[i].Substring(0, 1);
+            }
+            FullName = string.Join(".", Names);
+
+            Session["PreparedBy"] = FullName;
             Session["ApprovedBy"] = ddlApprovedby.SelectedItem.ToString();
 
             FarmOutDetails fo = new FarmOutDetails();
@@ -825,7 +834,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             p8112.SUBCONTROLNO = ControlNos;
             p8112.USERID = UserID;
             maint.AddPrinted8112(p8112);
-            
+
 
             Session["ControlNoS"] = ControlNos;
 
@@ -1050,6 +1059,31 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         else
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "FileNotExistAlert();", true);
+        }
+    }
+
+    protected void BtnCancel_Click(object sender, EventArgs e)
+    {
+        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalCancel').modal('show');", true);
+    }
+
+    protected void BtnCancelRequest_Click(object sender, EventArgs e)
+    {
+        if (txtReason.Text != "")
+        {
+            Approval a = new Approval();
+            a.ControlNo = tbFarmOutControlNo.Text;
+            a.Comment = txtReason.Text;
+            a.UserID = UserID;
+            maint.CancelRequest(a);
+
+            Response.Redirect("FarmOutRequestForm.aspx");
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalCancel", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "NoCommentAlert();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalCancel').modal('show');", true);
         }
     }
 }

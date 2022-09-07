@@ -1,5 +1,13 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="AllTasks.aspx.cs" Inherits="AllTasks" %>
 
+<asp:Content ID="css" ContentPlaceHolderID="style" runat="server">
+    <style type="text/css">
+        table.dataTable thead tr {
+            background-color: #007bff;
+        }
+    </style>
+</asp:Content>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="maincontent" runat="Server">
     <section class="content-header">
         <div class="container-fluid">
@@ -29,7 +37,8 @@
                 <!-- /.card-header -->
 
                 <div class="card-body" style="width: 100%; overflow: scroll">
-                    <table id="tableAllTasks" class="table table-bordered table-striped table-sm">
+                    <table id="tableAllTasks" class="table table-bordered table-hover table-condensed table-sm" style="white-space: nowrap; font-size: 13px; width: 1020px;">
+                        <thead class="th"></thead>
                     </table>
                 </div>
                 <!-- /.card-body -->
@@ -47,6 +56,7 @@
         var MainTable;
         $(document).ready(function () {
             GetAllTasks();
+            $('td:eq(0)', row).css('color', 'white');
         });
         function GetAllTasks(callback) {
             $.ajax({
@@ -64,12 +74,13 @@
                         MainTable.clear().destroy();
                     }
                     MainTable = $("#tableAllTasks").DataTable({
+                        select: true,
                         paging: true,
                         lengthChange: true,
                         ordering: true,
                         info: true,
                         autoWidth: true,
-                        responsive: true,
+                        responsive: false,
                         buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
                         data: d,
                         columns: [
@@ -81,27 +92,27 @@
                             { data: "DIVISION", title: 'Division' },
                             { data: "PROCESSNAME", title: 'Task' },
                             { data: "ASSIGNEDUSERNAME", title: 'Assigned' },
-                        {
-                            data: "ASSIGNEDDATE", title: 'Assigned Date', render: function (e) {
-                                return moment(e).format("L");
+                            {
+                                data: "ASSIGNEDDATE", title: 'Assigned Date', render: function (e) {
+                                    return moment(e).format("L");
+                                },
                             },
-                        },
-                        { data: "PAGEID", title: 'Page', visible: false, searchable: false },
+                            { data: "PAGEID", title: 'Page', visible: false, searchable: false },
                         ],
                         order: [[8, 'desc']],
                         columnDefs: [
-                        {
-                            targets: 0,
-                            render: function (data, type, row, meta) {
-                                return '<a href="'+ row["PAGEID"] +'?controlno=' + data + '" style="font-weight: bold; color: #cc0000">' + data + '</a>';
+                            {
+                                targets: 0,
+                                render: function (data, type, row, meta) {
+                                    return '<a href="' + row["PAGEID"] + '?controlno=' + data + '" style="font-weight: bold; color: #cc0000">' + data + '</a>';
+                                },
                             },
-                        },
-                    ],
+                        ],
                     });
-        },
-        error: function (err) {
-            console.log(err);
-        }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
             });
         }
 

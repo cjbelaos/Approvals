@@ -13,6 +13,7 @@ public partial class TestLOA : System.Web.UI.Page
 {
     private static readonly LOAMaintenance loamaint = new LOAMaintenance();
     private static readonly Maintenance maint = new Maintenance();
+    private DataTable dtLOANo = new DataTable();
     public static string UserName;
     public static string UserID;
     protected void Page_Load(object sender, EventArgs e)
@@ -34,13 +35,24 @@ public partial class TestLOA : System.Web.UI.Page
 
                 AddSupplierName();
                 GetLOA();
+                GetLOANos();
             }
         }
     }
 
     protected void BtnSearch_OnClick(object sender, EventArgs e)
     {
-        hfFileName.Value = ddlLOANo.SelectedValue;
+        //if (ddlLOANo.SelectedValue != "")
+        //{
+        //    GetLOA();
+        //    {
+        //        ddlLOANo.SelectedItem.Value = ddlLOANo.SelectedValue;
+        //    }
+        //}
+        //else
+        //{
+        //    GetLOA();
+        //}
         GetLOA();
     }
 
@@ -50,6 +62,7 @@ public partial class TestLOA : System.Web.UI.Page
         ddlSupplier.SelectedIndex = 0;
         tbDateFrom.Text = "";
         tbDateTo.Text = "";
+        ddlLOANo.SelectedIndex = 0;
     }
 
     private void AddSupplierName()
@@ -78,12 +91,16 @@ public partial class TestLOA : System.Web.UI.Page
         gvLOA.UseAccessibleHeader = true;
         gvLOA.HeaderRow.TableSection = TableRowSection.TableHeader;
 
-        DataTable dt = ds.Tables[1];
-        if (dt.Rows.Count > 0)
+        dtLOANo = ds.Tables[1];
+    }
+
+    private void GetLOANos()
+    {
+        if (dtLOANo.Rows.Count > 0)
         {
             divLOA.Visible = true;
 
-            ddlLOANo.DataSource = dt;
+            ddlLOANo.DataSource = dtLOANo;
             ddlLOANo.DataTextField = "LOANO";
             ddlLOANo.DataValueField = "LOANO";
             ddlLOANo.DataBind();
@@ -93,43 +110,37 @@ public partial class TestLOA : System.Web.UI.Page
 
     protected void BtnSave_Click(object sender, EventArgs e)
     {
-        ReportDetails rd = new ReportDetails();
-        rd.Supplier = ddlSupplier.SelectedValue;
-        rd.Section = tbSection.Text;
-        rd.DateFrom = tbDateFrom.Text;
-        rd.DateTo = tbDateTo.Text;
-        rd.LOANo = hfFileName.Value;
-        DataSet ds = maint.GetLOAReport(rd);
-
-        DataTable dt = ds.Tables[0];
-        DataSet ds1 = new DataSet();
-        DataSet ds2 = new DataSet();
-
-        var LOA = from rows in dt.AsEnumerable()
-                  group rows by new { TypeOfItem = rows["LOANO"] } into grp
-                  select grp;
-
-        foreach (var item in LOA)
+        if (ddlLOANo.SelectedValue != "")
         {
-            ds1.Tables.Add(item.CopyToDataTable());
-        }
+            ReportDetails rd = new ReportDetails();
+            rd.Supplier = ddlSupplier.SelectedValue;
+            rd.Section = tbSection.Text;
+            rd.DateFrom = tbDateFrom.Text;
+            rd.DateTo = tbDateTo.Text;
+            rd.LOANo = ddlLOANo.SelectedValue;
+            DataSet ds = maint.GetLOAReport(rd);
 
-        foreach (DataTable Table in ds1.Tables)
-        {
-            var result = from rows in Table.AsEnumerable()
+            DataTable dt = ds.Tables[0];
+            DataSet ds1 = new DataSet();
+
+            var result = from rows in dt.AsEnumerable()
                          group rows by new { TypeOfItem = rows["TYPEOFITEM"] } into grp
                          select grp;
 
             foreach (var item in result)
             {
-                ds2.Tables.Add(item.CopyToDataTable());
+                ds1.Tables.Add(item.CopyToDataTable());
             }
 
-            //string LOANo = Typeof;
-            //string FileName = LOANo.Replace("/", "-");
-            //string Path = @"~\Reports\LOA\" + FileName + ".xlsx";
-            //createExcelFile(ds2, Server.MapPath(Path));
-            //Response.Redirect(Path);
+            string LOANo = ddlLOANo.SelectedValue;
+            string FileName = LOANo.Replace("/", "-");
+            string Path = @"~\Reports\LOA\" + FileName + ".xls";
+            createExcelFile(ds1, Server.MapPath(Path));
+            Response.Redirect(Path);
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "SelectLOAAlert();", true);
         }
     }
 

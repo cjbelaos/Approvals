@@ -40,6 +40,7 @@
                                         <div class="input-group">
                                             <asp:TextBox runat="server" ID="tbControlNo" CssClass="form-control ControlNo" Enabled="false"></asp:TextBox>
                                             <div class="input-group-append">
+                                                <asp:Button runat="server" ID="BtnCancel" CssClass="btn btn-danger" Text="Cancel" OnClick="BtnCancel_Click" Visible="false" />
                                                 <asp:LinkButton runat="server" ID="LnkBtnBack" CssClass="btn btn-info" Text="Back" OnClick="LnkBtnBack_Click" />
                                             </div>
                                         </div>
@@ -945,12 +946,36 @@
             </section>
         </ContentTemplate>
     </asp:UpdatePanel>
+
+    <asp:UpdatePanel ID="upCancel" runat="server">
+        <ContentTemplate>
+            <!-- Modal -->
+            <div class="modal fade" id="modalCancel" data-backdrop="static">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body justify-content-between">
+                            <asp:TextBox runat="server" ID="txtReason" CssClass="form-control" TextMode="MultiLine" placeholder="Reason for cancellation"></asp:TextBox>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <asp:Button runat="server" ID="BtnCancelRequest" CssClass="btn btn-danger btn-sm" Text="Yes" OnClick="BtnCancelRequest_Click" Width="70px" />
+                            <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" style="width: 70px">No</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal -->
+        </ContentTemplate>
+    </asp:UpdatePanel>
+
 </asp:Content>
 
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
 
         $(function () {
+
             $('#<%=ddlTypeofItem.ClientID%>').on('change', function () {
                 x = $(this).val();
                 array = x + ""
@@ -968,6 +993,30 @@
 
             var items = ($('#<%=hfClassificationofItem.ClientID%>').val().split(','));
             $("#<%=ddlClassificationofItem.ClientID%>").val(items).trigger('change');
+
+            $('#<%=ddlItemType.ClientID%>').on('change', function () {
+                x = $(this).val();
+                if (x !== '') {
+                    CheckIfLOALimit(function (e) {
+                        var qtylimit = e[0]["QTYLIMITREACH"];
+                        var amtlimit = e[0]["AMTLIMITREACH"];
+
+                        if (qtylimit === '1' && amtlimit === '0') {
+                            LOAQTYLimitReachAlert();
+                        }
+                        else if (qtylimit === '0' && amtlimit === '1') {
+                            LOAAMTLimitReachAlert();
+                        }
+                        else if (qtylimit === '1' && amtlimit === '1') {
+                            LOALimitReachAlert();
+                        }
+                        else {
+                            LOALimitReachAlert();
+                        }
+                    });
+
+                }
+            });
 
             //Initialize Select2 Elements
             $('.select2').select2()
@@ -1012,6 +1061,30 @@
 
                 var items = ($('#<%=hfClassificationofItem.ClientID%>').val().split(','));
                 $("#<%=ddlClassificationofItem.ClientID%>").val(items).trigger('change');
+
+                $('#<%=ddlItemType.ClientID%>').on('change', function () {
+                    x = $(this).val();
+                    if (x !== '') {
+                        CheckIfLOALimit(function (e) {
+                            var qtylimit = e[0]["QTYLIMITREACH"];
+                            var amtlimit = e[0]["AMTLIMITREACH"];
+
+                            if (qtylimit === '1' && amtlimit === '0') {
+                                LOAQTYLimitReachAlert();
+                            }
+                            else if (qtylimit === '0' && amtlimit === '1') {
+                                LOAAMTLimitReachAlert();
+                            }
+                            else if (qtylimit === '1' && amtlimit === '1') {
+                                LOALimitReachAlert();
+                            }
+                            else {
+                                LOALimitReachAlert();
+                            }
+                        });
+
+                    }
+                });
 
                 //Initialize Select2 Elements
                 $('.select2').select2()
@@ -1149,6 +1222,44 @@
             })
         }
 
+        function FileNotExistAlert() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'error',
+                title: 'File not exist! Maybe it is remove or replace.'
+            })
+        }
+
+        function NoCommentAlert() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'warning',
+                title: 'Please state your reason for cancellation.'
+            })
+        }
+
+        function LOAQTYLimitReachAlert() {
+            toastr.warning('Please be inform that the LOA that you are going to use only have 20% quantity left. Thank you.')
+        }
+
+        function LOAAmtLimitReachAlert() {
+            toastr.warning('Please be inform that the LOA that you are going to use only have 20% amount left. Thank you.')
+        }
+
+        function LOALimitReachAlert() {
+            toastr.warning('Please be inform that the LOA that you are going to use only have 20% quantity and amount left. Thank you.')
+        }
+
         function ApprovedFarmOutSuccessAlert() {
             toastr.success('Task successfully approve!')
         }
@@ -1189,5 +1300,29 @@
             $("#modalRequestChange").modal({ backdrop: "static ", keyboard: false });
         }
 
+        function CheckIfLOALimit(callback) {
+            var LOADetails = {};
+            LOADetails.SUPPLIERID = $("#<%=ddlSupplierName.ClientID%>").val();
+            LOADetails.DIVISION = $("#<%=ddlDivision.ClientID%>").val();
+            LOADetails.DESCRIPTION = $("#<%=ddlItemType.ClientID%>").val();
+            $.ajax({
+                type: "post",
+                url: "FarmoutRequestForm.aspx/CheckIfLOALimit",
+                method: "post",
+                data: JSON.stringify({ ld: LOADetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    console.log(d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+        }
     </script>
 </asp:Content>

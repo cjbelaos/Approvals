@@ -4,6 +4,8 @@ using System.Web.UI.WebControls;
 using System.Web.UI;
 using System.Web;
 using System.IO;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class Default : System.Web.UI.Page
 {
@@ -53,10 +55,18 @@ public partial class Default : System.Web.UI.Page
                 GetCheckedby();
                 GetApprovedby();
                 GetItems();
-                GetFiles();
+                //GetFiles();
 
                 if (Request.QueryString["CONTROLNO"] != null)
                 {
+                    if (UserID == ddlRequestedby.SelectedValue)
+                    {
+                        BtnCancel.Visible = true;
+                    }
+                    else
+                    {
+                        BtnCancel.Visible = false;
+                    }
                     BtnPrint.Visible = true;
                     tbControlNo.Text = Request.QueryString["CONTROLNO"];
                     GetFarmOut();
@@ -280,6 +290,15 @@ public partial class Default : System.Web.UI.Page
         a.Comment = tbComment.Text;
         maint.Approval(a);
 
+        if (tbApproverID.Text == "1")
+        {
+            FarmOutDetails fod = new FarmOutDetails();
+            fod.SupplierID = ddlSupplierName.SelectedValue;
+            fod.Division = ddlDivision.SelectedValue;
+            a.Requestedby = ddlRequestedby.SelectedValue;
+            maint.SendEmailLOALimit(fod, a);
+        }
+
         EmailDetails ed = new EmailDetails();
         ed.CONTROLNO = tbControlNo.Text;
 
@@ -303,6 +322,7 @@ public partial class Default : System.Web.UI.Page
         ed.COMMENT = tbComment.Text;
         maint.SendEmail(ed);
 
+
         GetFarmOut();
         DisableControl();
 
@@ -311,16 +331,16 @@ public partial class Default : System.Web.UI.Page
 
         int day = (int)DateTime.Now.DayOfWeek;
         TimeSpan time = DateTime.Now.TimeOfDay;
-        if (day == 2 && time > new TimeSpan(04, 00, 00) && time <= new TimeSpan(24, 00, 00))
+        if (day == 2 && time > new TimeSpan(16, 00, 00) && time <= new TimeSpan(24, 00, 00))
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalFri').modal('show');", true);
         }
-        else if (day == 3 && time >= new TimeSpan(00, 00, 00) && time < new TimeSpan(08, 00, 00))
+        else if (day == 3 && time >= new TimeSpan(16, 00, 00) && time < new TimeSpan(08, 00, 00))
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalFri').modal('show');", true);
         }
 
-        if (day == 4 && time > new TimeSpan(04, 00, 00) && time <= new TimeSpan(24, 00, 00))
+        if (day == 4 && time > new TimeSpan(16, 00, 00) && time <= new TimeSpan(24, 00, 00))
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalMon').modal('show');", true);
         }
@@ -329,7 +349,7 @@ public partial class Default : System.Web.UI.Page
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalMon').modal('show');", true);
         }
 
-        if (day == 5 && time > new TimeSpan(08, 00, 00) && time <= new TimeSpan(24, 00, 00))
+        if (day == 5 && time > new TimeSpan(16, 00, 00) && time <= new TimeSpan(24, 00, 00))
         {
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalWed').modal('show');", true);
         }
@@ -461,7 +481,7 @@ public partial class Default : System.Web.UI.Page
     {
         if (string.IsNullOrEmpty(tbID.Text))
         {
-            if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "")
+            if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "" || tbAmount.Text == "")
             {
                 ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
@@ -503,7 +523,7 @@ public partial class Default : System.Web.UI.Page
         {
             try
             {
-                if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemNo.Text == "" || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "")
+                if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "" || tbAmount.Text == "")
                 {
                     ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
                     ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
@@ -869,7 +889,7 @@ public partial class Default : System.Web.UI.Page
             string selectedClassificationOfItem = ds.Tables[0].DefaultView[0]["ClassificationOfItem"].ToString();
             string ClassificationOfItem = selectedClassificationOfItem.Replace(" | ", ",");
             hfClassificationofItem.Value = ClassificationOfItem;
-
+            
             if (ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()) == null)
             {
                 ddlPurposeofItem.SelectedValue = "Others";
@@ -878,7 +898,9 @@ public partial class Default : System.Web.UI.Page
             }
             else
             {
-                divOthers.Visible = false;
+                ddlPurposeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
+                //ddlPurposeofItem.ClearSelection();
+                //ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()).Selected = true;
             }
             tbBearerEmployeeNo.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeNo"].ToString();
             tbBearerEmployeeName.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeName"].ToString();
@@ -972,6 +994,7 @@ public partial class Default : System.Web.UI.Page
         ddlTypeofItem.Enabled = false;
         ddlClassificationofItem.Enabled = false;
         ddlPurposeofItem.Enabled = false;
+        tbOthers.Enabled = false;
         tbBearerEmployeeNo.Enabled = false;
         tbBearerEmployeeName.Enabled = false;
         tbLocalNo.Enabled = false;
@@ -1000,7 +1023,7 @@ public partial class Default : System.Web.UI.Page
         BtnConfirm2.Enabled = false;
         BtnConfirm3.Enabled = false;
         gvItems.Enabled = false;
-        //gvFiles.Enabled = false;
+        gvFiles.Enabled = true;
     }
 
     private void EnableControl()
@@ -1122,10 +1145,16 @@ public partial class Default : System.Web.UI.Page
         if (File.Exists(FilePath))
         {
             Response.Redirect(filePath);
+            //string rurl = ResolveUrl(filePath);
+            //string url = rurl.Remove(0, 1);
+            //hrefFile.HRef = url;
+            //hrefFile.InnerText = url;
+            //Session["url"] = url;
+            //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "WindowOpen();", true);
         }
         else
         {
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "FileNotExistAlert();", true);
         }
     }
 
@@ -1158,7 +1187,7 @@ public partial class Default : System.Web.UI.Page
                 ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
             }
         }
-        Page.Response.Redirect(Page.Request.Url.ToString(), true);
+        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
     }
 
     protected void gvFiles_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -1176,14 +1205,48 @@ public partial class Default : System.Web.UI.Page
             }
 
             LinkButton link = (LinkButton)e.Row.FindControl("lblFileName");
-            if (maint.CheckAuthorization(Session["UserID"].ToString()) == false)
-            {
-                link.Enabled = false;
-            }
-            else
+            if (maint.CheckAuthorization(Session["UserID"].ToString()) == true ||
+                ddlRequestedby.SelectedValue == Session["UserID"].ToString() || 
+                ddlCheckedby.SelectedValue == Session["UserID"].ToString() || 
+                ddlApprovedby.SelectedValue == Session["UserID"].ToString())
             {
                 link.Enabled = true;
             }
+            else
+            {
+                link.Enabled = false;
+            }
+        }
+    }
+
+    [WebMethod]
+    public static string CheckIfLOALimit(LOADetails ld)
+    {
+        return JsonConvert.SerializeObject(maint.GetLOALimitPercentage(ld));
+    }
+
+    protected void BtnCancel_Click(object sender, EventArgs e)
+    {
+        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalCancel').modal('show');", true);
+    }
+
+    protected void BtnCancelRequest_Click(object sender, EventArgs e)
+    {
+        if (txtReason.Text != "")
+        {
+            Approval a = new Approval();
+            a.ControlNo = tbControlNo.Text;
+            a.Comment = txtReason.Text;
+            a.UserID = UserID;
+            maint.CancelRequest(a);
+
+            Response.Redirect("FarmOutRequestForm.aspx");
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalCancel", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "NoCommentAlert();", true);
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalCancel').modal('show');", true);
         }
     }
 }

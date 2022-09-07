@@ -79,7 +79,7 @@ public partial class GatepassPrint : System.Web.UI.Page
                 byte[] buffer = new byte[s.Length];
 
                 s.Read(buffer, 0, (int)s.Length);
-
+                //
                 Response.BinaryWrite(buffer);
 
                 Response.End();

@@ -131,6 +131,41 @@ public class Maintenance
         }
     }
 
+    public DataTable GetPendingTasks(string UserID)
+    {
+        using (var cmd = new SqlCommand("GET_TASKLIST_SECTION_REQUESTOR", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@USERID", UserID);
+            cmd.CommandTimeout = 360000;
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dt;
+        }
+    }
+
     public DataTable GetMyTasks(string UserID)
     {
         using (var cmd = new SqlCommand("GET_TASKLIST_USER", conn) { CommandType = CommandType.StoredProcedure })
@@ -169,6 +204,37 @@ public class Maintenance
     public DataTable GetFinishedTasks()
     {
         using (SqlCommand cmd = new SqlCommand("GetFinishedTasks", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd);
+            DataTable dataTable = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    sqlDataAdapter.Fill(dataTable);
+                }
+                else
+                {
+                    conn.Open();
+                    sqlDataAdapter.Fill(dataTable);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dataTable;
+        }
+    }
+
+    public DataTable GetFinished8112Tasks()
+    {
+        using (SqlCommand cmd = new SqlCommand("GetFinished8112Tasks", conn) { CommandType = CommandType.StoredProcedure })
         {
             SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd);
             DataTable dataTable = new DataTable();
@@ -410,7 +476,7 @@ public class Maintenance
                 cmd.Parameters.AddWithValue("@TypeOfItem", i.TypeOfItem);
                 cmd.Parameters.AddWithValue("@ItemCode", i.ItemCode);
                 cmd.Parameters.AddWithValue("@ItemDescription", i.ItemDescription);
-                cmd.Parameters.AddWithValue("@Quantity", i.Quantity.ToString());
+                cmd.Parameters.AddWithValue("@Quantity", i.Quantity);
                 cmd.Parameters.AddWithValue("@UnitOfMeasurement", i.UnitOfMeasurement);
                 cmd.Parameters.AddWithValue("@Amount", i.Amount.ToString());
                 cmd.Parameters.AddWithValue("@AssetNo", i.AssetNo);
@@ -458,9 +524,9 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@TypeOfItem", i.TypeOfItem);
             cmd.Parameters.AddWithValue("@ItemCode", i.ItemCode);
             cmd.Parameters.AddWithValue("@ItemDescription", i.ItemDescription);
-            cmd.Parameters.AddWithValue("@Quantity", i.Quantity.ToString());
+            cmd.Parameters.AddWithValue("@Quantity", i.Quantity);
             cmd.Parameters.AddWithValue("@UnitOfMeasurement", i.UnitOfMeasurement);
-            cmd.Parameters.AddWithValue("@Amount", i.Amount.ToString());
+            cmd.Parameters.AddWithValue("@Amount", i.Amount);
             cmd.Parameters.AddWithValue("@AssetNo", i.AssetNo);
             cmd.Parameters.AddWithValue("@ODNo", i.ODNo);
             cmd.Parameters.AddWithValue("@ContainerNo", i.ContainerNo);
@@ -834,36 +900,39 @@ public class Maintenance
         return JsonConvert.SerializeObject(ds.Tables[1]);
     }
 
+
     public DataTable GetMyTasksCount(string APOAccount)
     {
-        SqlCommand cmd = new SqlCommand("GetMyTasksCount", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@APOAccount", APOAccount);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataSet ds = new DataSet();
-
-        try
+        using (var cmd = new SqlCommand("GetMyTasksCount", conn) { CommandType = CommandType.StoredProcedure })
         {
-            if (conn.State == ConnectionState.Open)
+            cmd.Parameters.AddWithValue("@APOAccount", APOAccount);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+
+            try
             {
-                da.Fill(ds);
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(ds);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(ds);
+                }
             }
-            else
+            catch (SqlException sqlex)
             {
-                conn.Open();
-                da.Fill(ds);
+                throw sqlex;
+            }
+            finally
+            {
                 conn.Close();
             }
             return ds.Tables[1];
         }
-        catch (SqlException sqlex)
-        {
-            throw sqlex;
-        }
     }
-
     public Boolean CheckAuthorization(string APO)
     {
         SqlCommand cmd = new SqlCommand("CheckAuthorization", conn);
@@ -1866,4 +1935,197 @@ public class Maintenance
             return ds;
         }
     }
+
+    public DataSet GetLiquidationLedger(ReportDetails rd)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetLiquidationLedger", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@LOANO", rd.LOANo);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(ds);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(ds);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return ds;
+        }
+    }
+
+    public DataTable GetLOALimitPercentage(LOADetails ld)
+    {
+        using (SqlCommand cmd = new SqlCommand("GetLOALimitPercentage", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@SUPPLIERID", ld.SUPPLIERID);
+            cmd.Parameters.AddWithValue("@DIVISION", ld.DIVISION);
+            cmd.Parameters.AddWithValue("@DESCRIPTION", ld.DESCRIPTION);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
+    public void SendEmailLOALimit(FarmOutDetails fod, Approval a)
+    {
+        using (SqlCommand cmd = new SqlCommand("SendEmailLOALimit", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@FROM", a.Requestedby);
+            cmd.Parameters.AddWithValue("@SUPPLIERID", fod.SupplierID);
+            cmd.Parameters.AddWithValue("@DIVISION", fod.Division);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+    }
+
+    public void CancelRequest(Approval a)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_CancelRequest", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo);
+            cmd.Parameters.AddWithValue("@COMMENT", a.Comment);
+            cmd.Parameters.AddWithValue("@USERID", a.UserID);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+    }
+    //public Boolean CheckIfPrinted(FarmOutDocumentDetails fdd)
+    //{
+    //    using (var cmd = new SqlCommand("CheckIfPrinted", conn) { CommandType = CommandType.StoredProcedure })
+    //    {
+    //        cmd.Parameters.AddWithValue("@CONTROLNO", fdd.CONTROLNO);
+
+    //        SqlDataAdapter da = new SqlDataAdapter(cmd);
+    //        DataTable dt = new DataTable();
+
+    //        try
+    //        {
+    //            if (conn.State == ConnectionState.Open)
+    //            {
+    //                da.Fill(dt);
+    //            }
+    //            else
+    //            {
+    //                conn.Open();
+    //                da.Fill(dt);
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            ex.Message.ToString();
+    //        }
+
+    //        if (dt.Rows.Count > 0)
+    //        {
+    //            return true;
+    //        }
+    //        else
+    //        {
+    //            return false;
+    //        }
+    //    }
+    //}
+
+    //public void DeletePrinted8112(FarmOutDocumentDetails fd)
+    //{
+    //    using (var cmd = new SqlCommand("sp_DeletePrinted8112", conn) { CommandType = CommandType.StoredProcedure })
+    //    {
+    //        cmd.Parameters.AddWithValue("@CONTROLNO", fd.CONTROLNO);
+    //        cmd.Parameters.AddWithValue("@USERID", fd.USERID);
+
+    //        try
+    //        {
+    //            if (conn.State == ConnectionState.Open)
+    //            {
+
+    //                cmd.ExecuteNonQuery();
+    //            }
+    //            else
+    //            {
+    //                conn.Open();
+    //                cmd.ExecuteNonQuery();
+    //            }
+    //        }
+    //        catch (SqlException sqlex)
+    //        {
+    //            throw sqlex;
+    //        }
+    //        finally
+    //        {
+    //            conn.Close();
+    //        }
+    //    }
+    //}
 }

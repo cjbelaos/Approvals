@@ -37,8 +37,9 @@
                                         <div class="input-group">
                                             <asp:TextBox runat="server" ID="tbFarmOutControlNo" CssClass="form-control" Enabled="false"></asp:TextBox>
                                             <div class="input-group-append">
+                                                <asp:Button runat="server" ID="BtnCancel" CssClass="btn btn-danger" Text="Cancel" OnClick="BtnCancel_Click" Visible="false" />
                                                 <asp:LinkButton runat="server" ID="LnkBtnView" CssClass="btn btn-info" Text="View" OnClick="LnkBtnView_Click" />
-                                                <asp:Button runat="server" ID="BtnPrintRF" CssClass="btn btn-info" Text="Print" OnClick="BtnPrintRF_Click" Visible="false"/>
+                                                <asp:Button runat="server" ID="BtnPrintRF" CssClass="btn btn-info" Text="Print" OnClick="BtnPrintRF_Click" Visible="false" />
                                             </div>
                                         </div>
                                     </div>
@@ -71,23 +72,23 @@
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
-                                <div runat="server" id="divFiles" class="col-md-6" Visible="false">
+                                <div runat="server" id="divFiles" class="col-md-6" visible="false">
                                     <label>Attached Files</label>
                                     <div class="card">
-                                            <div class="card-body p-0">
-                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless table-hover table-striped"
-                                                    AutoGenerateColumns="false">
-                                                    <HeaderStyle CssClass="thead-light" />
-                                                    <Columns>
-                                                        <asp:TemplateField HeaderText="File Name" ItemStyle-VerticalAlign="Middle">
-                                                            <ItemTemplate>
-                                                                <asp:LinkButton ID="lblFileName" runat="server" Text='<%#Eval("FileName") %>' CommandArgument='<%#Bind("FileName") %>' CommandName="View" OnClick="lblFileName_Click"></asp:LinkButton>
-                                                            </ItemTemplate>
-                                                        </asp:TemplateField>
-                                                    </Columns>
-                                                </asp:GridView>
-                                            </div>
+                                        <div class="card-body p-0">
+                                            <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless table-hover table-striped"
+                                                AutoGenerateColumns="false">
+                                                <HeaderStyle CssClass="thead-light" />
+                                                <Columns>
+                                                    <asp:TemplateField HeaderText="File Name" ItemStyle-VerticalAlign="Middle">
+                                                        <ItemTemplate>
+                                                            <asp:LinkButton ID="lblFileName" runat="server" Text='<%#Eval("FileName") %>' CommandArgument='<%#Bind("FileName") %>' CommandName="View" OnClick="lblFileName_Click"></asp:LinkButton>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                </Columns>
+                                            </asp:GridView>
                                         </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -264,8 +265,6 @@
                             <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary" Text="Save" Width="70px" Enabled="false" OnClick="BtnSave_OnClick" />
                         </div>
                     </div>
-
-
                     <!-- /.card -->
                 </div>
             </section>
@@ -444,11 +443,34 @@
         </ContentTemplate>
     </asp:UpdatePanel>
 
+    <asp:UpdatePanel ID="upCancel" runat="server">
+        <ContentTemplate>
+            <!-- Modal -->
+            <div class="modal fade" id="modalCancel" data-backdrop="static">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body justify-content-between">
+                            <asp:TextBox runat="server" ID="txtReason" CssClass="form-control" TextMode="MultiLine" placeholder="Reason for cancellation"></asp:TextBox>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <asp:Button runat="server" ID="BtnCancelRequest" CssClass="btn btn-danger btn-sm" Text="Yes" OnClick="BtnCancelRequest_Click" Width="70px" />
+                            <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" style="width: 70px">No</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal -->
+        </ContentTemplate>
+    </asp:UpdatePanel>
+
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
         $(function () {
+
             $('#<%=ddlControlNo.ClientID%>').on('change', function () {
                 x = $(this).val();
                 array = x + ""
@@ -533,6 +555,19 @@
             })
         }
 
+        function NoCommentAlert() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'warning',
+                title: 'Please state your reason for cancellation.'
+            })
+        }
+
         function ApprovedAlert() {
             toastr.success('Task successfully approve!')
         }
@@ -556,7 +591,7 @@
         function GetControlNoPrinted8112() {
             var ctrlno = ($('#<%=hfControlNo.ClientID%>').val().split(','));
             console.log(ctrlno);
-                $("#<%=ddlControlNo.ClientID%>").val(ctrlno).trigger('change');
+            $("#<%=ddlControlNo.ClientID%>").val(ctrlno).trigger('change');
         }
     </script>
 </asp:Content>

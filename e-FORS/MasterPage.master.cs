@@ -7,7 +7,7 @@ using System.Web.UI;
 
 public partial class MasterPage2 : System.Web.UI.MasterPage
 {
-    private static readonly Maintenance maint = new Maintenance();
+    // private static readonly Maintenance maint = new Maintenance(); // PYON UNCOMMENT
 
     public static string UserID;
     public static string Link;
@@ -17,6 +17,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
     public string HideFarmOutDocuments;
     public string HideAllTasks;
     public string HideFinishedTasks;
+    //public string HidePendingTasks;
     public string HideReports;
     public string HideMaintenance;
 
@@ -35,6 +36,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
     public string Tasks = "";
     public string MyTasks = "";
     public string AllTasks = "";
+    public string PendingTasks = "";
     public string FinishedTasks = "";
     
     public string ReportsMenuOpen = "";
@@ -101,6 +103,12 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 Tasks = "active";
                 AllTasks = "active";
             }
+            else if (serviceName == "PendingTasks.aspx")
+            {
+                TasksMenuOpen = "menu-open";
+                Tasks = "active";
+                PendingTasks = "active";
+            }
             else if (serviceName == "FinishedTasks.aspx")
             {
                 TasksMenuOpen = "menu-open";
@@ -144,6 +152,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 LOAs = "active";
             }
 
+            Maintenance maint = new Maintenance(); // PYON REMOVE
             bool isAuthorized = maint.CheckAuthorization(lblUserID.Text);
             if (isAuthorized == false)
             {
@@ -153,11 +162,17 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 HideMaintenance = "hidden";
                 HideReports = "hidden";
             }
+            //else
+            //{
+            //    HidePendingTasks = "hidden";
+            //}
         }
     }
 
     public void GetMyTasksCount()
     {
+        Maintenance maint = new Maintenance(); // PYON REMOVE
+
         DataTable dt = maint.GetMyTasksCount(lblUserID.Text);
         if (dt.DefaultView[0]["MyTasksCount"].ToString() == "0")
         {
@@ -179,6 +194,7 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
 
     public void GetMyTasks()
     {
+        Maintenance maint = new Maintenance(); // PYON REMOVE
         DataTable dt = maint.GetMyTasks(lblUserID.Text);
 
         foreach (DataRow row in dt.Rows)

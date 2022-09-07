@@ -1,294 +1,150 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="Testing.aspx.cs" Inherits="Testing" %>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="server">
-    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-    <asp:UpdatePanel ID="upTable" runat="server">
-        <ContentTemplate>
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1>Reports</h1>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Tasks</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
+                        <li class="breadcrumb-item active">Finished 8112 Tasks</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Finished 8112 Tasks</h3>
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body" style="width: 100%; overflow: scroll">
+                    <table id="tableFinished8112Tasks" class="table table-bordered table-striped table-sm">
+                    </table>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                </div>
+
+            </div>
+            <!-- /.card -->
+        </div>
+    </section>
+
+    <div class="modal fade" id="modalPrint">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Print PEZA Form 8112</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <div class="input-group date" id="Date" data-target-input="nearest">
+                                <input type="text" id="txtDate" class="form-control datetimepicker-input" data-target="#Date" />
+                                <div class="input-group-append" data-target="#Date" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                                <li class="breadcrumb-item active">LOA</li>
-                            </ol>
-                        </div>
+                        <!-- /.form-group -->
                     </div>
                 </div>
-                <!-- /.container-fluid -->
-            </section>
-
-            <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">LOA</h3>
-                        </div>
-                        <!-- /.card-header -->
-
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label for="tbSection">Section</label>
-                                        <asp:TextBox runat="server" ID="tbSection" CssClass="form-control"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label>Supplier</label>
-                                        <asp:DropDownList runat="server" ID="ddlSupplier" CssClass="form-control select2" Width="100%" name="supplier"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div runat="server" id="divLOA" class="form-group" visible="false">
-                                        <label>LOA No.</label>
-                                        <asp:DropDownList runat="server" ID="ddlLOANo" CssClass="form-control select2" Width="100%" name="supplier"></asp:DropDownList>
-                                        <asp:HiddenField runat="server" ID="hfFileName" />
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Date From</label>
-                                        <div class="input-group date" id="DateFrom" data-target-input="nearest">
-                                            <asp:TextBox runat="server" ID="tbDateFrom" CssClass="form-control datetimepicker-input" data-target="#DateFrom" name="datefrom"></asp:TextBox>
-                                            <div class="input-group-append" data-target="#DateFrom" data-toggle="datetimepicker">
-                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label>Date To</label>
-                                        <div class="input-group date" id="DateTo" data-target-input="nearest">
-                                            <asp:TextBox runat="server" ID="tbDateTo" CssClass="form-control datetimepicker-input" data-target="#DateTo" name="dateto"></asp:TextBox>
-                                            <div class="input-group-append" data-target="#DateTo" data-toggle="datetimepicker">
-                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-
-                            <div class="row">
-                                <div class="col">
-                                    <asp:Button runat="server" ID="BtnSearch" Text="Search" class="btn btn-primary" Width="70px" OnClick="BtnSearch_OnClick" />
-                                    <asp:Button runat="server" ID="BtnClear" Text="Clear" class="btn btn-warning" Width="70px" OnClick="BtnClear_OnClick" />
-                                    <asp:Button runat="server" ID="BtnSave" Text="Save" class="btn btn-success" Width="70px" OnClick="BtnSave_Click" />
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="table-responsive">
-                                    <asp:GridView runat="server" ID="gvLOA" CssClass="table table-bordered table-condensed table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false" Width="4000px">
-                                        <HeaderStyle CssClass="thead-light" HorizontalAlign="Center" />
-                                        <Columns>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Date Transfer" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblActualDateOfTransfer" runat="server" Text='<%#Eval("DATEOFTRANSFER") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Destination" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblTargetDateOfReturn" runat="server" Text='<%#Eval("SUPPLIER") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Description" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblSection" runat="server" Text='<%#Eval("DESCRIPTION") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Model" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblSupplierName" runat="server" Text='<%#Eval("MODEL") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="PartCode" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblSupplierAddress" runat="server" Text='<%#Eval("PARTCODE") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="QTY" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblBearerEmployeeName" runat="server" Text='<%#Eval("QUANTITY") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Invoice Value" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblItemCode" runat="server" Text='<%#Eval("INVOICEVALUE") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Inv. No. / DR. No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblQuantity" runat="server" Text='<%#Eval("INVOICENO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Origin of Item" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblUnitOfMeasurement" runat="server" Text='<%#Eval("ORIGIN") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="EPPI 8106" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label1" runat="server" Text='<%#Eval("PEZADOCUMENTNO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="PEZA Permit No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label2" runat="server" Text='<%#Eval("PEZAPERMITNO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Gatepass No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label3" runat="server" Text='<%#Eval("GATEPASSNO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="FRF No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label4" runat="server" Text='<%#Eval("CONTROLNO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Delivery Slip No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label5" runat="server" Text='<%#Eval("DELIVERYSLIPNO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Subcon 8105 No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label6" runat="server" Text='<%#Eval("SUBCON8105NO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="PEZA Permit No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label7" runat="server" Text='<%#Eval("PEZAPERMITNO8105") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Date Returned" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label8" runat="server" Text='<%#Eval("DATERETURNED") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Subcon 8106 No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label9" runat="server" Text='<%#Eval("SUBCON8106NO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="PEZA Permit No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label10" runat="server" Text='<%#Eval("PEZAPERMITNO8106") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="DR No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label11" runat="server" Text='<%#Eval("DRNO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="EPPI 8015 No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label12" runat="server" Text='<%#Eval("EPPI8105NO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="PEZA Permit No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label13" runat="server" Text='<%#Eval("EPPI8105NOPERMITNO") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="QTY" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label14" runat="server" Text='<%#Eval("QTY") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Bond Amount" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="Label15" runat="server" Text='<%#Eval("BONDAMOUNT") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                        </Columns>
-                                    </asp:GridView>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-footer">
-                        </div>
-
-                    </div>
-                    <!-- /.card -->
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 70px">Close</button>
+                    <button type="button" class="btn btn-success btn-sm" style="width: 70px">Proceed</button>
                 </div>
-            </section>
-        </ContentTemplate>
-    </asp:UpdatePanel>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
 </asp:Content>
 <asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
     <script type="text/javascript">
-        <%--$(function () {
-            $('#<%=gvLOA.ClientID%>').DataTable({
-                searching: true,
-                dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        title: 'LOA Monitoring'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        title: 'LOA Monitoring'
+        var MainTable;
+        $(document).ready(function () {
+            GetFinished8112Tasks();
+        });
+
+        function GetFinished8112Tasks(callback) {
+            $.ajax({
+                url: "Testing.aspx/GetFinished8112Tasks",
+                type: "POST",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
                     }
-                ]
-            });
-
-            //Initialize Select2 Elements
-            $('.select2').select2()
-
-            //Date picker
-            $('#DateFrom').datetimepicker({
-                format: 'L',
-            });
-            $('#DateTo').datetimepicker({
-                format: 'L'
-            });
-
-            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
-            function EndRequestHandler(sender, args) {
-                $('#<%=gvLOA.ClientID%>').DataTable({
-                    searching: true,
-                    dom: 'Bfrtip',
-                    buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            title: 'LOA Monitoring'
+                    if (MainTable !== undefined && MainTable !== null) {
+                        MainTable.clear().destroy();
+                    }
+                    MainTable = $("#tableFinished8112Tasks").DataTable({
+                        dom: 'Bfrtip',
+                        select: {
+                            style: 'multi'
                         },
-                        {
-                            extend: 'pdfHtml5',
-                            title: 'LOA Monitoring'
-                        }
-                    ]
-                });
+                        paging: false,
+                        lengthChange: true,
+                        ordering: true,
+                        info: true,
+                        autoWidth: true,
+                        responsive: true,
+                        buttons: [
+                            {
+                                text: 'Print',
+                                action: function () {
+                                    let rows = MainTable.rows({ selected: true }).indexes();
+                                    var x = MainTable.cells(rows, 0).data().toArray().toString();
+                                    console.log(x);
+                                    $('#modalPrint').modal('show');
+                                }
+                            }
+                        ],
+                        data: d,
+                        columns: [
+                            { data: "CONTROLNO", title: 'Control No.' },
+                            { data: "Division", title: 'Division' },
+                            { data: "LOANO", title: 'LOA No.' },
+                            { data: "SupplierName", title: 'Supplier' },
+                            { data: "DestinationAddress", title: 'Address' },
+                            { data: "PurposeOfItem", title: 'Purpose' },
+                            { data: "DOCUMENTFORMAT", title: 'Format' },
+                            {
+                                data: "UPDATEDDATE", title: 'Approved Date', render: function (e) {
+                                    return moment(e).format("L");
+                                },
+                            },
+                        ],
+                    });
+                    MainTable.on('select', function () {
+                        //let controlno = MainTable.rows({ selected: true }).data()[0]['CONTROLNO'];
+                        //// now do what you need to do wht the row data
+                        //console.log(controlno);
+                    });
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
 
-                //Initialize Select2 Elements
-                $('.select2').select2()
-
-                //Date picker
-                $('#DateFrom').datetimepicker({
-                    format: 'L',
-                });
-                $('#DateTo').datetimepicker({
-                    format: 'L'
-                });
-            }
-        })--%>
     </script>
 </asp:Content>

@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="TestLOA.aspx.cs" Inherits="TestLOA" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="style" Runat="Server">
+<asp:Content ID="Content1" ContentPlaceHolderID="style" runat="Server">
 </asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="maincontent" Runat="Server">
+<asp:Content ID="Content2" ContentPlaceHolderID="maincontent" runat="Server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
     <asp:UpdatePanel ID="upTable" runat="server">
         <ContentTemplate>
@@ -50,7 +50,6 @@
                                     <div runat="server" id="divLOA" class="form-group" visible="false">
                                         <label>LOA No.</label>
                                         <asp:DropDownList runat="server" ID="ddlLOANo" CssClass="form-control select2" Width="100%" name="supplier"></asp:DropDownList>
-                                        <asp:HiddenField runat="server" ID="hfFileName" />
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
@@ -234,6 +233,49 @@
         </ContentTemplate>
     </asp:UpdatePanel>
 </asp:Content>
-<asp:Content ID="Content3" ContentPlaceHolderID="script" Runat="Server">
+<asp:Content ID="Content3" ContentPlaceHolderID="script" runat="Server">
+    <script type="text/javascript">
+        $(function () {
+
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Date picker
+            $('#DateFrom').datetimepicker({
+                format: 'L',
+            });
+            $('#DateTo').datetimepicker({
+                format: 'L'
+            });
+
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
+            function EndRequestHandler(sender, args) {
+                //Initialize Select2 Elements
+                $('.select2').select2()
+
+                //Date picker
+                $('#DateFrom').datetimepicker({
+                    format: 'L',
+                });
+                $('#DateTo').datetimepicker({
+                    format: 'L'
+                });
+            }
+        })
+
+
+        function SelectLOAAlert() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({
+                icon: 'warning',
+                title: 'Please choose LOA No.'
+            })
+        }
+    </script>
 </asp:Content>
 

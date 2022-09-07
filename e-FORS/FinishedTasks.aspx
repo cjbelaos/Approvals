@@ -21,7 +21,6 @@
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">Finished Tasks</h3>
@@ -29,7 +28,18 @@
                 <!-- /.card-header -->
 
                 <div class="card-body" style="width: 100%; overflow: scroll">
-                    <table id="tableAllTasks" class="table table-bordered table-striped table-sm">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label>Control No.</label>
+                                <input type="text" id="txtControlNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                    </div>
+
+                    <table id="tableFinishedTasks" class="table table-bordered table-striped table-sm" style="white-space: nowrap; font-size: 13px; width: 1020px;">
                     </table>
                 </div>
                 <!-- /.card-body -->
@@ -48,6 +58,7 @@
         $(document).ready(function () {
             GetFinishedTasks();
         });
+
         function GetFinishedTasks(callback) {
             $.ajax({
                 url: "FinishedTasks.aspx/GetFinishedTasks",
@@ -63,14 +74,14 @@
                     if (MainTable !== undefined && MainTable !== null) {
                         MainTable.clear().destroy();
                     }
-                    MainTable = $("#tableAllTasks").DataTable({
+                    MainTable = $("#tableFinishedTasks").DataTable({
+                        fixedHeader: true,
                         paging: true,
                         lengthChange: true,
                         ordering: true,
                         info: true,
                         autoWidth: true,
-                        responsive: true,
-                        buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
+                        responsive: false,
                         data: d,
                         columns: [
                             { data: "CONTROLNO", title: 'Control No.' },
@@ -85,27 +96,27 @@
                                 },
                             },
                             { data: "CREATEDBY", title: 'Creator' },
-                        {
-                            data: "CREATEDDATE", title: 'Created Date', render: function (e) {
-                                return moment(e).format("L");
+                            {
+                                data: "CREATEDDATE", title: 'Created Date', render: function (e) {
+                                    return moment(e).format("L");
+                                },
                             },
-                        },
-                        { data: "PAGEID", title: 'Page', visible: false, searchable: false },
+                            { data: "PAGEID", title: 'Page', visible: false, searchable: false },
                         ],
                         order: [[8, 'desc']],
                         columnDefs: [
-                        {
-                            targets: 0,
-                            render: function (data, type, row, meta) {
-                                return '<a href="'+ row["PAGEID"] +'?controlno=' + data + '" style="font-weight: bold; color: #cc0000">' + data + '</a>';
+                            {
+                                targets: 0,
+                                render: function (data, type, row, meta) {
+                                    return '<a href="' + row["PAGEID"] + '?controlno=' + data + '" style="font-weight: bold; color: #cc0000">' + data + '</a>';
+                                },
                             },
-                        },
-                    ],
+                        ],
                     });
-        },
-        error: function (err) {
-            console.log(err);
-        }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
             });
         }
 

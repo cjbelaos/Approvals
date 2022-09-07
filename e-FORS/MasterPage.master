@@ -12,7 +12,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/ionicons/ionicons.min.css" />
+    <%--<link rel="stylesheet" href="AdminLTE-3.2.0/plugins/ionicons/ionicons.min.css" />--%>
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Toastr -->
@@ -26,6 +26,8 @@
     <link href="AdminLTE-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap_4.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link href="AdminLTE-3.2.0/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" />
+    <link href="AdminLTE-3.2.0/plugins/datatables-checkboxes/css/dataTables.checkboxes.css" rel="stylesheet" />
     <!-- Theme style -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/dist/css/adminlte.min.css">
 
@@ -170,6 +172,12 @@
                                             <p>All Tasks</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="PendingTasks.aspx" class="nav-link <% Response.Write(PendingTasks); %>">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Pending Tasks</p>
+                                        </a>
+                                    </li>
                                     <li class="nav-item" <% Response.Write(HideFinishedTasks); %>>
                                         <a href="FinishedTasks.aspx" class="nav-link <% Response.Write(FinishedTasks); %>">
                                             <i class="far fa-circle nav-icon"></i>
@@ -276,7 +284,7 @@
         <!-- ./wrapper -->
 
         <!-- modal -->
-        <div class="modal fade" id="modalMon">
+        <div class="modal fade" id="modalPopup">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -286,53 +294,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>This is to notify that your Farm-Out Request will be process on the next processing day which is Monday.</p>
-                    </div>
-                    <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <!-- /.modal -->
-
-        <!-- modal -->
-        <div class="modal fade" id="modalWed">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Attention!</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>This is to notify that your Farm-Out Request will be process on the next processing day which is Wednesday.</p>
-                    </div>
-                    <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <!-- /.modal -->
-
-        <!-- modal -->
-        <div class="modal fade" id="modalFri">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Attention!</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>This is to notify that your Farm-Out Request will be process on the next processing day which is Wednesday.</p>
+                        <p>This is to notify that your Farm-Out Request will be process on the next processing day.</p>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -370,6 +332,8 @@
         <script src="AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
         <script src="AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.print.min.js"></script>
         <script src="AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+        <script src="AdminLTE-3.2.0/plugins/datatables-select/js/dataTables.select.min.js"></script>
+        <script src="AdminLTE-3.2.0/plugins/datatables-checkboxes/js/dataTables.checkboxes.min.js"></script>
         <!-- bs-custom-file-input -->
         <script src="AdminLTE-3.2.0/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
         <!-- InputMask -->
@@ -405,15 +369,15 @@
                             && moment().isSameOrAfter(moment({ hour: 16, minute: 1, second: 0 }))
                             && moment().isBefore(moment({ hour: 24, minute: 0, second: 0 }))
                             && PopupChecker === "0") {
-                            $('#modalFri').modal('show');
+                            $('#modalPopup').modal('show');
                             SetSessionPopupChecker();
                         }
                         else
                             if (day === 3
                                 && moment().isSameOrAfter(moment({ hour: 0, minute: 0, second: 0 }))
                                 && moment().isBefore(moment({ hour: 8, minute: 0, second: 0 }))
-                                && $.session.get('PopupChecker') === '0') {
-                                $('#modalFri').modal('show');
+                                && PopupChecker === '0') {
+                                $('#modalPopup').modal('show');
                                 SetSessionPopupChecker();
                             }
 
@@ -421,36 +385,37 @@
                             && moment().isSameOrAfter(moment({ hour: 16, minute: 1, second: 0 }))
                             && moment().isBefore(moment({ hour: 24, minute: 0, second: 0 }))
                             && PopupChecker === "0") {
-                            $('#modalWed').modal('show');
+                            $('#modalPopup').modal('show');
                             SetSessionPopupChecker();
                         }
                         else
                             if (day === 5
                                 && moment().isSameOrAfter(moment({ hour: 0, minute: 0, second: 0 }))
                                 && moment().isBefore(moment({ hour: 8, minute: 0, second: 0 }))
-                                && $.session.get('PopupChecker') === '0') {
-                                $('#modalWed').modal('show');
+                                && PopupChecker === '0') {
+                                $('#modalPopup').modal('show');
                                 SetSessionPopupChecker();
                             }
 
                         if (day === 5
                             && moment().isSameOrAfter(moment({ hour: 16, minute: 01, second: 0 }))
                             && moment().isBefore(moment({ hour: 24, minute: 0, second: 0 }))
-                            && PopupChecker === "0") {
-                            $('#modalWed').modal('show');
+                            && PopupChecker === '0') {
+                            $('#modalPopup').modal('show');
                             SetSessionPopupChecker();
                         }
                         else
                             if (day === 6
                                 && moment().isSameOrAfter(moment({ hour: 0, minute: 0, second: 0 }))
                                 && moment().isBefore(moment({ hour: 8, minute: 0, second: 0 }))
-                                && $.session.get('PopupChecker') === '0') {
-                                $('#modalWed').modal('show');
+                                && PopupChecker === '0') {
+                                $('#modalPopup').modal('show');
                                 SetSessionPopupChecker();
                             }
                     });
                 }, 1000);
             });
+
             function GetSessionPopupChecker(callback) {
                 $.ajax({
                     type: "POST",
@@ -492,10 +457,6 @@
                     }
                 });
             }
-
-            //function SessionExpired() {
-            //    toastr.error('Session Expired. Please login again.')
-            //}
         </script>
         <asp:ContentPlaceHolder ID="script" runat="server">
         </asp:ContentPlaceHolder>
