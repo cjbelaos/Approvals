@@ -93,26 +93,33 @@ public class FarmOutDocumentsMaintenance
 
     public DataTable GetEPPIAuthorizedSignatory()
     {
-        SqlCommand cmd = new SqlCommand("GetEPPIAuthorizedSignatory", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        DataTable dt = new DataTable();
-
-        if (conn.State == ConnectionState.Open)
+        using (var cmd = new SqlCommand("GetEPPIAuthorizedSignatory", conn) { CommandType = CommandType.StoredProcedure })
         {
-            da.Fill(dt);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
 
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
             return dt;
-        }
-        else
-        {
-            conn.Open();
-            da.Fill(dt);
-            conn.Close();
-
-            return dt;
-        }
+        } 
     }
 
     public DataTable GetLOANo(string LOAType)

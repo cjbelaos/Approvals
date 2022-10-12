@@ -128,6 +128,39 @@ public class FarmOutRequestFormMaintenance
         return dt;
     }
 
+    public DataTable DeleteFile(string ControlNo, int ID)
+    {
+        SqlCommand cmd = new SqlCommand("DeleteFile", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+        cmd.Parameters.AddWithValue("@ID", ID);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+        return dt;
+    }
+
     public DataTable GetBearerEmployeeName(string EmployeeNo)
     {
         SqlCommand cmd = new SqlCommand("GetBearerEmployeeName", conn);

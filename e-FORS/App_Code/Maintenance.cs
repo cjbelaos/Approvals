@@ -232,9 +232,42 @@ public class Maintenance
         }
     }
 
-    public DataTable GetFinished8112Tasks()
+    public DataTable GetFinishedTasksPerSection(string UserID)
     {
-        using (SqlCommand cmd = new SqlCommand("GetFinished8112Tasks", conn) { CommandType = CommandType.StoredProcedure })
+        using (SqlCommand cmd = new SqlCommand("GetFinishedTasksPerSection", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@USERID", UserID);
+
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd);
+            DataTable dataTable = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    sqlDataAdapter.Fill(dataTable);
+                }
+                else
+                {
+                    conn.Open();
+                    sqlDataAdapter.Fill(dataTable);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dataTable;
+        }
+    }
+
+    public DataTable GetCancelledTasks()
+    {
+        using (SqlCommand cmd = new SqlCommand("GetCancelledTasks", conn) { CommandType = CommandType.StoredProcedure })
         {
             SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(cmd);
             DataTable dataTable = new DataTable();
@@ -263,11 +296,235 @@ public class Maintenance
         }
     }
 
+    public DataTable GetFinished8112Tasks(string DIVISION, string LOANO, string SUPPLIER, string PURPOSE)
+    {
+        using (SqlCommand cmd = new SqlCommand("GetFinished8112Tasks", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            if (DIVISION == null)
+            {
+                DIVISION = "";
+            }
+            if (LOANO == null)
+            {
+                LOANO = "";
+            }
+            if (SUPPLIER == null)
+            {
+                SUPPLIER = "";
+            }
+            if (PURPOSE == null)
+            {
+                PURPOSE = "";
+            }
+            cmd.Parameters.AddWithValue("@DIVISION", DIVISION);
+            cmd.Parameters.AddWithValue("@LOANO", LOANO);
+            cmd.Parameters.AddWithValue("@SUPPLIER", SUPPLIER);
+            cmd.Parameters.AddWithValue("@PURPOSE", PURPOSE);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetFinished8112LOANOs()
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetFinished8112LOANOs", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetFinished8112Purpose()
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetFinished8112Purpose", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dt;
+        }
+    }
+
+    public DataTable GetFinished8112Suppliers()
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetFinished8112Suppliers", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return dt;
+        }
+    }
+
     public Boolean FinishTaskChecking(string ControlNo)
     {
         SqlCommand cmd = new SqlCommand("FinishTaskChecking", conn);
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public Boolean CheckIfCancelled(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("CheckIfCancelled", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        DataTable dt = new DataTable();
+
+        try
+        {
+            if (conn.State == ConnectionState.Open)
+            {
+                da.Fill(dt);
+            }
+            else
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public Boolean CheckIfFinishedRequestor(string ControlNo)
+    {
+        SqlCommand cmd = new SqlCommand("CheckIfFinishedRequestor", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
 
         SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
@@ -380,15 +637,12 @@ public class Maintenance
                 if (conn.State == ConnectionState.Open)
                 {
                     da.Fill(ds);
-
                     conn.Close();
                 }
                 else
                 {
                     conn.Open();
-
                     da.Fill(ds);
-
                     conn.Close();
                 }
             }
@@ -652,11 +906,11 @@ public class Maintenance
     {
         using (var cmd = new SqlCommand("REQUEST_CHANGE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo.ToString());
-            cmd.Parameters.AddWithValue("@WORKFLOWID", a.WorkFlowID.ToString());
-            cmd.Parameters.AddWithValue("@APPROVERID", a.ApproverID.ToString());
-            cmd.Parameters.AddWithValue("@REQUESTCHANGECOMMENT", a.Comment.ToString());
-            cmd.Parameters.AddWithValue("@UID", a.UserID.ToString());
+            cmd.Parameters.AddWithValue("@CONTROLNO", a.ControlNo);
+            cmd.Parameters.AddWithValue("@WORKFLOWID", a.WorkFlowID);
+            cmd.Parameters.AddWithValue("@APPROVERID", a.ApproverID);
+            cmd.Parameters.AddWithValue("@REQUESTCHANGECOMMENT", a.Comment);
+            cmd.Parameters.AddWithValue("@UID", a.UserID);
 
             conn.Open();
             cmd.ExecuteNonQuery();
@@ -704,10 +958,26 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@ControlNo", a.ControlNo);
             cmd.Parameters.AddWithValue("@Createdby", a.UserID);
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
-
-            conn.Close();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 
@@ -721,10 +991,58 @@ public class Maintenance
             cmd.Parameters.AddWithValue("@Approvedby", a.Approvedby);
             cmd.Parameters.AddWithValue("@UserID", a.UserID);
 
-            conn.Open();
-            cmd.ExecuteNonQuery();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+    }
 
-            conn.Close();
+    public void UpdateApproval(string ControlNo, string ApproverID, string ApproverUserID, string UserID)
+    {
+        using (var cmd = new SqlCommand("UpdateApproval", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+            cmd.Parameters.AddWithValue("@APPROVERID", ApproverID);
+            cmd.Parameters.AddWithValue("@APPROVERUSERID", ApproverUserID);
+            cmd.Parameters.AddWithValue("@USERID", UserID);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 
@@ -1377,6 +1695,35 @@ public class Maintenance
         }
     }
 
+    public DataTable GetLOADetails(LOADetails ld)
+    {
+        using (SqlCommand cmd = new SqlCommand("GetLOADetails", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@LOAID", ld.LOAID);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
     public DataTable GetItemType(SupplierDetails sd, LOADetails ld)
     {
         using (SqlCommand cmd = new SqlCommand("sp_GetItemType", conn) { CommandType = CommandType.StoredProcedure })
@@ -1967,6 +2314,41 @@ public class Maintenance
         }
     }
 
+    public DataTable GetLiquidationLedgerInfo (LiquidationLedgerDetails ll)
+    {
+        using (SqlCommand cmd = new SqlCommand("sp_GetLiquidationLedgerInfo", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@LOANO", ll.LOANO);
+            cmd.Parameters.AddWithValue("@SUPPLIERID", ll.SUPPLIERID);
+            cmd.Parameters.AddWithValue("@TYPEOFITEM", ll.TYPEOFITEM);
+            cmd.Parameters.AddWithValue("@PEZADOCUMENTNO", ll.PEZADOCUMENTNO);
+            cmd.Parameters.AddWithValue("@DATEOFTRANSFER", ll.DATEOFTRANSFER);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    da.Fill(dt);
+                    conn.Close();
+                }
+                else
+                {
+                    conn.Open();
+                    da.Fill(dt);
+                    conn.Close();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            return dt;
+        }
+    }
+
     public DataTable GetLOALimitPercentage(LOADetails ld)
     {
         using (SqlCommand cmd = new SqlCommand("GetLOALimitPercentage", conn) { CommandType = CommandType.StoredProcedure })
@@ -2061,6 +2443,67 @@ public class Maintenance
             }
         }
     }
+
+    public void MarkAsPrinted(string ControlNo, string UserId)
+    {
+        using (var cmd = new SqlCommand("sp_MarkAsPrinted", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+            cmd.Parameters.AddWithValue("@USERID", UserId);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+    }
+
+    public void RemoveMarkAsPrinted(string ControlNo, string UserId)
+    {
+        using (var cmd = new SqlCommand("sp_RemoveMarkAsPrinted", conn) { CommandType = CommandType.StoredProcedure })
+        {
+            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+            cmd.Parameters.AddWithValue("@USERID", UserId);
+
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                throw sqlex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+    }
+
     //public Boolean CheckIfPrinted(FarmOutDocumentDetails fdd)
     //{
     //    using (var cmd = new SqlCommand("CheckIfPrinted", conn) { CommandType = CommandType.StoredProcedure })

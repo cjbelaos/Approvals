@@ -33,4 +33,15 @@ public class SharedService : System.Web.Services.WebService
         return JsonConvert.SerializeObject(dic);
     }
 
+    [WebMethod(EnableSession = true)]
+    public void ClearSession()
+    {
+        Session["UserID"] = null;
+        Session["UserName"] = null;
+        Session["Link"] = null;
+
+        Session.Clear();
+        Session.Abandon();
+    }
+
 }

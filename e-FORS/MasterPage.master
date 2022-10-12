@@ -11,8 +11,6 @@
     <link href="AdminLTE-3.2.0/plugins/fonts/Poppins.css" rel="stylesheet" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
-    <!-- Ionicons -->
-    <%--<link rel="stylesheet" href="AdminLTE-3.2.0/plugins/ionicons/ionicons.min.css" />--%>
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Toastr -->
@@ -22,6 +20,8 @@
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- Tempusdominus Bootstrap 4 -->
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/dropzone/min/dropzone.min.css">
     <!-- DataTables -->
     <link href="AdminLTE-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap_4.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
@@ -90,7 +90,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <asp:Button runat="server" ID="BtnLogOut" CssClass="btn btn-danger" Text="Logout" OnClick="BtnLogOut_Click" />
+                        <%--<asp:Button runat="server" ID="BtnLogOut" CssClass="btn btn-danger" Text="Logout" OnClick="BtnLogOut_Click" />--%>
+                        <button type="button" id="btnLogout" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</button>
                     </li>
                 </ul>
             </nav>
@@ -178,10 +179,22 @@
                                             <p>Pending Tasks</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item" <% Response.Write(HideFinishedTasks); %>>
+                                    <li class="nav-item">
                                         <a href="FinishedTasks.aspx" class="nav-link <% Response.Write(FinishedTasks); %>">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Finished Tasks</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" <% Response.Write(HideFinished8112Tasks); %>>
+                                        <a href="Finished8112Tasks.aspx" class="nav-link <% Response.Write(Finished8112Tasks); %>">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Finished 8112 Tasks</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="CancelledTasks.aspx" class="nav-link <% Response.Write(CancelledTasks); %>">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Cancelled Tasks</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -211,6 +224,12 @@
                                         <a href="LOA.aspx" class="nav-link <% Response.Write(LOA); %>">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>LOA</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="LiquidationLedger.aspx" class="nav-link <% Response.Write(LiquidationLedger); %>">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Liquidation Ledger</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -346,6 +365,8 @@
         <script src="AdminLTE-3.2.0/plugins/datetime/datetime.js"></script>
         <!-- jquery-session -->
         <script src="AdminLTE-3.2.0/plugins/jquery-session/jquery.session.js"></script>
+        <!-- dropzonejs -->
+        <script src="AdminLTE-3.2.0/plugins/dropzone/min/dropzone.min.js"></script>
         <!-- AdminLTE App -->
         <script src="AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
         <!-- AdminLTE for demo purposes -->
@@ -414,7 +435,31 @@
                             }
                     });
                 }, 1000);
+                $('#btnLogout').on('click', function () {
+                    ClearSession();
+                    sessionStorage.clear();
+                    sessionStorage.removeItem('itemName');
+                });
             });
+
+             function ClearSession() {
+                $.ajax({
+                    type: "POST",
+                    url: "SharedService.asmx/ClearSession",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (e) {
+                         window.location.assign('Login.aspx');
+                    },
+                    failure: function (r) {
+                        ShowError(r);
+                    },
+                    error: function (r) {
+                        ShowError(r);
+                    }
+                });
+            }
 
             function GetSessionPopupChecker(callback) {
                 $.ajax({

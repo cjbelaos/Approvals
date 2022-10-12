@@ -16,10 +16,10 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
 
     public string HideFarmOutDocuments;
     public string HideAllTasks;
-    public string HideFinishedTasks;
-    //public string HidePendingTasks;
+    //public string HideFinishedTasks;
     public string HideReports;
     public string HideMaintenance;
+    public string HideFinished8112Tasks;
 
     public string HideCountMyTasks;
 
@@ -38,12 +38,15 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
     public string AllTasks = "";
     public string PendingTasks = "";
     public string FinishedTasks = "";
+    public string Finished8112Tasks = "";
+    public string CancelledTasks = "";
     
     public string ReportsMenuOpen = "";
     public string Reports = "";
     public string Gatepass = "";
     public string FarmOut = "";
     public string LOA = "";
+    public string LiquidationLedger = "";
 
     public string MaintenanceMenuOpen = "";
     public string Maintenance = "";
@@ -62,7 +65,6 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         {
             //not logged in
             //Redirect to Login
-            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "SessionExpired();", true);
             Response.Redirect("Login.aspx?expired=1");
         }
         else
@@ -115,6 +117,18 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 Tasks = "active";
                 FinishedTasks = "active";
             }
+            else if (serviceName == "Finished8112Tasks.aspx")
+            {
+                TasksMenuOpen = "menu-open";
+                Tasks = "active";
+                Finished8112Tasks = "active";
+            }
+            else if (serviceName == "CancelledTasks.aspx")
+            {
+                TasksMenuOpen = "menu-open";
+                Tasks = "active";
+                CancelledTasks = "active";
+            }
             else if (serviceName == "Gatepass.aspx")
             {
                 ReportsMenuOpen = "menu-open";
@@ -132,6 +146,12 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
                 ReportsMenuOpen = "menu-open";
                 Reports = "active";
                 LOA = "active";
+            }
+            else if (serviceName == "LiquidationLedger.aspx")
+            {
+                ReportsMenuOpen = "menu-open";
+                Reports = "active";
+                LiquidationLedger = "active";
             }
             else if (serviceName == "Supplier.aspx")
             {
@@ -158,14 +178,11 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
             {
                 HideFarmOutDocuments = "hidden";
                 HideAllTasks = "hidden";
-                HideFinishedTasks = "hidden";
+                HideFinished8112Tasks = "hidden";
+                //HideFinishedTasks = "hidden";
                 HideMaintenance = "hidden";
                 HideReports = "hidden";
             }
-            //else
-            //{
-            //    HidePendingTasks = "hidden";
-            //}
         }
     }
 
@@ -263,10 +280,10 @@ public partial class MasterPage2 : System.Web.UI.MasterPage
         }
     }
 
-    protected void BtnLogOut_Click(object sender, EventArgs e)
-    {
-        Session.Clear();
-        Session.Abandon();
-        Response.Redirect("Login.aspx");
-    }
+    //protected void BtnLogOut_Click(object sender, EventArgs e)
+    //{
+    //    Session.Clear();
+    //    Session.Abandon();
+    //    Response.Redirect("Login.aspx");
+    //}
 }

@@ -3,6 +3,8 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Web.Services;
+using System;
+using System.Data;
 
 [WebService(Namespace = "http://tempuri.org/")]
 [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
@@ -10,20 +12,23 @@ using System.Web.Services;
 [System.Web.Script.Services.ScriptService]
 public class _8112 : System.Web.Services.WebService
 {
-
+    private static readonly Maintenance maint = new Maintenance();
     [WebMethod(EnableSession = true)]
-    public string GetUrl()
+    public void Print(string ControlNos, string Division, string LOANo, string Supplier, string Purpose, string Date )
     {
-        if (Session["url"] == null)
-        {
-            Session["url"] = "";
-        }
-        //Session["ControlNoS"] = ControlNos;
-        //Session["Dates"] = maint.Get8112Dates(ControlNos);
-        //Session["AuthorizedOffical"] = dt1.Rows[0]["AuthorizedOfficial"].ToString();
-        Dictionary<string, object> dic = new Dictionary<string, object>();
-        dic.Add("url", Session["url"].ToString());
+        Session["ControlNos"] = ControlNos;
 
-        return JsonConvert.SerializeObject(dic);
+        Session["Division"] = Division;
+
+        Session["LOANo"] = LOANo;
+
+        Session["Supplier"] = Supplier;
+
+        Session["Purpose"] = Purpose;
+
+        Session["Dates"] = maint.Get8112Dates(ControlNos);
+
+        var parsedDate = DateTime.Parse(Date);
+        Session["Date"] = parsedDate.ToString("MMMM dd, yyyy").ToUpper();
     }
 }

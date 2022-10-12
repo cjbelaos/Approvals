@@ -27,14 +27,39 @@ public partial class Testing : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static string GetFinished8112Tasks()
+    public static string GetFinished8112Tasks(string DIVISION, string LOANO, string SUPPLIER, string PURPOSE)
     {
-        return JsonConvert.SerializeObject(maint.GetFinished8112Tasks());
+        return JsonConvert.SerializeObject(maint.GetFinished8112Tasks(DIVISION, LOANO, SUPPLIER, PURPOSE));
     }
 
-
-    protected void btnPrint_Click(object sender, EventArgs e)
+    [WebMethod]
+    public static string GetFinished8112LOANOs()
     {
-
+        return JsonConvert.SerializeObject(maint.GetFinished8112LOANOs());
     }
+
+    [WebMethod]
+    public static string GetFinished8112Purpose()
+    {
+        return JsonConvert.SerializeObject(maint.GetFinished8112Purpose());
+    }
+
+    [WebMethod]
+    public static string GetFinished8112Suppliers()
+    {
+        return JsonConvert.SerializeObject(maint.GetFinished8112Suppliers());
+    }
+
+    [WebMethod]
+    public static void MarkAsPrinted(string ControlNo, string UserId)
+    {
+        maint.MarkAsPrinted(ControlNo, UserId);
+    }
+
+    [WebMethod]
+    public static void RemoveMarkAsPrinted(string ControlNo, string UserId)
+    {
+        maint.RemoveMarkAsPrinted(ControlNo, UserId);
+    }
+
 }

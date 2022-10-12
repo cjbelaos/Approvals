@@ -1,20 +1,19 @@
-﻿using OfficeOpenXml;
+﻿using Newtonsoft.Json;
+using OfficeOpenXml;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Web;
+using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 public partial class LiquidationLedger : System.Web.UI.Page
 {
     private static readonly Maintenance maint = new Maintenance();
-    private DataSet ds = new DataSet();
-    private DataTable dt = new DataTable();
-    public static string UserName;
     public static string UserID;
+    public static string UserName;
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["UserID"] == null)
@@ -31,31 +30,31 @@ public partial class LiquidationLedger : System.Web.UI.Page
             {
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
+                Session["Link"] = "";
 
-                GetLiquidationLedger();
-                GetLOANOs();
+                GetLOANos();
             }
         }
-
-        grdLiquidationLedger.UseAccessibleHeader = true;
-        grdLiquidationLedger.HeaderRow.TableSection = TableRowSection.TableHeader;
     }
 
-    private void GetLiquidationLedger()
+    [WebMethod]
+    public static string GetLiquidationLedger(ReportDetails rd)
+    {
+        return JsonConvert.SerializeObject(maint.GetLiquidationLedger(rd));
+    }
+
+    [WebMethod]
+    public static string GetLiquidInfo(LiquidationLedgerDetails ll)
+    {
+        return JsonConvert.SerializeObject(maint.GetLiquidationLedgerInfo(ll));
+    }
+
+    public void GetLOANos()
     {
         ReportDetails rd = new ReportDetails();
         rd.LOANo = ddlLOANo.SelectedValue;
-        ds = maint.GetLiquidationLedger(rd);
+        DataSet ds = maint.GetLiquidationLedger(rd);
 
-        grdLiquidationLedger.DataSource = ds.Tables[0];
-        grdLiquidationLedger.DataBind();
-
-        grdLiquidationLedger.UseAccessibleHeader = true;
-        grdLiquidationLedger.HeaderRow.TableSection = TableRowSection.TableHeader;
-    }
-
-    private void GetLOANOs()
-    {
         if (ds.Tables[1].Rows.Count > 0)
         {
             ddlLOANo.DataSource = ds.Tables[1];
@@ -66,35 +65,22 @@ public partial class LiquidationLedger : System.Web.UI.Page
         }
     }
 
-    protected void BtnSearch_OnClick(object sender, EventArgs e)
+    public void CreateExcelFile(DataTable dt, String TemplatePath, String CopyPath)
     {
-        GetLiquidationLedger();
-    }
-
-    protected void DownloadTemplate()
-    {
-        ReportDetails rd = new ReportDetails();
-        rd.LOANo = ddlLOANo.SelectedValue;
-        ds = maint.GetLiquidationLedger(rd);
-
-        dt = ds.Tables[0];
-        if (dt.Rows.Count > 0)
+        try
         {
-            /////////////////////////////////////EDITING EXCEL TEMPLATE/////////////////////////////////////////////////////////////
-            string LOANO = ddlLOANo.SelectedValue.ToString().Replace("/", "-");
-            string strFileName = LOANO + DateTime.Now.ToString("(yyyyMMddHHmmss)") + ".xlsx";
-            string strTemplatePath = Server.MapPath(@"~\UploadedExcel\Template\Liquidation_Ledger_Template.xlsx");
-
-            string strFilePath = Server.MapPath(@"~\UploadedExcel\Temp\" + strFileName);
-
+            string LOANO = ddlLOANo.SelectedValue;
+            LOADetails ld = new LOADetails();
+            ld.LOANO = ddlLOANo.SelectedValue;
+            maint.GetLOADetails(ld);
             int ccc2 = 13; //excel row start    
             int i = 1; //
             int lastRowCount = 1;
 
-            if (File.Exists(strTemplatePath))
+            if (File.Exists(TemplatePath))
             {
-                File.Copy(strTemplatePath, strFilePath);
-                FileInfo file = new FileInfo(strFilePath);
+                File.Copy(TemplatePath, CopyPath);
+                FileInfo file = new FileInfo(CopyPath);
 
                 using (ExcelPackage excel = new ExcelPackage(file))
                 {
@@ -112,15 +98,21 @@ public partial class LiquidationLedger : System.Web.UI.Page
                         //setting the values
                         var Supplier = dt.Rows[row - 1]["SUPPLIER"].ToString().ToUpper().Trim();
                         var TypeOfItem = dt.Rows[row - 1]["TYPEOFITEM"].ToString().ToUpper().Trim();
-                        var DocumentNo = dt.Rows[row - 1]["PEZADOCUMENTNO"].ToString().ToUpper().Trim();
-                        var Date = dt.Rows[row - 1]["DATEOFTRANSFER"].ToString().Trim();
-                        var Qty = dt.Rows[row - 1]["TOTALQUANTITY"].ToString().Trim();
-                        var Amt = dt.Rows[row - 1]["TOTALAMOUNT"].ToString().Trim();
+
+                        string PEZADOCUMENTNO = dt.Rows[row - 1]["PEZADOCUMENTNO"].ToString().ToUpper().Trim();
+                        if (PEZADOCUMENTNO == "")
+                        {
+                            PEZADOCUMENTNO = "0";
+                        }
+                        var DocumentNo = Convert.ToInt64(PEZADOCUMENTNO);
+                        var Date = DateTime.Parse(dt.Rows[row - 1]["DATEOFTRANSFER"].ToString().Trim());
+                        var Qty = Convert.ToDouble(dt.Rows[row - 1]["TOTALQUANTITY"].ToString().Trim());
+                        var Amt = Convert.ToDecimal(dt.Rows[row - 1]["TOTALAMOUNT"].ToString().Trim());
 
                         //int cs = currentWorkSheet + 1;
                         //currentSheet = cs.ToString();
 
-                        if ((lastRowCount == 2) || (row == 1))
+                        if ((lastRowCount == 19) || (row == 1))
                         {
                             nextWorkSheet = currentWorkSheet + 1;
                             nextSheet = nextWorkSheet.ToString();
@@ -136,6 +128,7 @@ public partial class LiquidationLedger : System.Web.UI.Page
                         }
 
                         //plotting the values
+                        excel.Workbook.Worksheets[currentSheet].Cells["B8"].Value = LOANO;
                         excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 2].Value = Supplier;
                         excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 3].Value = TypeOfItem;
                         excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 4].Value = DocumentNo;
@@ -153,48 +146,38 @@ public partial class LiquidationLedger : System.Web.UI.Page
                     excel.Workbook.Worksheets["Sheet1"].Hidden = OfficeOpenXml.eWorkSheetHidden.VeryHidden;
 
                     excel.Save();
-
-                    //convert the excel package to a byte array
-                    byte[] bin = excel.GetAsByteArray();
-
-                    //clear the buffer stream
-                    Response.ClearHeaders();
-                    Response.Clear();
-                    Response.Buffer = true;
-
-                    //set the correct contenttype
-                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-                    //set the correct length of the data being send
-                    Response.AddHeader("content-length", bin.Length.ToString());
-
-                    //set the filename for the excel package
-                    Response.AddHeader("content-disposition", "attachment; filename=\""+ strFileName +"\"");
-
-                    //send the byte array to the browser
-                    Response.OutputStream.Write(bin, 0, bin.Length);
-
-                    //cleanup
-                    Response.Flush();
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
-                    //excel.Save();
-
-                    //Response.Clear();
-                    //Response.AddHeader("content-disposition", "attachment;filename=" + strFileName);
-                    //Response.WriteFile(Server.MapPath(strFilePath));
-                    //Response.Flush();
-                    Response.Close();
-
                 }
             }
         }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
-    protected void BtnSave_Click(object sender, EventArgs e)
+    protected void LnkDownload_Click(object sender, EventArgs e)
     {
         if (ddlLOANo.SelectedValue != "")
         {
-            DownloadTemplate();
+            ReportDetails rd = new ReportDetails();
+            rd.LOANo = ddlLOANo.SelectedValue;
+            DataSet ds = maint.GetLiquidationLedger(rd);
+            DataTable dt = ds.Tables[0];
+
+            string LOANo = ddlLOANo.SelectedValue;
+            string FileName = LOANo.Replace("/", "-") + DateTime.Now.ToString("(yyyyMMddHHmmss)");
+            string FilePath = Server.MapPath(@"~\UploadedExcel\Temp\");
+            string Path = @"~\UploadedExcel\Temp\" + FileName + ".xlsx";
+            string TemplatePath = Server.MapPath(@"~\UploadedExcel\Template\Liquidation_Ledger_Template.xlsx");
+            string CopyPath = Server.MapPath(@"~\UploadedExcel\Temp\" + FileName + ".xlsx");
+
+            if (!Directory.Exists(FilePath))
+            {
+                Directory.CreateDirectory(FilePath);
+            }
+
+            CreateExcelFile(dt, TemplatePath, CopyPath);
+            Response.Redirect(Path);
         }
         else
         {

@@ -280,11 +280,11 @@
                 $('#txtAmtLimit').val(AMTLIMIT);
             }
             if (elem.hasClass('btn-delete-row')) {
-                var data = MainTable.row(elem.parents('tr')).data();
+                var data = LOATable.row(elem.parents('tr')).data();
                 var ID = data[Object.keys(data)[0]];
                 console.log(ID);
                 if (confirm("Are you sure you want to delete this data?")) {
-                    MainTable.row(elem.parents('tr')).remove().draw();
+                    LOATable.row(elem.parents('tr')).remove().draw();
                     DeleteLOA(ID);
                 }
             }
@@ -530,7 +530,7 @@
 
         function ClearFields() {
             $('#txtID').val('');
-            $('#selectSupplier').val(0).trigger('change');
+            $('#selectSupplier').val('0').trigger('change');
             $('#txtLOANo').val('');
             $('#txtLOAExpiryDate').val('');
             $('#txtSuretyBondNo').val('');

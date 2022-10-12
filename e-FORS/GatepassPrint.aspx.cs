@@ -26,66 +26,129 @@ public partial class GatepassPrint : System.Web.UI.Page
                 string SealNo = Session["SealNo"].ToString();
                 string WithItemContainer = Session["WithItemContainer"].ToString();
 
-                ReportDocument reportDocument = new ReportDocument();
-                dsEFORS eFORS = new dsEFORS();
-
-                string reportPath;
-                if (WithItemContainer == "True")
+                using (var reportDocument = new ReportDocument())
                 {
-                    reportPath = Server.MapPath("~/crGatepassWithItemContainer.rpt");
+                    dsEFORS eFORS = new dsEFORS();
+
+                    string reportPath;
+                    if (WithItemContainer == "True")
+                    {
+                        reportPath = Server.MapPath("~/crGatepassWithItemContainer.rpt");
+                    }
+                    else
+                    {
+                        reportPath = Server.MapPath("~/crGatepass.rpt");
+                    }
+
+                    reportDocument.Load(reportPath);
+
+                    reportDocument.SetDataSource(eFORS);
+                    reportDocument.SetParameterValue("@ControlNo", ControlNo);
+                    reportDocument.SetParameterValue("@TotalQuantity", TotalQuantity);
+                    reportDocument.SetParameterValue("@Date", Date);
+                    reportDocument.SetParameterValue("@PreparedBy", PreparedBy);
+                    reportDocument.SetParameterValue("@Approvedby", Approvedby);
+                    reportDocument.SetParameterValue("@ContainerNo", ContainerNo);
+                    reportDocument.SetParameterValue("@SealNo", SealNo);
+                    reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
+
+                    //Load the report by setting the report source
+                    CrystalReportViewer1.ReportSource = reportDocument;
+
+                    ExportOptions options = new ExportOptions();
+
+                    options.ExportFormatType = ExportFormatType.PortableDocFormat;
+
+                    options.FormatOptions = new PdfRtfWordFormatOptions();
+
+                    ExportRequestContext req = new ExportRequestContext();
+
+                    req.ExportInfo = options;
+
+
+                    Stream s = reportDocument.FormatEngine.ExportToStream(req);
+
+                    reportDocument.Close();
+                    reportDocument.Dispose();
+
+                    Response.ClearHeaders();
+
+                    Response.ClearContent();
+
+                    Response.ContentType = "application/pdf";
+
+
+                    s.Seek(0, SeekOrigin.Begin);
+
+                    byte[] buffer = new byte[s.Length];
+
+                    s.Read(buffer, 0, (int)s.Length);
+
+                    Response.BinaryWrite(buffer);
+
+                    Response.End();
                 }
-                else
-                {
-                    reportPath = Server.MapPath("~/crGatepass.rpt");
-                }
 
-                reportDocument.Load(reportPath);
+                //ReportDocument reportDocument = new ReportDocument();
+                //dsEFORS eFORS = new dsEFORS();
 
-                reportDocument.SetDataSource(eFORS);
-                reportDocument.SetParameterValue("@ControlNo", ControlNo);
-                reportDocument.SetParameterValue("@TotalQuantity", TotalQuantity);
-                reportDocument.SetParameterValue("@Date", Date);
-                reportDocument.SetParameterValue("@PreparedBy", PreparedBy);
-                reportDocument.SetParameterValue("@Approvedby", Approvedby);
-                reportDocument.SetParameterValue("@ContainerNo", ContainerNo);
-                reportDocument.SetParameterValue("@SealNo", SealNo);
-                reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
+                //string reportPath;
+                //if (WithItemContainer == "True")
+                //{
+                //    reportPath = Server.MapPath("~/crGatepassWithItemContainer.rpt");
+                //}
+                //else
+                //{
+                //    reportPath = Server.MapPath("~/crGatepass.rpt");
+                //}
 
-                //Load the report by setting the report source
-                CrystalReportViewer1.ReportSource = reportDocument;
+                //reportDocument.Load(reportPath);
 
-                ExportOptions options = new ExportOptions();
+                //reportDocument.SetDataSource(eFORS);
+                //reportDocument.SetParameterValue("@ControlNo", ControlNo);
+                //reportDocument.SetParameterValue("@TotalQuantity", TotalQuantity);
+                //reportDocument.SetParameterValue("@Date", Date);
+                //reportDocument.SetParameterValue("@PreparedBy", PreparedBy);
+                //reportDocument.SetParameterValue("@Approvedby", Approvedby);
+                //reportDocument.SetParameterValue("@ContainerNo", ContainerNo);
+                //reportDocument.SetParameterValue("@SealNo", SealNo);
+                //reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
 
-                options.ExportFormatType = ExportFormatType.PortableDocFormat;
+                ////Load the report by setting the report source
+                //CrystalReportViewer1.ReportSource = reportDocument;
 
-                options.FormatOptions = new PdfRtfWordFormatOptions();
+                //ExportOptions options = new ExportOptions();
 
-                ExportRequestContext req = new ExportRequestContext();
+                //options.ExportFormatType = ExportFormatType.PortableDocFormat;
 
-                req.ExportInfo = options;
+                //options.FormatOptions = new PdfRtfWordFormatOptions();
 
+                //ExportRequestContext req = new ExportRequestContext();
 
-                Stream s = reportDocument.FormatEngine.ExportToStream(req);
-
-                Response.ClearHeaders();
-
-                Response.ClearContent();
-
-                Response.ContentType = "application/pdf";
+                //req.ExportInfo = options;
 
 
-                s.Seek(0, SeekOrigin.Begin);
+                //Stream s = reportDocument.FormatEngine.ExportToStream(req);
 
-                byte[] buffer = new byte[s.Length];
+                //Response.ClearHeaders();
 
-                s.Read(buffer, 0, (int)s.Length);
-                //
-                Response.BinaryWrite(buffer);
+                //Response.ClearContent();
 
-                Response.End();
+                //Response.ContentType = "application/pdf";
 
-                reportDocument.Close();
-                reportDocument.Dispose();
+
+                //s.Seek(0, SeekOrigin.Begin);
+
+                //byte[] buffer = new byte[s.Length];
+
+                //s.Read(buffer, 0, (int)s.Length);
+                ////
+                //Response.BinaryWrite(buffer);
+
+                //Response.End();
+
+                //reportDocument.Close();
+                //reportDocument.Dispose();
             }
         }
     }

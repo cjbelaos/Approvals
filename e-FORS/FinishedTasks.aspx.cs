@@ -31,4 +31,16 @@ public partial class FinishedTasks : System.Web.UI.Page
     {
         return JsonConvert.SerializeObject(maint.GetFinishedTasks());
     }
+
+    [WebMethod]
+    public static string GetFinishedTasksPerSection(string UserID)
+    {
+        return JsonConvert.SerializeObject(maint.GetFinishedTasksPerSection(UserID));
+    }
+
+    [WebMethod]
+    public static string CheckAuthorization(string UserID)
+    {
+        return JsonConvert.SerializeObject(maint.CheckAuthorization(UserID));
+    }
 }

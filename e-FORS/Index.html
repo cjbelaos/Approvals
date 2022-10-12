@@ -1,0 +1,32 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Upload Test</title>
+</head>
+<body>
+    <input id="fileupload" type="file" name="file" data-url="/upload">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="AdminLTE-3.2.0/plugins/jquery-file-upload/github/jquery.ui.widget.js"></script>
+    <script src="AdminLTE-3.2.0/plugins/jquery-file-upload/github/jquery.iframe-transport.js"></script>
+    <script src="AdminLTE-3.2.0/plugins/jquery-file-upload/github/jquery.fileupload.js"></script>
+    <script>
+        $(function () {
+            $('#fileupload').fileupload({
+                dataType: 'json',
+                add: function (e, data) {
+                    data.context = $('<button></button>').text('Upload')
+                        .appendTo(document.body)
+                        .click(function () {
+                            data.context = $('<p></p>').text('Uploading...').replaceAll($(this));
+                            data.submit();
+                        });
+                },
+                done: function (e, data) {
+                    data.context.text(data.result.filename);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

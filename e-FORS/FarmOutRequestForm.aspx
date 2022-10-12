@@ -1,6 +1,8 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="Default" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="FarmOutRequestForm" %>
 
-<asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="Server">
+<asp:Content ID="Content1" ContentPlaceHolderID="style" runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="maincontent" runat="Server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
     <asp:UpdatePanel ID="upTable" runat="server">
         <ContentTemplate>
@@ -100,17 +102,16 @@
                                         <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:DropDownList runat="server" ID="ddlPurposeofItem" CssClass="form-control select2" Width="100%" name="purposeofitem" OnSelectedIndexChanged="ddlPurposeofItem_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                                     </div>
-                                    <!-- /.form-group -->
                                 </div>
                                 <div class="col-md-6">
                                     <div runat="server" class="form-group" id="divOthers" visible="false">
                                         <label>Others</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:TextBox runat="server" ID="tbOthers" CssClass="form-control"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>
                             </div>
-                            <!-- /.row -->
                         </div>
                         <!-- /.card-body -->
 
@@ -580,7 +581,7 @@
                         <!-- /.card-body -->
 
                         <div class="card-footer">
-                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary BtnSave" Text="Save" OnClick="BtnSave_OnClick" Width="70px" />
+                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary BtnSave" Text="Save" OnClick="BtnSave_Click" Width="70px" />
                             <asp:Button runat="server" ID="BtnPrint" CssClass="btn btn-info" Text="Print" OnClick="BtnPrint_Click" Width="70px" Visible="false" />
                         </div>
                     </div>
@@ -594,6 +595,7 @@
             <asp:PostBackTrigger ControlID="BtnUpload" />
         </Triggers>
     </asp:UpdatePanel>
+
     <asp:UpdatePanel ID="upModalItem" runat="server">
         <ContentTemplate>
             <!-- Modal -->
@@ -663,6 +665,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tbAmount">Amount ($)</label>
+                                        <span style="color: #ff0000; font-weight: bold">*</span>
                                         <asp:TextBox runat="server" ID="tbAmount" CssClass="form-control text-uppercase" name="amount" onkeypress="return isNumberKey(event)"></asp:TextBox>
                                     </div>
                                     <!-- /.form-group -->
@@ -729,7 +732,7 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal -->
-            </section>
+
         </ContentTemplate>
         <Triggers>
             <asp:AsyncPostBackTrigger ControlID="BtnSubmit" EventName="Click" />
@@ -769,7 +772,7 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal -->
-            </section>
+
         </ContentTemplate>
     </asp:UpdatePanel>
 
@@ -797,7 +800,7 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal -->
-            </section>
+
         </ContentTemplate>
     </asp:UpdatePanel>
 
@@ -825,7 +828,7 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal -->
-            </section>
+
         </ContentTemplate>
     </asp:UpdatePanel>
 
@@ -853,7 +856,7 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal -->
-            </section>
+
         </ContentTemplate>
     </asp:UpdatePanel>
 
@@ -897,7 +900,7 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal -->
-            </section>
+
         </ContentTemplate>
     </asp:UpdatePanel>
 
@@ -943,7 +946,7 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal -->
-            </section>
+
         </ContentTemplate>
     </asp:UpdatePanel>
 
@@ -968,14 +971,11 @@
             <!-- /.Modal -->
         </ContentTemplate>
     </asp:UpdatePanel>
-
 </asp:Content>
-
-<asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
+<asp:Content ID="Content3" ContentPlaceHolderID="script" runat="Server">
     <script type="text/javascript">
 
         $(function () {
-
             $('#<%=ddlTypeofItem.ClientID%>').on('change', function () {
                 x = $(this).val();
                 array = x + ""
@@ -1322,7 +1322,8 @@
                 error: function (err) {
                     console.log(err);
                 }
-            })
+            });
         }
     </script>
 </asp:Content>
+

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
 using System.Web.UI;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Web.Services;
 using Newtonsoft.Json;
 
-public partial class Default : System.Web.UI.Page
+public partial class FarmOutRequestForm : System.Web.UI.Page
 {
     private static readonly FarmOutRequestFormMaintenance frfm = new FarmOutRequestFormMaintenance();
     private static readonly Maintenance maint = new Maintenance();
@@ -22,7 +22,6 @@ public partial class Default : System.Web.UI.Page
     public static string ItemDescriptionHelpBlock;
     public static string QuantityHelpBlock;
     public static string UnitofMeasurementHelpBlock;
-
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["UserID"] == null)
@@ -40,45 +39,52 @@ public partial class Default : System.Web.UI.Page
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
 
-                GetUserInfo();
-                AddDivision();
-                AddNatureofItem();
-                AddTransferto();
-                AddTypeofItem();
-                AddClassificationofItem();
-                AddPurposeofItem();
-                AddPackagingUsed();
-                AddSuppliers();
-                AddModeofTransfer();
-                AddTypeofTransfer();
-                GetRequesteddby();
-                GetCheckedby();
-                GetApprovedby();
-                GetItems();
-                //GetFiles();
-
                 if (Request.QueryString["CONTROLNO"] != null)
                 {
-                    if (UserID == ddlRequestedby.SelectedValue)
+                    AddDivision();
+                    AddNatureofItem();
+                    AddTransferto();
+                    AddTypeofItem();
+                    AddClassificationofItem();
+                    AddPurposeofItem();
+                    AddPackagingUsed();
+                    AddSuppliers();
+                    AddModeofTransfer();
+                    AddTypeofTransfer();
+                    GetRequesteddby();
+                    GetCheckedby();
+                    GetApprovedby();
+                    GetItems();
+                    GetFiles();
+
+                    BtnPrint.Visible = true;
+                    tbControlNo.Text = Request.QueryString["CONTROLNO"];
+                    GetFarmOut();
+                    if (frfm.FarmOutRequestFormApprovalChecking(tbControlNo.Text) == true && maint.CheckAuthorization(UserID) == true)
+                    {
+                        LnkBtnBack.Visible = true;
+                        BtnPrint.Visible = true;
+                    }
+                    else
+                    {
+                        LnkBtnBack.Visible = false;
+                        BtnPrint.Visible = false;
+                    }
+                    if (maint.CheckIfCancelled(tbControlNo.Text) == false)
+                    {
+                        BtnPrint.Enabled = true;
+                    }
+                    else
+                    {
+                        BtnPrint.Enabled = false;
+                    }
+                    if (UserID == ddlRequestedby.SelectedValue && maint.CheckIfCancelled(tbControlNo.Text) == false && maint.CheckIfFinishedRequestor(tbControlNo.Text) == false)
                     {
                         BtnCancel.Visible = true;
                     }
                     else
                     {
                         BtnCancel.Visible = false;
-                    }
-                    BtnPrint.Visible = true;
-                    tbControlNo.Text = Request.QueryString["CONTROLNO"];
-                    GetFarmOut();
-                    if (frfm.FarmOutRequestFormApprovalChecking(tbControlNo.Text) == false)
-                    {
-                        LnkBtnBack.Visible = false;
-                        BtnPrint.Visible = false;
-                    }
-                    else
-                    {
-                        LnkBtnBack.Visible = true;
-                        BtnPrint.Visible = true;
                     }
                 }
                 else
@@ -165,7 +171,7 @@ public partial class Default : System.Web.UI.Page
                 }
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
             }
-        }    
+        }
     }
 
     protected void BtnUpload_Click(object sender, EventArgs e)
@@ -560,87 +566,6 @@ public partial class Default : System.Web.UI.Page
         }
     }
 
-    protected void BtnSave_OnClick(object sender, EventArgs e)
-    {
-        if (ddlDivision.SelectedValue != "" && hfTypeofItem.Value != "" && hfClassificationofItem.Value != "" &&
-            ((ddlPurposeofItem.SelectedValue != "" && ddlPurposeofItem.SelectedValue  != "Others") || (ddlPurposeofItem.SelectedValue == "Others" && tbOthers.Text != "")) && tbBearerEmployeeName.Text != "" && tbDateRequested.Text != "" &&
-            tbActualDateofTransfer.Text != "" && ddlSupplierName.SelectedValue != "" && ddlCheckedby.SelectedValue != "" && 
-            ddlApprovedby.SelectedValue != "")
-        {
-            Maintenance maint = new Maintenance();
-            DataSet ds = new DataSet();
-            FarmOutDetails fo = new FarmOutDetails();
-
-
-            fo.ControlNo = tbControlNo.Text;
-            fo.Division = ddlDivision.SelectedValue;
-            fo.NatureOfItem = ddlNatureofItem.SelectedValue;
-            fo.TransferTo = ddlTransferto.SelectedValue;
-
-            string selectedTypeOfItem = hfTypeofItem.Value;
-            string TypeOfItem = selectedTypeOfItem.Replace(",", " | ");
-
-            fo.TypeOfItem = TypeOfItem;
-
-            string selectedClassificationOfItem = hfClassificationofItem.Value;
-            string ClassificationOfItem = selectedClassificationOfItem.Replace(",", " | ");
-
-            fo.ClassificationOfItem = ClassificationOfItem;
-
-            if (ddlPurposeofItem.SelectedValue == "Others")
-            {
-                fo.PurposeOfItem = tbOthers.Text;
-            }
-            else
-            {
-                fo.PurposeOfItem = ddlPurposeofItem.SelectedValue;
-            }
-            fo.BearerEmployeeNo = tbBearerEmployeeNo.Text;
-            fo.BearerEmployeeName = tbBearerEmployeeName.Text.ToUpper(); ;
-            fo.RequestorEmployeeNo = tbEmployeeNo.Text;
-            fo.RequestorEmployeeName = tbEmployeeName.Text;
-            fo.Section = tbSection.Text;
-            fo.LocalNo = tbLocalNo.Text;
-            fo.DateRequested = tbDateRequested.Text;
-            fo.ActualDateOfTransfer = tbActualDateofTransfer.Text;
-            fo.TargetDateOfReturn = tbTargetDateofReturn.Text;
-            fo.PackagingUsed = ddlPackagingUsed.SelectedValue;
-            fo.SupplierID = ddlSupplierName.SelectedValue;
-            fo.SupplierName = ddlSupplierName.SelectedItem.ToString();
-            fo.DestinationAddress = tbDestinationAddress.Text;
-            fo.OriginOfItem = tbOriginofItem.Text.ToUpper();
-            fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text.ToUpper();
-            fo.InvoiceNo = tbInvoiceNo.Text.ToUpper();
-            fo.ContactPerson = tbContactPerson.Text.ToUpper();
-            fo.ContactNo = tbContactNo.Text.ToUpper();
-            fo.TelephoneNo = tbTelephoneNo.Text.ToUpper();
-            fo.FaxNo = tbFaxNo.Text.ToUpper();
-            fo.ModeOfTransfer = ddlModeofTransfer.SelectedValue;
-            fo.TypeOfTransfer = ddlTypeofTransfer.SelectedValue;
-            ds = maint.SaveFarmOutRequestForm(fo, UserID);
-            tbControlNo.Text = ds.Tables[0].DefaultView[0]["CONTROLNO"].ToString();
-
-            Approval a = new Approval();
-            a.ControlNo = tbControlNo.Text;
-            a.Requestedby = ddlRequestedby.SelectedValue;
-            a.Checkedby = ddlCheckedby.SelectedValue;
-            a.Approvedby = ddlApprovedby.SelectedValue;
-            a.UserID = UserID;
-            maint.SaveApproval(a);
-            maint.SaveMirrorApproval(a);
-
-            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutSuccessAlert();", true);
-
-            BtnAdd.Enabled = true;
-            BtnConfirm1.Enabled = true;
-
-        }
-        else
-        {
-            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutFailedAlert();", true);
-        }
-    }
-
     protected void GrvItems_RowCommand(object sender, GridViewCommandEventArgs g)
     {
         if (g.CommandName.Equals("EditItem"))
@@ -889,7 +814,8 @@ public partial class Default : System.Web.UI.Page
             string selectedClassificationOfItem = ds.Tables[0].DefaultView[0]["ClassificationOfItem"].ToString();
             string ClassificationOfItem = selectedClassificationOfItem.Replace(" | ", ",");
             hfClassificationofItem.Value = ClassificationOfItem;
-            
+
+            //string x = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
             if (ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()) == null)
             {
                 ddlPurposeofItem.SelectedValue = "Others";
@@ -947,10 +873,10 @@ public partial class Default : System.Web.UI.Page
             lblDate3.Text = ds.Tables[0].DefaultView[2]["ACTIONDATE"].ToString();
             tbAssignedto.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeName"].ToString();
 
-            if ((ddlRequestedby.SelectedValue != UserID || UserID != ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) && 
-                (ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "1" || 
-                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "3" || 
-                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "5" || 
+            if ((ddlRequestedby.SelectedValue != UserID || UserID != ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) &&
+                (ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "1" ||
+                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "3" ||
+                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "5" ||
                 ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "7"))
             {
                 DisableControl();
@@ -1018,7 +944,7 @@ public partial class Default : System.Web.UI.Page
         ddlCheckedby.Enabled = false;
         ddlApprovedby.Enabled = false;
         BtnAdd.Enabled = false;
-        BtnSave.Enabled = false;
+        //BtnSave.Enabled = false;
         BtnConfirm1.Enabled = false;
         BtnConfirm2.Enabled = false;
         BtnConfirm3.Enabled = false;
@@ -1064,7 +990,7 @@ public partial class Default : System.Web.UI.Page
         ddlCheckedby.Enabled = true;
         ddlApprovedby.Enabled = true;
         BtnAdd.Enabled = true;
-        BtnSave.Enabled = true;
+        //BtnSave.Enabled = true;
         BtnPrint.Enabled = true;
         BtnConfirm1.Enabled = true;
         BtnConfirm2.Enabled = true;
@@ -1187,11 +1113,17 @@ public partial class Default : System.Web.UI.Page
                 ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
             }
         }
-        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
+        Page.Response.Redirect(Page.Request.Url.ToString(), true);
     }
 
     protected void gvFiles_RowDataBound(object sender, GridViewRowEventArgs e)
     {
+        DataSet ds = maint.GetUserInformation(Session["UserID"].ToString());
+        string Section = ds.Tables[0].DefaultView[0]["SectionName"].ToString();
+
+        DataSet ds2 = maint.GetUserInformation(ddlRequestedby.SelectedValue);
+        string RequestorSection = Section = ds2.Tables[0].DefaultView[0]["SectionName"].ToString();
+
         if (e.Row.RowType == DataControlRowType.DataRow)
         {
             Button button = (Button)e.Row.FindControl("BtnDelete");
@@ -1206,10 +1138,9 @@ public partial class Default : System.Web.UI.Page
 
             LinkButton link = (LinkButton)e.Row.FindControl("lblFileName");
             if (maint.CheckAuthorization(Session["UserID"].ToString()) == true ||
-                ddlRequestedby.SelectedValue == Session["UserID"].ToString() || 
-                ddlCheckedby.SelectedValue == Session["UserID"].ToString() || 
-                ddlApprovedby.SelectedValue == Session["UserID"].ToString())
+                Section == RequestorSection)
             {
+                
                 link.Enabled = true;
             }
             else
@@ -1247,6 +1178,87 @@ public partial class Default : System.Web.UI.Page
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalCancel", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "NoCommentAlert();", true);
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalCancel').modal('show');", true);
+        }
+    }
+
+    protected void BtnSave_Click(object sender, EventArgs e)
+    {
+        if (ddlDivision.SelectedValue != "" && hfTypeofItem.Value != "" && hfClassificationofItem.Value != "" &&
+            ((ddlPurposeofItem.SelectedValue != "" && ddlPurposeofItem.SelectedValue != "Others") || (ddlPurposeofItem.SelectedValue == "Others" && tbOthers.Text != "")) && tbBearerEmployeeName.Text != "" && tbDateRequested.Text != "" &&
+            tbActualDateofTransfer.Text != "" && ddlSupplierName.SelectedValue != "" && ddlCheckedby.SelectedValue != "" &&
+            ddlApprovedby.SelectedValue != "")
+        {
+            Maintenance maint = new Maintenance();
+            DataSet ds = new DataSet();
+            FarmOutDetails fo = new FarmOutDetails();
+
+
+            fo.ControlNo = tbControlNo.Text;
+            fo.Division = ddlDivision.SelectedValue;
+            fo.NatureOfItem = ddlNatureofItem.SelectedValue;
+            fo.TransferTo = ddlTransferto.SelectedValue;
+
+            string selectedTypeOfItem = hfTypeofItem.Value;
+            string TypeOfItem = selectedTypeOfItem.Replace(",", " | ");
+
+            fo.TypeOfItem = TypeOfItem;
+
+            string selectedClassificationOfItem = hfClassificationofItem.Value;
+            string ClassificationOfItem = selectedClassificationOfItem.Replace(",", " | ");
+
+            fo.ClassificationOfItem = ClassificationOfItem;
+
+            if (ddlPurposeofItem.SelectedValue == "Others")
+            {
+                fo.PurposeOfItem = tbOthers.Text;
+            }
+            else
+            {
+                fo.PurposeOfItem = ddlPurposeofItem.SelectedValue;
+            }
+            fo.BearerEmployeeNo = tbBearerEmployeeNo.Text;
+            fo.BearerEmployeeName = tbBearerEmployeeName.Text.ToUpper(); ;
+            fo.RequestorEmployeeNo = tbEmployeeNo.Text;
+            fo.RequestorEmployeeName = tbEmployeeName.Text;
+            fo.Section = tbSection.Text;
+            fo.LocalNo = tbLocalNo.Text;
+            fo.DateRequested = tbDateRequested.Text;
+            fo.ActualDateOfTransfer = tbActualDateofTransfer.Text;
+            fo.TargetDateOfReturn = tbTargetDateofReturn.Text;
+            fo.PackagingUsed = ddlPackagingUsed.SelectedValue;
+            fo.SupplierID = ddlSupplierName.SelectedValue;
+            fo.SupplierName = ddlSupplierName.SelectedItem.ToString();
+            fo.DestinationAddress = tbDestinationAddress.Text;
+            fo.OriginOfItem = tbOriginofItem.Text.ToUpper();
+            fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text.ToUpper();
+            fo.InvoiceNo = tbInvoiceNo.Text.ToUpper();
+            fo.ContactPerson = tbContactPerson.Text.ToUpper();
+            fo.ContactNo = tbContactNo.Text.ToUpper();
+            fo.TelephoneNo = tbTelephoneNo.Text.ToUpper();
+            fo.FaxNo = tbFaxNo.Text.ToUpper();
+            fo.ModeOfTransfer = ddlModeofTransfer.SelectedValue;
+            fo.TypeOfTransfer = ddlTypeofTransfer.SelectedValue;
+            ds = maint.SaveFarmOutRequestForm(fo, UserID);
+            tbControlNo.Text = ds.Tables[0].DefaultView[0]["CONTROLNO"].ToString();
+
+            Approval a = new Approval();
+            a.ControlNo = tbControlNo.Text;
+            a.Requestedby = ddlRequestedby.SelectedValue;
+            a.Checkedby = ddlCheckedby.SelectedValue;
+            a.Approvedby = ddlApprovedby.SelectedValue;
+            a.UserID = UserID;
+            maint.SaveApproval(a);
+            maint.SaveMirrorApproval(a);
+
+            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutSuccessAlert();", true);
+
+            BtnAdd.Enabled = true;
+            BtnConfirm1.Enabled = true;
+
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutFailedAlert();", true);
         }
     }
 }

@@ -34,19 +34,35 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
 
-                GetDocumentFormattobeUsed();
-                GetEPPIAuthorizedSignatory();
-                GetPEZASignatory();
-                GetPreparedby();
+                //GetDocumentFormattobeUsed();
+                //GetEPPIAuthorizedSignatory();
+                //GetPEZASignatory();
+                //GetPreparedby();
                 
-                ddlPreparedby.SelectedValue = UserID;
+                //ddlPreparedby.SelectedValue = UserID;
 
                 if (Request.QueryString["controlno"] != null)
                 {
-                    BtnCancel.Visible = true;
+                    GetDocumentFormattobeUsed();
+                    GetEPPIAuthorizedSignatory();
+                    GetPEZASignatory();
+                    GetPreparedby();
+
                     BtnSave.Enabled = true;
                     tbFarmOutControlNo.Text = Request.QueryString["controlno"].ToString();
-                    //GetFiles();
+
+                    bool isCancelled = maint.CheckIfCancelled(tbFarmOutControlNo.Text);
+                    if (isCancelled == true)
+                    {
+                        BtnCancel.Visible = false;
+                        BtnPrintRF.Visible = false;
+
+                    }
+                    else
+                    {
+                        BtnCancel.Visible = true;
+                    }
+
                     isSaved = fodm.FarmOutDocumentsControlNoChecking(tbFarmOutControlNo.Text);
                     if (isSaved == true)
                     {
@@ -69,9 +85,20 @@ public partial class FarmOutDocuments : System.Web.UI.Page
                             BtnPrintRF.Visible = false;
                         }
                     }
+                    else
+                    {
+                        ddlPreparedby.SelectedValue = UserID;
+                    }
                 }
                 else
                 {
+                    GetDocumentFormattobeUsed();
+                    GetEPPIAuthorizedSignatory();
+                    GetPEZASignatory();
+                    GetPreparedby();
+
+                    ddlPreparedby.SelectedValue = UserID;
+                    BtnConfirm1.Enabled = false;
                     LnkBtnView.Visible = false;
                 }
 
@@ -599,13 +626,13 @@ public partial class FarmOutDocuments : System.Web.UI.Page
         if (e.Row.RowType == DataControlRowType.DataRow)
         {
             Button button = (Button)e.Row.FindControl("BtnPrint");
-            if (maint.CheckAuthorization(Session["UserID"].ToString()) == false)
+            if (maint.CheckAuthorization(Session["UserID"].ToString()) == true && maint.CheckIfCancelled(tbFarmOutControlNo.Text) == false)
             {
-                button.Enabled = false;
+                button.Enabled = true;
             }
             else
             {
-                button.Enabled = true;
+                button.Enabled = false;
             }
         }
     }
@@ -1031,17 +1058,6 @@ public partial class FarmOutDocuments : System.Web.UI.Page
     protected void BtnPrintRF_Click(object sender, EventArgs e)
     {
         Response.Redirect("RequestFormPrint.aspx" + "?controlno=" + Request.QueryString["controlno"]);
-    }
-
-    private void GetFiles()
-    {
-        string ControlNo = tbFarmOutControlNo.Text;
-        DataTable dt = frfm.GetFiles(ControlNo);
-        if (dt.Rows.Count > 0)
-        {
-            gvFiles.DataSource = dt;
-            gvFiles.DataBind();
-        }
     }
 
     protected void lblFileName_Click(object sender, EventArgs g)
