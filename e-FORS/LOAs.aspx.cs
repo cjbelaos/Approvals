@@ -54,6 +54,18 @@ public partial class LOAs : System.Web.UI.Page
     }
 
     [WebMethod]
+    public static string GetLOAInventory()
+    {
+        return JsonConvert.SerializeObject(maint.GetLOAInvetory());
+    }
+
+    [WebMethod]
+    public static string GetLOAInventoryDetails(LOAInventoryDetails lid)
+    {
+        return JsonConvert.SerializeObject(maint.GetLOAInventoryDetails(lid));
+    }
+
+    [WebMethod]
     public static string GetDivisionList()
     {
         return JsonConvert.SerializeObject(maint.GetDivision());

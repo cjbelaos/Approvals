@@ -38,7 +38,7 @@ public partial class PEZA8110Print : System.Web.UI.Page
                 reportDocument.SetParameterValue("@Date", Date);
                 reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
                 reportDocument.SetParameterValue("@TotalQuantity", TotalQuantity);
-                reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
+                reportDocument.SetDatabaseLogon("sa", "Sql@dmin2015", "172.16.52.193", "db_eFORS");
 
                 //Load the report by setting the report source
                 CrystalReportViewer1.ReportSource = reportDocument;

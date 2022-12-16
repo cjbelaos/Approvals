@@ -1,24 +1,18 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="Testing.aspx.cs" Inherits="Testing" %>
 
-<asp:Content ID="style" ContentPlaceHolderID="style" runat="server">
-    <style type="text/css">
-        .printed {
-            color: #fff;
-            background-color: #17a2b8 !important;
-        }
-    </style>
+<asp:Content ID="Content1" ContentPlaceHolderID="style" runat="Server">
 </asp:Content>
-<asp:Content ID="Content3" ContentPlaceHolderID="maincontent" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="maincontent" runat="Server">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Tasks</h1>
+                    <h1>Reports</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                        <li class="breadcrumb-item active">Finished 8112 Tasks</li>
+                        <li class="breadcrumb-item active">LOA</li>
                     </ol>
                 </div>
             </div>
@@ -32,49 +26,66 @@
 
             <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Finished 8112 Tasks</h3>
+                    <h3 class="card-title">LOA</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
+                            <!-- /.form-group -->
                             <div class="form-group">
-                                <label for="selectLOANo">LOA No.</label>
-                                <select id="selectLOANo" class="form-control select2" name="loano">
+                                <label>Section</label>
+                                <select id="selectSection" class="form-control select2">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label>Supplier</label>
+                                <select id="selectSupplier" class="form-control select2">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                            <div runat="server" id="divLOA" class="form-group">
+                                <label>LOA No.</label>
+                                <select id="selectLOA" class="form-control select2">
                                     <option selected value="">Choose...</option>
                                 </select>
                             </div>
                             <!-- /.form-group -->
                         </div>
-                        <div class="col-md-4">
+                        <!-- /.col -->
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label for="selectSupplier">Supplier</label>
-                                <select id="selectSupplier" class="form-control select2" name="supplier">
-                                    <option selected value="">Choose...</option>
-                                </select>
+                                <label>Date From</label>
+                                <div class="input-group date" id="DateFrom" data-target-input="nearest">
+                                    <input type="text" id="txtDateFrom" class="form-control datetimepicker-input" data-target="#DateFrom" />
+                                    <div class="input-group-append" data-target="#DateFrom" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label>Date To</label>
+                                <div class="input-group date" id="DateTo" data-target-input="nearest">
+                                    <input type="text" id="txtDateTo" class="form-control datetimepicker-input" data-target="#DateTo" />
+                                    <div class="input-group-append" data-target="#DateTo" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- /.form-group -->
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="selectPurpose">Purpose</label>
-                                <select id="selectPurpose" class="form-control select2" name="purpose">
-                                    <option selected value="">Choose...</option>
-                                </select>
-                            </div>
-                            <!-- /.form-group -->
-                        </div>
-                        <button type="button" id="btnFilter" class="btn btn-primary"><i class="fas fa-filter"></i>&nbsp;Filter</button>
+                        <!-- /.col -->
                     </div>
+                    <!-- /.row -->
                 </div>
-                <div class="card-body" style="width: 100%; overflow: scroll">
-                    <div class="row mb-4">
-                        <button type="button" id="btnPrint" class="btn btn-primary"><i class="fas fa-print"></i>&nbsp;Print</button>
-                    </div>
-                    <div class="row">
-                        <table id="tableFinished8112Tasks" class="table table-bordered table-striped table-sm">
-                        </table>
-                    </div>
+                <!-- /.card-body -->
+                <div class="card-body">
+                    <table id="table_LOA" class="table table-bordered table-hover table-sm">
+                    </table>
                 </div>
                 <!-- /.card-body -->
 
@@ -85,430 +96,259 @@
             <!-- /.card -->
         </div>
     </section>
-
-    <div class="modal fade" id="modalPrint">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Print PEZA Form 8112</h3>
-                </div>
-                <div class="modal-body">
-                    <div class="col-md-12">
-                        <input type="text" id="txtControlNos" class="form-control" hidden />
-                        <div class="form-group">
-                            <label>Date</label>
-                            <div class="input-group date" id="Date" data-target-input="nearest">
-                                <input type="text" id="txtDate" class="form-control datetimepicker-input" data-target="#Date" />
-                                <div class="input-group-append" data-target="#Date" data-toggle="datetimepicker">
-                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label for="selectControlNo">Control No.</label>
-                            <select id="selectControlNo" class="form-control select2" name="controlno" multiple="multiple" disabled>
-                            </select>
-                        </div>
-                        <!-- /.form-group -->
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 70px">Close</button>
-                    <button id="btnProceed" type="button" class="btn btn-success btn-sm" style="width: 70px">Proceed</button>
-                </div>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-
 </asp:Content>
-<asp:Content ID="Content4" ContentPlaceHolderID="script" runat="server">
+<asp:Content ID="Content3" ContentPlaceHolderID="script" runat="Server">
     <script type="text/javascript">
-        //Date picker
-        $('#Date').datetimepicker({
-            format: 'L'
-        });
 
         //Initialize Select2 Elements
         $('.select2').select2()
 
-        var MainTable;
-        $(document).ready(function () {
-
-            GetSession(function (e) {
-                Session = e;
-                var userid = Session["UserID"];
-                console.log(userid);
-
-                $(document).on('click', 'button', function (e) {
-                    var elem = $(this);
-
-                    if (elem.hasClass('btn-check-row')) {
-                        elem.parents('tr').addClass('printed');
-                        var data = MainTable.row(elem.parents('tr')).data();
-                        var ControlNo = data[Object.keys(data)[0]];
-                        MarkAsPrinted(ControlNo, userid);
-                    }
-                    if (elem.hasClass('btn-cross-row')) {
-                        elem.parents('tr').removeClass('printed');
-                        var data = MainTable.row(elem.parents('tr')).data();
-                        console.log(data);
-                        var ControlNo = data[Object.keys(data)[0]];
-                        RemoveMarkAsPrinted(ControlNo, userid);
-                    }
-                    function MarkAsPrinted(controlno, userid, callback) {
-                        $.ajax({
-                            url: "Testing.aspx/MarkAsPrinted",
-                            type: "POST",
-                            data: JSON.stringify({ ControlNo: controlno, UserId: userid }),
-                            contentType: "application/json;charset=utf-8",
-                            dataType: "json",
-                            success: function (e) {
-                                var d = JSON.parse(e.d);
-                                if (callback !== undefined) {
-                                    callback(d);
-                                }
-                            },
-                            error: function (err) {
-                                console.log(err);
-                            }
-                        });
-                    }
-
-                    function RemoveMarkAsPrinted(controlno, userid, callback) {
-                        $.ajax({
-                            url: "Testing.aspx/RemoveMarkAsPrinted",
-                            type: "POST",
-                            data: JSON.stringify({ ControlNo: controlno, UserId: userid }),
-                            contentType: "application/json;charset=utf-8",
-                            dataType: "json",
-                            success: function (e) {
-                                var d = JSON.parse(e.d);
-                                if (callback !== undefined) {
-                                    callback(d);
-                                }
-                            },
-                            error: function (err) {
-                                console.log(err);
-                            }
-                        });
-                    }
-                });
-            });
-            GetFinished8112Tasks();
-            GetFinished8112LOANOs();
-            GetFinished8112Purpose();
-            GetFinished8112Suppliers();
-
-            //$('#selectLOANo').on('change', function () {
-            //    GetFinished8112Tasks();
-            //});
-
-            //$('#selectSupplier').on('change', function () {
-            //    GetFinished8112Tasks();
-            //});
-
-            //$('#selectPurpose').on('change', function () {
-            //    GetFinished8112Tasks();
-            //});
-            $('#btnFilter').on('click', function () {
-                GetFinished8112Tasks();
-            });
-
-            $('#btnPrint').on('click', function () {
-                if ($("#txtControlNos").val() === '') {
-
-                    var Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
-                    Toast.fire({
-                        icon: 'warning',
-                        title: 'No control number selected. Please select control number(s) to proceed.'
-                    })
-
-                }
-                else {
-                    $('#modalPrint').modal('show');
-                    $("#selectControlNo").empty();
-
-
-                    var controlnos = $("#txtControlNos").val();
-                    if (controlnos !== '') {
-                        var ctrlno = controlnos.split(',');
-                        console.log(ctrlno);
-                        for (var i in ctrlno) {
-                            console.log(ctrlno[i]);
-                            $('<option/>', {
-                                value: ctrlno[i],
-                                text: ctrlno[i]
-                            }).appendTo($("#selectControlNo"));
-                        };
-                        $("#selectControlNo").val(ctrlno).trigger('change');
-                    }
-                }
-            });
-            $('#btnProceed').on('click', function () {
-                var controlnos = $('#txtControlNos').val();
-                var loano = $('#selectLOANo').val();
-                var supplier = $('#selectSupplier').val();
-                var purpose = $('#selectPurpose').val();
-                var date = $('#txtDate').val();
-
-                console.log(controlnos);
-                Print(controlnos, loano, supplier, purpose, date);
-                window.location.replace('PEZA8112Print.aspx?controlno=' + controlnos);
-            });
+        //Date picker
+        $('#DateFrom').datetimepicker({
+            format: 'L',
+        });
+        $('#DateTo').datetimepicker({
+            format: 'L'
         });
 
-
-
-        function GetSession(callback) {
-            $.ajax({
-                type: "POST",
-                url: "SharedService.asmx/GetSession",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    Session = d;
-                    if (callback !== undefined) {
-                        callback(d);
+        $(document).ready(function () {
+            function GetLOA(callback) {
+                $.ajax({
+                    url: "Testing.aspx/GetLOA",
+                    type: "POST",
+                    data: "{}",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: function (e) {
+                        var d = JSON.parse(e.d);
+                        if (callback !== undefined) {
+                            callback(d);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
                     }
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            });
-        }
+                })
+            }
 
-        function Print(controlnos, loano, supplier, purpose, date, callback) {
-            console.log(controlnos, loano, supplier, purpose, date);
-            $.ajax({
-                type: "POST",
-                url: "8112.asmx/Print",
-                data: JSON.stringify({ ControlNos: controlnos, LOANo: loano, Supplier: supplier, Purpose: purpose, Date: date }),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    Session = d;
-                    if (callback !== undefined) {
-                        callback(d);
-                    }
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            });
-        }
+            //function ExportToExcel(columns, data, simulation) {
+            //    //file initialization
+            //    var workbook = new ExcelJS.Workbook();
+            //    workbook.creator = 'ISD';
+            //    workbook.lastModifiedBy = 'ISD';
+            //    workbook.created = new Date();
+            //    workbook.company = "EPPI";
+            //    workbook.modified = new Date();
+            //    workbook.lastPrinted = new Date();
+            //    workbook.properties.date1904 = true;
+            //    // Force workbook calculation on load
+            //    workbook.calcProperties.fullCalcOnLoad = true;
+            //    workbook.views = [
+            //        {
+            //            x: 0, y: 0, width: 10000, height: 20000,
+            //            firstSheet: 0, activeTab: 1, visibility: 'visible'
+            //        }
+            //    ]
+            //    var worksheet = workbook.addWorksheet('Parts Simulation');
+            //    //index for row and column of ExcelJS starts with 1
+            //    var rowIndex = 1;
+            //    var row = worksheet.getRow(rowIndex);
+            //    var row2, row3, colTotalStock, strFormula = "";
+            //    //initialize the table header
+            //    for (var i in columns) {
+            //        row.getCell(parseInt(i) + 1).value = columns[i];
+            //    }
+            //    var ranges = selectRange(worksheet, 1, 1, 1, columns.length);
+            //    ranges.forEach(function (range) {
+            //        range.style = {
+            //            font: { bold: true }
+            //        };
+            //        range.alignment = { vertical: 'middlen', horizontal: 'center' };
+            //    });
+            //    //loop the data
+            //    rowIndex = 0;
+            //    for (var i in data) {
+            //        if (rowIndex == 0) {
+            //            rowIndex = 2;
+            //        } else {
+            //            rowIndex += 3;
+            //        }
+            //        row = worksheet.getRow(rowIndex);
+            //        row2 = worksheet.getRow(rowIndex + 1);
+            //        row3 = worksheet.getRow(rowIndex + 2);
+            //        var ctr = 0;
+            //        var MaterialNumber = data[i]['MaterialNumber'];
+            //        for (var j in data[i]) {
+            //            row.getCell(ctr + 1).value = data[i][j];
+            //            if (j != "Past" && !IsDate(j.replace(/_/g, '/').substr(1))) {
+            //                row2.getCell(ctr + 1).value = data[i][j];
+            //                row3.getCell(ctr + 1).value = data[i][j];
+            //            }
+            //            if (j == "PlanLogical") {
+            //                row.getCell(ctr + 1).value = "EPPI PLAN";
+            //                row2.getCell(ctr + 1).value = "SUPPLIER PLAN/DELIVERY";
+            //                row3.getCell(ctr + 1).value = "END STOCKS";
+            //            }
+            //            if (simulation.hasOwnProperty(MaterialNumber)) {
+            //                if (simulation[MaterialNumber].hasOwnProperty(j)) {
+            //                    row2.getCell(ctr + 1).value = simulation[MaterialNumber][j];
+            //                }
+            //            } else {
+            //                if (j == "Past" || IsDate(j.replace(/_/g, '/').substr(1))) {
+            //                    row2.getCell(ctr + 1).value = 0;
+            //                }
+            //            }
+            //            if (j == "TotalSTCK") {
+            //                colTotalStock = ctr;
+            //            }
+            //            if (j == "Past") {
+            //                strFormula = String.format("{0}{1}+{2}{3}-{4}{5}", ExcelColumn(colTotalStock), rowIndex + 1, ExcelColumn(ctr), rowIndex + 1, ExcelColumn(ctr), rowIndex);
+            //                row3.getCell(ctr + 1).value = { formula: strFormula };
+            //            }
+            //            if (IsDate(j.replace(/_/g, '/').substr(1))) {
+            //                strFormula = String.format("{0}{1}+{2}{3}-{4}{5}", ExcelColumn(ctr - 1), rowIndex + 2, ExcelColumn(ctr), rowIndex + 1, ExcelColumn(ctr), rowIndex);
+            //                row3.getCell(ctr + 1).value = { formula: strFormula };
+            //            }
+            //            ctr++;
+            //        }
+            //    }
+            //    //for downloading the file
+            //    workbook.xlsx.writeBuffer().then(data => {
+            //        const blob = new Blob([data], { type: this.blobType });
+            //        saveAs(blob, "PartsSimulation.xlsx");
+            //    });
+            //}
 
-        function GetFinished8112Tasks(callback) {
-            var loano = $('#selectLOANo').val();
-            var supplier = $('#selectSupplier').val();
-            var purpose = $('#selectPurpose').val();
-
-            $.ajax({
-                url: "Testing.aspx/GetFinished8112Tasks",
-                type: "POST",
-                data: JSON.stringify({ LOANO: loano, SUPPLIER: supplier, PURPOSE: purpose }),
-                contentType: "application/json;charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    if (callback !== undefined) {
-                        callback(d);
-                    }
-
-                    if (MainTable !== undefined && MainTable !== null) {
-                        MainTable.clear().destroy();
-                    }
-                    var check = '<button type="button" class="btn btn-sm btn-success btn-check-row" title="Check"><i class="fas fa-check"></i></button>';
-                    var cross = '<button type="button" class="btn btn-sm btn-danger btn-cross-row" title="Cross"><i class="fas fa-times"></i></button>';
-                    MainTable = $("#tableFinished8112Tasks").DataTable({
-                        //dom: 'Bfrtip',
-                        select: {
-                            style: 'multi',
-                            selector: 'td:not(:nth-child(11), :nth-child(12))'
-                        },
+            GetLOA(function (data) {
+                if (data.length > 0) {
+                    table = $('#table_LOA').DataTable({
                         paging: true,
-                        lengthChange: true,
-                        ordering: true,
+                        filtering: true,
                         info: true,
-                        autoWidth: true,
-                        responsive: true,
-                        //buttons: [
-                        //    {
-                        //        text: 'Print',
-                        //        action: function () {
-                        //            let rows = MainTable.rows({ selected: true }).indexes();
-                        //            var x = MainTable.cells(rows, 0).data().toArray().toString();
-                        //            console.log(x);
-                        //            $('#modalPrint').modal('show');
-                        //        }
-                        //    }
-                        //],
-                        data: d,
+                        searching: true,
+                        data: data,
                         columns: [
-                            { data: "CONTROLNO", title: 'Control No.' },
-                            { data: "DIVISION", title: 'Division' },
-                            { data: "LOANO", title: 'LOA No.' },
-                            { data: "SUPPLIER", title: 'Supplier' },
-                            { data: "DESTINATION", title: 'Address' },
-                            { data: "PURPOSE", title: 'Purpose' },
-                            { data: "DOCUMENTFORMAT", title: 'Format' },
+                            { data: 'Section', title: 'Section', visible: false, searchable: true },
+                            { data: 'LOANO', title: 'LOA No.', visible: false, searchable: true },
+                            { data: 'TypeOfItem', title: 'Type of Item', visible: false, searchable: true },
                             {
-                                data: "APPROVEDDATE", title: 'Approved Date', render: function (e) {
+                                data: 'ActualDateOfTransfer', title: 'Date', render: function (e) {
                                     return moment(e).format("L");
-                                },
-                            },
-                            { data: "UPDATEDBY", title: 'Updated by' },
-                            {
-                                data: "UPDATEDDATE", title: 'Updated Date', render: function (e) {
-                                    if (e === null || e === '') {
-                                        return '';
-                                    }
-                                    else {
-                                        return moment(e).format("L");
-                                    }
-
-                                },
-                            },
-                            {
-                                data: "CONTROLNO", title: '', render: function (e) {
-                                    return check;
                                 }
                             },
-                            {
-                                data: "CONTROLNO", title: '', render: function (e) {
-                                    return cross;
-                                }
-                            },
-                            { data: "isPRINTED", title: 'isPrinted', visible: false, searchable: false },
+                            { data: 'SupplierName', title: 'Supplier', },
+                            { data: 'ItemDescription', title: 'Description', },
+                            { data: 'ItemCode', title: 'Item', },
+                            { data: 'Quantity', title: 'Quantity', },
+                            { data: 'Amount', title: 'Invoice Val.', },
+                            { data: 'InvoiceNo', title: 'Invoice No.', },
+                            { data: 'OriginOfItem', title: 'Origin', },
+                            { data: 'PEZADOCUMENTNO', title: 'PEZA Doc. No.', },
+                            { data: 'PEZAPERMITNO', title: 'PEZA Permit No.', },
+                            { data: 'GATEPASSNO', title: 'Gatepass No.', },
+                            { data: 'CONTROLNO', title: 'Control No.', },
                         ],
-                        createdRow: function (row, data) {
-                            if (data['isPRINTED'] === true) {
-                                $(row).addClass('printed');
+                        columnDefs: [
+                            { className: "dt-nowrap", targets: "_all" }
+                        ],
+                        scrollY: "300px",
+                        scrollX: true,
+                        scrollCollapse: true,
+                        order: [[2, 'asc']],
+                        dom: 'Blfrtip',
+                        //buttons: [{
+                        //    extend: 'excelHtml5',
+                        //    title: '',
+                        //    exportOptions: {
+                        //        columns: ':visible'
+                        //    },
+                        //    customize: function (xlsx, button, dt) {
+                        //        console.log(dt.table);
+                        //    },
+                        //}],
+                        buttons: [
+                            {
+                                text: 'Export',
+                                action: function (e, dt, node, config) {
+                                    console.log(table.data());
+                                }
                             }
+                        ],
+                        initComplete: function () {
+                            var table = this.api();
+                            table.column(0).data().unique().sort().each(function (e) {
+                                var section = table.column(0);
+                                $('<option/>', {
+                                    value: e,
+                                    text: e
+                                }).appendTo($("#selectSection")
+                                    .on('change', function () {
+                                        var val = $.fn.dataTable.util.escapeRegex(
+                                            $(this).val()
+                                        );
 
+                                        section
+                                            .search(val ? '^' + val + '$' : '', true, false)
+                                            .draw();
+                                    }));
+                            });
+                            table.column(1).data().unique().sort().each(function (e) {
+                                var loa = table.column(1);
+                                $('<option/>', {
+                                    value: e,
+                                    text: e
+                                }).appendTo($("#selectLOA")
+                                    .on('change', function () {
+                                        var val = $.fn.dataTable.util.escapeRegex(
+                                            $(this).val()
+                                        );
+
+                                        loa
+                                            .search(val ? '^' + val + '$' : '', true, false)
+                                            .draw();
+                                    }));
+                            });
+                            table.column(4).data().unique().sort().each(function (e) {
+                                var supplier = table.column(4);
+                                $('<option/>', {
+                                    value: e,
+                                    text: e
+                                }).appendTo($("#selectSupplier")
+                                    .on('change', function () {
+                                        var val = $.fn.dataTable.util.escapeRegex(
+                                            $(this).val()
+                                        );
+
+                                        supplier
+                                            .search(val ? '^' + val + '$' : '', true, false)
+                                            .draw();
+                                    }));
+                            });
                         },
                     });
-                    MainTable.on('select', function () {
-
-                        $("#txtControlNos").empty();
-
-                        let rows = MainTable.rows({ selected: true }).indexes();
-                        var controlno = MainTable.cells(rows, 0).data().toArray().toString();
-                        var loano = MainTable.cells(rows, 2).data().toArray().toString();
-                        var supplier = MainTable.cells(rows, 3).data().toArray().toString();
-                        var purpose = MainTable.cells(rows, 5).data().toArray().toString();
-
-                        $("#selectLOANo").val(loano).trigger('change');
-                        $("#selectSupplier").val(supplier).trigger('change');
-                        $("#selectPurpose").val(purpose).trigger('change');
-
-                        $("#txtControlNos").val(controlno);
-                    });
-                    MainTable.on('deselect', function () {
-
-                        let rows = MainTable.rows({ selected: true }).indexes();
-                        var controlno = MainTable.cells(rows, 0).data().toArray().toString();
-                        var loano = MainTable.cells(rows, 2).data().toArray().toString();
-                        var supplier = MainTable.cells(rows, 3).data().toArray().toString();
-                        var purpose = MainTable.cells(rows, 5).data().toArray().toString();
-
-                        $("#selectLOANo").val(loano).trigger('change');
-                        $("#selectSupplier").val(supplier).trigger('change');
-                        $("#selectPurpose").val(purpose).trigger('change');
-
-                        $("#txtControlNos").val(controlno);
-                    });
-                },
-                error: function (err) {
-                    console.log(err);
                 }
-            });
-        }
+            })
 
-        function GetFinished8112LOANOs(callback) {
-            $.ajax({
-                type: "POST",
-                url: "Testing.aspx/GetFinished8112LOANOs",
-                data: "{}",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    if (callback !== undefined) {
-                        callback(d);
+            // Custom filtering function which will search data in column four between two values
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var from = $('#txtDateFrom').val();
+                    var to = $('#txtDateTo').val();
+                    var date = data[3];
+                    if ((from === '' && to === '') ||
+                        (from === '' && date <= to) ||
+                        (from <= date && to === '') ||
+                        (from <= date && date <= to)
+                    ) {
+                        return true;
                     }
-                    for (var i in d) {
-                        $('<option/>', {
-                            value: d[i]['LOANO'],
-                            text: d[i]['LOANO']
-                        }).appendTo($("#selectLOANo"));
-                    };
-                },
-                error: function (err) {
-                    console.log(err);
+                    return false;
                 }
-            });
-        }
+            );
 
-        function GetFinished8112Purpose(callback) {
-            $.ajax({
-                type: "POST",
-                url: "Testing.aspx/GetFinished8112Purpose",
-                data: "{}",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    if (callback !== undefined) {
-                        callback(d);
-                    }
-                    for (var i in d) {
-                        $('<option/>', {
-                            value: d[i]['PURPOSE'],
-                            text: d[i]['PURPOSE']
-                        }).appendTo($("#selectPurpose"));
-                    };
-                },
-                error: function (err) {
-                    console.log(err);
-                }
+            $('#DateFrom, #DateTo').on("change.datetimepicker", function (e) {
+                table.draw();
             });
-        }
-
-        function GetFinished8112Suppliers(callback) {
-            $.ajax({
-                type: "POST",
-                url: "Testing.aspx/GetFinished8112Suppliers",
-                data: "{}",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (e) {
-                    var d = JSON.parse(e.d);
-                    if (callback !== undefined) {
-                        callback(d);
-                    }
-                    for (var i in d) {
-                        $('<option/>', {
-                            value: d[i]['SUPPLIER'],
-                            text: d[i]['SUPPLIER']
-                        }).appendTo($("#selectSupplier"));
-                    };
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            });
-        }
+        });
     </script>
 </asp:Content>

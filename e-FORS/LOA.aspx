@@ -260,6 +260,7 @@
         $(function () {
             $('#<%=gvLOA.ClientID%>').DataTable({
                 searching: true,
+                order: [[0, 'desc']],
             });
             //Initialize Select2 Elements
             $('.select2').select2()
@@ -276,6 +277,7 @@
             function EndRequestHandler(sender, args) {
                 $('#<%=gvLOA.ClientID%>').DataTable({
                     searching: true,
+                    order: [[0, 'desc']],
                 });
                 //Initialize Select2 Elements
                 $('.select2').select2()

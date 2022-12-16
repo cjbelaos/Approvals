@@ -149,6 +149,12 @@
 
         var MainTable;
         $(document).ready(function () {
+            GetFinished8112Tasks();
+            GetDivision();
+            GetFinished8112LOANOs();
+            GetFinished8112Purpose();
+            GetFinished8112Suppliers();
+
             GetSession(function (e) {
                 Session = e;
                 var userid = Session["UserID"];
@@ -256,23 +262,30 @@
                 }
             });
 
-            GetFinished8112Tasks();
-            GetDivision();
-            GetFinished8112LOANOs();
-            GetFinished8112Purpose();
-            GetFinished8112Suppliers();
-
-
-
-            $('#btnFilter').on('click', function () {
+            //$('#btnFilter').on('click', function () {
+            //    GetFinished8112Tasks();
+            //});
+            $("#selectDivision").change(function () {
                 GetFinished8112Tasks();
-            });
+            })
+
+            $("#selectLOANo").change(function () {
+                GetFinished8112Tasks();
+            })
+
+            $("#selectSupplier").change(function () {
+                GetFinished8112Tasks();
+            })
+
+            $("#selectPurpose").change(function () {
+                GetFinished8112Tasks();
+            })
 
             $('#btnClear').on('click', function () {
                 $("#selectDivision").val('').trigger('change');
                 $("#selectLOANo").val('').trigger('change');
-                $("#selectSupplier").val('').trigger('change');;
-                $("#selectPurpose").val('').trigger('change');;
+                $("#selectSupplier").val('').trigger('change');
+                $("#selectPurpose").val('').trigger('change');
             });
 
             $('#btnPrint').on('click', function () {
@@ -324,6 +337,8 @@
                 Print(controlnos, division, loano, supplier, purpose, date);
                 window.location.assign('PEZA8112PrintNew.aspx?controlno=' + controlnos);
             });
+
+
         });
 
         function GetSession(callback) {
@@ -439,6 +454,7 @@
                             },
                             { data: "isPRINTED", title: 'isPrinted', visible: false, searchable: false },
                         ],
+                        //order: [[7, 'desc']],
                         createdRow: function (row, data) {
                             if (data['isPRINTED'] === true) {
                                 $(row).addClass('printed');
@@ -446,8 +462,12 @@
                         },
 
                     });
-                    MainTable.on('select', function () {
-
+                    MainTable.on('user-select', function (e, dt, type, cell, originalEvent) {
+                        if ($("#selectDivision").val() === '' || $("#selectLOANo").val() === '' || $("#selectSupplier").val() === '' || $("#selectPurpose").val() === '') {
+                            e.preventDefault();
+                        }
+                    });
+                    MainTable.on('select', function (e) {
                         $("#txtControlNos").empty();
 
                         let row = MainTable.row({ selected: true }).data();
@@ -457,28 +477,28 @@
                         //console.log(rows);
 
                         var controlno = MainTable.cells(rows, 0).data().toArray().toString();
-                        if (row !== undefined) {
-                            var division = row['DIVISION'];
-                            var loano = row['LOANO'];
-                            var supplier = row['SUPPLIER'];
-                            var purpose = row['PURPOSE'];
+                        //if (row !== undefined) {
+                        //    var division = row['DIVISION'];
+                        //    var loano = row['LOANO'];
+                        //    var supplier = row['SUPPLIER'];
+                        //    var purpose = row['PURPOSE'];
 
-                            console.log(division);
-                            console.log(loano);
-                            console.log(supplier);
-                            console.log(purpose);
+                        //    console.log(division);
+                        //    console.log(loano);
+                        //    console.log(supplier);
+                        //    console.log(purpose);
 
-                            $("#selectDivision").val(division).trigger('change');
-                            $("#selectLOANo").val(loano).trigger('change');
-                            $("#selectSupplier").val(supplier).trigger('change');
-                            $("#selectPurpose").val(purpose).trigger('change');
-                        }
-                        else {
-                            $("#selectDivision").val('').trigger('change');
-                            $("#selectLOANo").val('').trigger('change');
-                            $("#selectSupplier").val('').trigger('change');;
-                            $("#selectPurpose").val('').trigger('change');;
-                        }
+                        //    $("#selectDivision").val(division).trigger('change');
+                        //    $("#selectLOANo").val(loano).trigger('change');
+                        //    $("#selectSupplier").val(supplier).trigger('change');
+                        //    $("#selectPurpose").val(purpose).trigger('change');
+                        //}
+                        //else {
+                        //    $("#selectDivision").val('').trigger('change');
+                        //    $("#selectLOANo").val('').trigger('change');
+                        //    $("#selectSupplier").val('').trigger('change');;
+                        //    $("#selectPurpose").val('').trigger('change');;
+                        //}
 
 
                         $("#txtControlNos").val(controlno);
@@ -491,26 +511,26 @@
                         let rows = MainTable.rows({ selected: true }).indexes();
                         var controlno = MainTable.cells(rows, 0).data().toArray().toString();
 
-                        if (row !== undefined) {
-                            var loano = row['LOANO'];
-                            var supplier = row['SUPPLIER'];
-                            var purpose = row['PURPOSE'];
+                        //if (row !== undefined) {
+                        //    var loano = row['LOANO'];
+                        //    var supplier = row['SUPPLIER'];
+                        //    var purpose = row['PURPOSE'];
 
-                            console.log(loano);
-                            console.log(supplier);
-                            console.log(purpose);
+                        //    console.log(loano);
+                        //    console.log(supplier);
+                        //    console.log(purpose);
 
-                            $("#selectDivision").val(division).trigger('change');
-                            $("#selectLOANo").val(loano).trigger('change');
-                            $("#selectSupplier").val(supplier).trigger('change');
-                            $("#selectPurpose").val(purpose).trigger('change');
-                        }
-                        else {
-                            $("#selectDivision").val('').trigger('change');
-                            $("#selectLOANo").val('').trigger('change');;
-                            $("#selectSupplier").val('').trigger('change');;
-                            $("#selectPurpose").val('').trigger('change');;
-                        }
+                        //    $("#selectDivision").val(division).trigger('change');
+                        //    $("#selectLOANo").val(loano).trigger('change');
+                        //    $("#selectSupplier").val(supplier).trigger('change');
+                        //    $("#selectPurpose").val(purpose).trigger('change');
+                        //}
+                        //else {
+                        //    $("#selectDivision").val('').trigger('change');
+                        //    $("#selectLOANo").val('').trigger('change');;
+                        //    $("#selectSupplier").val('').trigger('change');;
+                        //    $("#selectPurpose").val('').trigger('change');;
+                        //}
 
                         $("#txtControlNos").val(controlno);
                     });

@@ -59,11 +59,6 @@ public class hn_DeleteFile : IHttpHandler
         }
     }
 
-    //public bool IsDirectoryEmpty(string path)
-    //{
-    //    return !Directory.EnumerateFileSystemEntries(path).Any();
-    //}
-
     public bool IsReusable
     {
         get

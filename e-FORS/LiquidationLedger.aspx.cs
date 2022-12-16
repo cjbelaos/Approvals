@@ -70,9 +70,15 @@ public partial class LiquidationLedger : System.Web.UI.Page
         try
         {
             string LOANO = ddlLOANo.SelectedValue;
+
             LOADetails ld = new LOADetails();
-            ld.LOANO = ddlLOANo.SelectedValue;
-            maint.GetLOADetails(ld);
+            ld.LOANO = LOANO;
+            DataTable dt1 = new DataTable();
+            dt1 = maint.GetLOADetails(ld);
+            string LOAEXP = Convert.ToDateTime(dt1.Rows[0]["LOAEXP"]).ToString("MMMM dd, yyyy").ToUpper();
+            string QTYLEFT = dt1.Rows[0]["QTYLEFT"].ToString();
+            string AMTLEFT = dt1.Rows[0]["AMTLEFT"].ToString();
+
             int ccc2 = 13; //excel row start    
             int i = 1; //
             int lastRowCount = 1;
@@ -87,10 +93,14 @@ public partial class LiquidationLedger : System.Web.UI.Page
                     //iterate through dataset tables
                     //for row data
 
+                    int previousWorkSheet = 0;
                     int currentWorkSheet = 0;
                     int nextWorkSheet = 0;
+
+                    string previousSheet = "";
                     string currentSheet = "";
                     string nextSheet = "";
+                    
 
                     //for row data
                     for (var row = 1; row <= dt.Rows.Count; row++)
@@ -108,7 +118,9 @@ public partial class LiquidationLedger : System.Web.UI.Page
                         var Date = DateTime.Parse(dt.Rows[row - 1]["DATEOFTRANSFER"].ToString().Trim());
                         var Qty = Convert.ToDouble(dt.Rows[row - 1]["TOTALQUANTITY"].ToString().Trim());
                         var Amt = Convert.ToDecimal(dt.Rows[row - 1]["TOTALAMOUNT"].ToString().Trim());
-
+                        
+                        var QtyLeft = Convert.ToDouble(QTYLEFT.Trim());
+                        var AmtLeft = Convert.ToDouble(AMTLEFT.Trim());
                         //int cs = currentWorkSheet + 1;
                         //currentSheet = cs.ToString();
 
@@ -125,10 +137,24 @@ public partial class LiquidationLedger : System.Web.UI.Page
                             lastRowCount = 0;
                             currentSheet = nextSheet;
                             currentWorkSheet++;
+
+                            excel.Workbook.Worksheets[currentSheet].Cells["D35"].Value = QtyLeft;
+                            excel.Workbook.Worksheets[currentSheet].Cells["F35"].Value = AmtLeft;
+                        }
+
+                        if (currentWorkSheet >= 2)
+                        {
+                            currentSheet = currentWorkSheet.ToString();
+                            previousWorkSheet = currentWorkSheet - 1;
+                            previousSheet = previousWorkSheet.ToString();
+
+                            excel.Workbook.Worksheets[currentSheet].Cells["D35"].Formula = "'"+previousSheet+"'!D37";
+                            excel.Workbook.Worksheets[currentSheet].Cells["F35"].Formula = "'"+previousSheet+"'!F37";
                         }
 
                         //plotting the values
-                        excel.Workbook.Worksheets[currentSheet].Cells["B8"].Value = LOANO;
+                        excel.Workbook.Worksheets[currentSheet].Cells["B8"].Value = "LOA NO.     "+LOANO;
+                        excel.Workbook.Worksheets[currentSheet].Cells["H8"].Value = "LOA EXPIRY:  "+LOAEXP;
                         excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 2].Value = Supplier;
                         excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 3].Value = TypeOfItem;
                         excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 4].Value = DocumentNo;

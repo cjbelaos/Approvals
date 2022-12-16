@@ -25,20 +25,11 @@
 <body class="hold-transition login-page">
     <form id="form1" method="post" runat="server">
         <asp:ScriptManager ID="ScriptManager2" runat="server"></asp:ScriptManager>
-        <asp:UpdateProgress ID="UpdateProgress1" runat="server" AssociatedUpdatePanelID="upTable"
-            ClientIDMode="Predictable" ViewStateMode="Inherit">
-            <ProgressTemplate>
-                <div class="submit-progress hidden" runat="server" id="divProgress">
-                    <img src="Images/Spinner.gif" />   
-                </div>
-            </ProgressTemplate>
-        </asp:UpdateProgress>
         <asp:UpdatePanel ID="upTable" runat="server">
             <ContentTemplate>
                 <div class="login-box">
                     <div class="login-logo">
-                        <a href="Login.aspx" class="brand-link">
-                            <img src="Images/e.png" alt="e-FORS Logo" class="brand-image float-none" style="opacity: .8"><b>-</b>FORS</a>
+                        <a href="Login.aspx" class="brand-link"><img src="Images/e.png"  alt="e-FORS Logo" class="brand-image float-none" style="opacity: .8"><b>-</b>FORS</a>
                     </div>
                     <!-- /.login-logo -->
                     <div class="card">
@@ -63,17 +54,15 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4"></div>
-                                <div class="col-md-4">
-                                    <asp:Button runat="server" ID="BtnLogin" CssClass="btn btn-primary btn-block" Text="Sign In" Width="100px" OnClick="BtnLogin_Click" />
-                                </div>
+                                <div class="col-md-4"> <asp:Button runat="server" ID="BtnLogin" CssClass="btn btn-primary btn-block" Text="Sign In" Width="100px" OnClick="BtnLogin_Click" /></div>
                                 <div class="col-md-4"></div>
+                                </div>
                             </div>
+                            <!-- /.col -->
                         </div>
-                        <!-- /.col -->
-                    </div>
 
-                </div>
-                <!-- /.login-card-body -->
+                    </div>
+                    <!-- /.login-card-body -->
                 </div>
                 </div>
                 <!-- /.login-box -->
@@ -95,7 +84,6 @@
         $(function () {
             $('#tbUsername').focus();
         });
-
         function LoginFailed() {
             var Toast = Swal.mixin({
                 toast: true,

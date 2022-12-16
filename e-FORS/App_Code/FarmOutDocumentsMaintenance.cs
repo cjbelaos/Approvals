@@ -18,21 +18,33 @@ public class FarmOutDocumentsMaintenance
 
     public DataSet GetPEZASignatory()
     {
-        SqlCommand cmd = new SqlCommand("GetPEZASignatory", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataSet ds = new DataSet();
-
-        if (conn.State == ConnectionState.Open)
+        try
         {
-            da.Fill(ds);
+            if (conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open();
+            using (var cmd = new SqlCommand("GetPEZASignatory", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(ds);
+                }
+            }
             conn.Close();
         }
-        else
+        catch (SqlException sqlex)
         {
-            conn.Open();
-            da.Fill(ds);
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
             conn.Close();
         }
         return ds;
@@ -40,138 +52,174 @@ public class FarmOutDocumentsMaintenance
 
     public DataSet GetPreparedby()
     {
-        SqlCommand cmd = new SqlCommand("GetPreparedby", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataSet ds = new DataSet();
-
-        if (conn.State == ConnectionState.Open)
+        try
         {
-            da.Fill(ds);
+            if (conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open();
+            using (var cmd = new SqlCommand("GetPreparedby", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(ds);
+                }
+            }
             conn.Close();
         }
-        else
+        catch (SqlException sqlex)
         {
-            conn.Open();
-            da.Fill(ds);
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
             conn.Close();
         }
         return ds;
-
     }
 
     public DataTable GetDocumentFormattobeUsed()
     {
-        SqlCommand cmd = new SqlCommand("GetDocumentFormattobeUsed", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
                 conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("GetDocumentFormattobeUsed", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(dt);
-
-                conn.Close();
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
             }
-
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
         }
         catch (Exception ex)
         {
-            ex.Message.ToString();
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
         }
         return dt;
     }
 
     public DataTable GetEPPIAuthorizedSignatory()
     {
-        using (var cmd = new SqlCommand("GetEPPIAuthorizedSignatory", conn) { CommandType = CommandType.StoredProcedure })
+        DataTable dt = new DataTable();
+        try
         {
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-
-            try
-            {
-                if (conn.State == ConnectionState.Open)
-                {
-                    da.Fill(dt);
-                }
-                else
-                {
-                    conn.Open();
-                    da.Fill(dt);
-                }
-            }
-            catch (SqlException sqlex)
-            {
-                throw sqlex;
-            }
-            finally
+            if (conn.State == ConnectionState.Open)
             {
                 conn.Close();
             }
-            return dt;
-        } 
+            conn.Open();
+            using (var cmd = new SqlCommand("GetEPPIAuthorizedSignatory", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
+            }
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+        return dt;
     }
 
     public DataTable GetLOANo(string LOAType)
     {
-        using (var cmd = new SqlCommand("GetLOANo", conn) { CommandType = CommandType.StoredProcedure })
+        DataTable dt = new DataTable();
+        try
         {
-            cmd.Parameters.AddWithValue("@LOAType", LOAType);
-
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
-
-                return dt;
-            }
-            else
-            {
-                conn.Open();
-                da.Fill(dt);
                 conn.Close();
-
-                return dt;
             }
+            conn.Open();
+            using (var cmd = new SqlCommand("GetLOANo", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.AddWithValue("@LOAType", LOAType);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
+            }
+            conn.Close();
         }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+        return dt;
     }
 
     public DataTable GetSuretyBondNo(string LOANo)
     {
-        SqlCommand cmd = new SqlCommand("GetSuretyBondNo", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@LOANo", LOANo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
-
-        if (conn.State == ConnectionState.Open)
+        try
         {
-            da.Fill(dt);
-            conn.Close();
-
-            return dt;
-        }
-        else
-        {
+            if (conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+            }
             conn.Open();
-            da.Fill(dt);
+            using (var cmd = new SqlCommand("GetSuretyBondNo", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.AddWithValue("@LOANo", LOANo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
+            }
             conn.Close();
-
-            return dt;
         }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+        return dt;
     }
 
     public void SaveFarmOutDocuments(
@@ -195,223 +243,245 @@ public class FarmOutDocumentsMaintenance
     {
         try
         {
-            SqlCommand cmd = new SqlCommand("SaveFarmOutDocuments", conn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-            cmd.Parameters.AddWithValue("@DocumentFormat", DocumentFormat);
-            cmd.Parameters.AddWithValue("@PEZADocumentNo", PEZADocumentNo);
-            cmd.Parameters.AddWithValue("@GatepassNo", GatepassNo);
-            cmd.Parameters.AddWithValue("@LOANo", LOANo);
-            cmd.Parameters.AddWithValue("@LOAExpiryDate", LOAExpiryDate);
-            cmd.Parameters.AddWithValue("@SuretyBondNo", SuretyBondNo);
-            cmd.Parameters.AddWithValue("@SuretyExpiryDate", SuretyExpiryDate);
-            cmd.Parameters.AddWithValue("@ContainerNo", ContainerNo);
-            cmd.Parameters.AddWithValue("@PEZASeal", PEZASeal);
-            cmd.Parameters.AddWithValue("@PlateNo", PlateNo);
-            cmd.Parameters.AddWithValue("@ControlNo8105", ControlNo8105);
-            cmd.Parameters.AddWithValue("@EPPIAuthorizedSignatory", EPPIAuthorizedSignatory);
-            cmd.Parameters.AddWithValue("@PEZAExaminerSignatory", PEZAExaminerSignatory);
-            cmd.Parameters.AddWithValue("@PEZAOICSignatory", PEZAOICSignatory);
-            cmd.Parameters.AddWithValue("@CreatedBy", UserName);
-            cmd.Parameters.AddWithValue("@UpdatedBy", UserName);
-
             if (conn.State == ConnectionState.Open)
             {
-                cmd.ExecuteNonQuery();
                 conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("SaveFarmOutDocuments", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
+                cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+                cmd.Parameters.AddWithValue("@DocumentFormat", DocumentFormat);
+                cmd.Parameters.AddWithValue("@PEZADocumentNo", PEZADocumentNo);
+                cmd.Parameters.AddWithValue("@GatepassNo", GatepassNo);
+                cmd.Parameters.AddWithValue("@LOANo", LOANo);
+                cmd.Parameters.AddWithValue("@LOAExpiryDate", LOAExpiryDate);
+                cmd.Parameters.AddWithValue("@SuretyBondNo", SuretyBondNo);
+                cmd.Parameters.AddWithValue("@SuretyExpiryDate", SuretyExpiryDate);
+                cmd.Parameters.AddWithValue("@ContainerNo", ContainerNo);
+                cmd.Parameters.AddWithValue("@PEZASeal", PEZASeal);
+                cmd.Parameters.AddWithValue("@PlateNo", PlateNo);
+                cmd.Parameters.AddWithValue("@ControlNo8105", ControlNo8105);
+                cmd.Parameters.AddWithValue("@EPPIAuthorizedSignatory", EPPIAuthorizedSignatory);
+                cmd.Parameters.AddWithValue("@PEZAExaminerSignatory", PEZAExaminerSignatory);
+                cmd.Parameters.AddWithValue("@PEZAOICSignatory", PEZAOICSignatory);
+                cmd.Parameters.AddWithValue("@CreatedBy", UserName);
+                cmd.Parameters.AddWithValue("@UpdatedBy", UserName);
                 cmd.ExecuteNonQuery();
-                conn.Close();
             }
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
         }
         catch (Exception ex)
         {
-            ex.Message.ToString();
+            throw ex;
+        }
+        finally
+        {
             conn.Close();
         }
     }
     public void Approval(LCApproval la)
     {
-        using (var cmd = new SqlCommand("APPROVE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
+        try
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
-            cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
-            cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
-            cmd.Parameters.AddWithValue("@APPROVALCOMMENTS", la.Comment);
-            cmd.Parameters.AddWithValue("@UID", la.UserID);
-
-            try
+            if (conn.State == ConnectionState.Open)
             {
-                if (conn.State == ConnectionState.Open)
-                {
-                    cmd.ExecuteNonQuery();
-                }
-                else
-                {
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
+                conn.Close();
             }
-
-            catch (Exception ex)
+            conn.Open();
+            using (var cmd = new SqlCommand("APPROVE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
             {
-                ex.Message.ToString();
+                cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
+                cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
+                cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
+                cmd.Parameters.AddWithValue("@APPROVALCOMMENTS", la.Comment);
+                cmd.Parameters.AddWithValue("@UID", la.UserID);
+                cmd.ExecuteNonQuery();
             }
-
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
         }
     }
 
     public void RequestChange(LCApproval la)
     {
-        using (var cmd = new SqlCommand("REQUEST_CHANGE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
+        try
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
-            cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
-            cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
-            cmd.Parameters.AddWithValue("@REQUESTCHANGECOMMENT", la.Comment);
-            cmd.Parameters.AddWithValue("@UID", la.UserID);
-
-            try
+            if (conn.State == ConnectionState.Open)
             {
-                if (conn.State == ConnectionState.Open)
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-                else
-                {
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                conn.Close();
             }
-            catch (SqlException sqlex)
+            conn.Open();
+            using (var cmd = new SqlCommand("REQUEST_CHANGE_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
             {
-                throw sqlex;
+                cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
+                cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
+                cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
+                cmd.Parameters.AddWithValue("@REQUESTCHANGECOMMENT", la.Comment);
+                cmd.Parameters.AddWithValue("@UID", la.UserID);
+                cmd.ExecuteNonQuery();
             }
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
         }
     }
 
     public void ReassignTask(LCApproval la, string Reassignto)
     {
-        using (var cmd = new SqlCommand("REASSIGN_TASK_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
+        try
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
-            cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
-            cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
-            cmd.Parameters.AddWithValue("@REASSIGNEDCOMMENTS", la.Comment);
-            cmd.Parameters.AddWithValue("@REASSIGNEDTO", Reassignto);
-            cmd.Parameters.AddWithValue("@UID", la.UserID);
-
-            try
+            if (conn.State == ConnectionState.Open)
             {
-                if (conn.State == ConnectionState.Open)
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-                else
-                {
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                conn.Close();
             }
-            catch (SqlException sqlex)
+            conn.Open();
+            using (var cmd = new SqlCommand("REASSIGN_TASK_WORKFLOW", conn) { CommandType = CommandType.StoredProcedure })
             {
-                throw sqlex;
+                cmd.Parameters.AddWithValue("@CONTROLNO", la.ControlNo);
+                cmd.Parameters.AddWithValue("@WORKFLOWID", la.WorkFlowID);
+                cmd.Parameters.AddWithValue("@APPROVERID", la.ApproverID);
+                cmd.Parameters.AddWithValue("@REASSIGNEDCOMMENTS", la.Comment);
+                cmd.Parameters.AddWithValue("@REASSIGNEDTO", Reassignto);
+                cmd.Parameters.AddWithValue("@UID", la.UserID);
+                cmd.ExecuteNonQuery();
             }
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
         }
     }
 
     public DataSet GetFarmOutDocument(string ControlNo)
     {
-        using (var cmd = new SqlCommand("GET_FARMOUT_DETAILS", conn) { CommandType = CommandType.StoredProcedure })
+        DataSet ds = new DataSet();
+        try
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
-            cmd.CommandTimeout = 360000;
-
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(ds);
-
-                return ds;
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("GET_FARMOUT_DETAILS", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(ds);
-
-                return ds;
+                cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(ds);
+                }
             }
+            conn.Close();
         }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+        return ds;
     }
 
     public void SaveFarmOutDocumentsApproval(string ControlNo, string Preparedby, string Approvedby, string UserID)
     {
-        using (var cmd = new SqlCommand("SaveFarmOutDocumentsApproval", conn) { CommandType = CommandType.StoredProcedure })
+        try
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
-            cmd.Parameters.AddWithValue("@Preparedby", Preparedby);
-            cmd.Parameters.AddWithValue("@Approvedby", Approvedby);
-            cmd.Parameters.AddWithValue("@UserID", UserID);
-
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-
-            try
+            if (conn.State == ConnectionState.Open)
             {
-                if (conn.State == ConnectionState.Open)
-                {
-                    da.Fill(ds);
-                    conn.Close();
-                }
-                else
-                {
-                    conn.Open();
-                    da.Fill(ds);
-                    conn.Close();
-                }
-                
+                conn.Close();
             }
-            catch (SqlException sqlex)
+            conn.Open();
+            using (var cmd = new SqlCommand("SaveFarmOutDocumentsApproval", conn) { CommandType = CommandType.StoredProcedure })
             {
-                throw sqlex;
+                cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+                cmd.Parameters.AddWithValue("@Preparedby", Preparedby);
+                cmd.Parameters.AddWithValue("@Approvedby", Approvedby);
+                cmd.Parameters.AddWithValue("@UserID", UserID);
+                cmd.ExecuteNonQuery();
             }
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
         }
     }
 
     public DataSet GetGatepassForPrint(string ControlNo)
     {
-        SqlCommand cmd = new SqlCommand("GetGatepassForPrint", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataSet ds = new DataSet();
-
         try
         {
-            if (conn.State != ConnectionState.Open)
+            if (conn.State == ConnectionState.Open)
             {
-                conn.Open();
-                da.Fill(ds);
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("GetGatepassForPrint", conn) { CommandType = CommandType.StoredProcedure })
             {
-                da.Fill(ds);
+                cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(ds);
+                }
             }
-            
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
         finally
         {
@@ -422,170 +492,183 @@ public class FarmOutDocumentsMaintenance
 
     public DataTable GetAuthorizedOfficial(string APOAccount)
     {
-        SqlCommand cmd = new SqlCommand("GetAuthorizedOfficial", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@APOAccount", APOAccount);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
-
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("GetAuthorizedOfficial", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(dt);
+                cmd.Parameters.AddWithValue("@APOAccount", APOAccount);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
             }
-            return dt;
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
         }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
         finally
         {
             conn.Close();
         }
-
+        return dt;
     }
 
     public DataTable GetItemContainers(string ControlNo)
     {
-        SqlCommand cmd = new SqlCommand("sp_GetItemContainers", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
-
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("sp_GetItemContainers", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(dt);
+                cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
             }
-            return dt;
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
         }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
         finally
         {
             conn.Close();
         }
-
+        return dt;
     }
 
     public DataTable GetItemSealNo(string ControlNo)
     {
-        SqlCommand cmd = new SqlCommand("sp_GetItemSealNo", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
-
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("sp_GetItemSealNo", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(dt);
+                cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
             }
-            return dt;
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
         }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
         finally
         {
             conn.Close();
         }
-
+        return dt;
     }
 
     public Boolean FarmOutDocumentsControlNoChecking(string ControlNo)
     {
-        using (var cmd = new SqlCommand("FarmOutDocumentsControlNoChecking", conn) { CommandType = CommandType.StoredProcedure })
+        DataTable dt = new DataTable();
+        try
         {
-            cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
-
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-
-            try
+            if (conn.State == ConnectionState.Open)
             {
-                if (conn.State == ConnectionState.Open)
+                conn.Close();
+            }
+            conn.Open();
+            using (var cmd = new SqlCommand("FarmOutDocumentsControlNoChecking", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.AddWithValue("@CONTROLNO", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
                 {
                     da.Fill(dt);
                 }
-                else
-                {
-                    conn.Open();
-                    da.Fill(dt);
-                }
             }
-            catch (Exception ex)
-            {
-                ex.Message.ToString();
-            }
-
-            if (dt.Rows.Count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            conn.Close();
+        }
+        if (dt.Rows.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
     public Boolean CheckIfWithContainer(string ControlNo)
     {
-        SqlCommand cmd = new SqlCommand("CheckIfWithContainer", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
-
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("CheckIfWithContainer", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(dt);
+                cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
             }
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
         }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
         finally
         {
             conn.Close();
         }
-
         if (dt.Rows.Count > 0)
         {
             return true;
@@ -598,34 +681,36 @@ public class FarmOutDocumentsMaintenance
 
     public Boolean CheckIfWithLOA(string ControlNo)
     {
-        SqlCommand cmd = new SqlCommand("CheckIfWithLOA", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
-
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("CheckIfWithLOA", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(dt);
+                cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
             }
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
         }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
         finally
         {
             conn.Close();
         }
-
         if (dt.Rows.Count > 0)
         {
             return true;
@@ -638,34 +723,36 @@ public class FarmOutDocumentsMaintenance
 
     public Boolean CheckIfWithItemContainer(string ControlNo)
     {
-        SqlCommand cmd = new SqlCommand("CheckIfWithItemContainer", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
-
         try
         {
             if (conn.State == ConnectionState.Open)
             {
-                da.Fill(dt);
+                conn.Close();
             }
-            else
+            conn.Open();
+            using (var cmd = new SqlCommand("CheckIfWithItemContainer", conn) { CommandType = CommandType.StoredProcedure })
             {
-                conn.Open();
-                da.Fill(dt);
+                cmd.Parameters.AddWithValue("@ControlNo", ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
             }
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
         }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
         finally
         {
             conn.Close();
         }
-
         if (dt.Rows.Count > 0)
         {
             return true;

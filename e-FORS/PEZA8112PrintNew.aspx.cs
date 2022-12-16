@@ -14,6 +14,8 @@ public partial class PEZA8112PrintNew : System.Web.UI.Page
                 string ControlNos = Session["ControlNos"].ToString();
                 string Division = Session["Division"].ToString();
                 string LOANO = Session["LOANo"].ToString();
+                string Supplier = Session["Supplier"].ToString();
+                string Purpose = Session["Purpose"].ToString();
                 string Date = Session["Date"].ToString();
                 string Dates = Session["Dates"].ToString();
 
@@ -31,7 +33,9 @@ public partial class PEZA8112PrintNew : System.Web.UI.Page
                     reportDocument.SetParameterValue("@Date", Date);
                     reportDocument.SetParameterValue("@Dates", Dates);
                     reportDocument.SetParameterValue("@LOANO", LOANO);
-                    reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
+                    reportDocument.SetParameterValue("@Supplier", Supplier);
+                    reportDocument.SetParameterValue("@Purpose", Purpose);
+                    reportDocument.SetDatabaseLogon("sa", "Sql@dmin2015", "172.16.52.193", "db_eFORS");
 
                     //Load the report by setting the report source
                     CrystalReportViewer1.ReportSource = reportDocument;

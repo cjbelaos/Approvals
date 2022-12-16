@@ -1,1264 +1,310 @@
 ﻿using System;
-using System.Data;
-using System.Web.UI.WebControls;
-using System.Web.UI;
 using System.Web;
-using System.IO;
 using System.Web.Services;
 using Newtonsoft.Json;
 
 public partial class FarmOutRequestForm : System.Web.UI.Page
 {
-    private static readonly FarmOutRequestFormMaintenance frfm = new FarmOutRequestFormMaintenance();
-    private static readonly Maintenance maint = new Maintenance();
-    private static readonly Items items = new Items();
-    private static readonly FarmOutDetails fod = new FarmOutDetails();
-    private static readonly SupplierDetails sd = new SupplierDetails();
-    private static readonly LOADetails ld = new LOADetails();
-    public static string UserID;
-    public static string UserName;
-    public static string Message;
-    public static string ItemNoHelpBlock;
-    public static string ItemDescriptionHelpBlock;
-    public static string QuantityHelpBlock;
-    public static string UnitofMeasurementHelpBlock;
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["UserID"] == null)
         {
             Session["Link"] = HttpContext.Current.Request.Url.AbsoluteUri;
-            //not logged in
-            //Redirect to Login
-
             Response.Redirect("Login.aspx?expired=1");
         }
-        else
-        {
-            if (!Page.IsPostBack)
-            {
-                UserID = Session["UserID"].ToString();
-                UserName = Session["UserName"].ToString();
-
-                if (Request.QueryString["CONTROLNO"] != null)
-                {
-                    AddDivision();
-                    AddNatureofItem();
-                    AddTransferto();
-                    AddTypeofItem();
-                    AddClassificationofItem();
-                    AddPurposeofItem();
-                    AddPackagingUsed();
-                    AddSuppliers();
-                    AddModeofTransfer();
-                    AddTypeofTransfer();
-                    GetRequesteddby();
-                    GetCheckedby();
-                    GetApprovedby();
-                    GetItems();
-                    GetFiles();
-
-                    BtnPrint.Visible = true;
-                    tbControlNo.Text = Request.QueryString["CONTROLNO"];
-                    GetFarmOut();
-                    if (frfm.FarmOutRequestFormApprovalChecking(tbControlNo.Text) == true && maint.CheckAuthorization(UserID) == true)
-                    {
-                        LnkBtnBack.Visible = true;
-                        BtnPrint.Visible = true;
-                    }
-                    else
-                    {
-                        LnkBtnBack.Visible = false;
-                        BtnPrint.Visible = false;
-                    }
-                    if (maint.CheckIfCancelled(tbControlNo.Text) == false)
-                    {
-                        BtnPrint.Enabled = true;
-                    }
-                    else
-                    {
-                        BtnPrint.Enabled = false;
-                    }
-                    if (UserID == ddlRequestedby.SelectedValue && maint.CheckIfCancelled(tbControlNo.Text) == false && maint.CheckIfFinishedRequestor(tbControlNo.Text) == false)
-                    {
-                        BtnCancel.Visible = true;
-                    }
-                    else
-                    {
-                        BtnCancel.Visible = false;
-                    }
-                }
-                else
-                {
-                    LnkBtnBack.Visible = false;
-                    tbControlNo.Text = "[AUTOMATIC]";
-                    GetUserInfo();
-                    AddDivision();
-                    AddNatureofItem();
-                    AddTransferto();
-                    AddTypeofItem();
-                    AddClassificationofItem();
-                    AddPurposeofItem();
-                    AddPackagingUsed();
-                    AddSuppliers();
-                    AddModeofTransfer();
-                    AddTypeofTransfer();
-                    GetRequesteddby();
-                    GetCheckedby();
-                    GetApprovedby();
-                    GetItems();
-                }
-            }
-
-            LoginDetails login = new LoginDetails();
-            login.username = Session["UserID"].ToString();
-            bool bypass = maint.CheckIfBypassAccount(login);
-            if (bypass == true)
-            {
-                EnableControl();
-            }
-        }
     }
 
-    private void GetItems()
+    [WebMethod]
+    public static string GetUserInformation(string UserID)
     {
-        string ControlNo = tbControlNo.Text;
-        DataTable dt = maint.GetAllItems(ControlNo);
-        gvItems.DataSource = dt;
-        gvItems.DataBind();
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetUserInformation(UserID));
     }
 
-    protected void BtnAdd_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static string GetSectionDepartment(string Section)
     {
-        if (tbControlNo.Text == "[AUTOMATIC]")
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "FailedAlert();", true);
-        }
-        else
-        {
-            DataTable dt = maint.GetAllItems(tbControlNo.Text);
-            if (dt.Rows.Count >= 6)
-            {
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "MaxNoItemsAlert();", true);
-            }
-            else
-            {
-                FarmOutDocumentDetails fdd = new FarmOutDocumentDetails();
-                fdd.CONTROLNO = tbControlNo.Text;
-                bool x = maint.CheckPurposeOfItemIfWithLOA(fdd);
-                if (x == true)
-                {
-                    ddlItemType.Items.Clear();
-                    ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
-                }
-                else
-                {
-                    ddlItemType.Items.Clear();
-                    sd.ID = ddlSupplierName.SelectedValue.ToString();
-                    ld.DIVISION = ddlDivision.SelectedValue.ToString();
-                    DataTable dt1 = maint.GetItemType(sd, ld);
-                    if (dt1.Rows.Count > 0)
-                    {
-                        ddlItemType.DataSource = dt1;
-                        ddlItemType.DataTextField = "DESCRIPTION";
-                        ddlItemType.DataValueField = "DESCRIPTION";
-                        ddlItemType.DataBind();
-                        ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
-                    }
-                    else
-                    {
-                        ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
-                    }
-                }
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
-            }
-        }
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetSectionDepartment(Section));
     }
 
-    protected void BtnUpload_Click(object sender, EventArgs e)
+    [WebMethod]
+    public static string GetBearerEmployeeName(string EmployeeNo)
     {
-        if (tbControlNo.Text == "[AUTOMATIC]")
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "InvalidCOntrolNo();", true);
-        }
-        else
-        {
-            FileDetails fd = new FileDetails();
-            fd.UserID = UserID;
-            fd.ControlNo = tbControlNo.Text;
-            if (fuChooseFile.HasFile)
-            {
-                foreach (HttpPostedFile postedFile in fuChooseFile.PostedFiles)
-                {
-                    fd.FileName = Path.GetFileName(postedFile.FileName);
-                    fd.FileType = Path.GetExtension(postedFile.FileName).ToLower();
-                    fd.FilePath = Server.MapPath(Path.Combine("~/RelatedDocu/", fd.ControlNo));
-
-                    Directory.CreateDirectory(fd.FilePath);
-
-                    if (!Directory.Exists(fd.FilePath))
-                    {
-                        Directory.CreateDirectory(fd.FilePath);
-                    }
-
-                    postedFile.SaveAs(fd.FilePath + "/" + fd.FileName);
-
-                    frfm.SaveFiles(fd);
-                    GetFiles();
-                }
-            }
-            else
-            {
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "UploadFailedAlert();", true);
-            }
-        }
-
+        FarmOutRequestFormMaintenance form = new FarmOutRequestFormMaintenance();
+        return JsonConvert.SerializeObject(form.GetBearerEmployeeName(EmployeeNo));
     }
 
-    private void GetFiles()
+    [WebMethod]
+    public static string GetFarmOut(FarmOutDetails fo)
     {
-        string ControlNo = tbControlNo.Text;
-        DataTable dt = frfm.GetFiles(ControlNo);
-        if (dt.Rows.Count > 0)
-        {
-            gvFiles.Visible = true;
-            gvFiles.DataSource = dt;
-            gvFiles.DataBind();
-        }
+        FarmOutRequestFormMaintenance form = new FarmOutRequestFormMaintenance();
+        return JsonConvert.SerializeObject(form.GetFarmOut(fo));
     }
 
-    protected string CreateFileName(FileUpload fu)
+    [WebMethod]
+    public static string SaveFarmOut(FarmOutDetails fo, string UserID)
     {
-        string FileName = fu.FileName.ToString();
-        int Position = FileName.LastIndexOf(".");
-        FileName = FileName.Remove(Position, FileName.Length - Position);
-        FileName = FileName + "_" + DateTime.Now.ToString("yyMMddHHmmssfff") + Path.GetExtension(fu.FileName);
-        return FileName;
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.SaveFarmOutRequestForm(fo, UserID));
     }
 
-    protected void BtnConfirm1_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static void SaveApproval(Approval a)
     {
-
-        if (tbControlNo.Text == "[AUTOMATIC]")
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "FailedAlert();", true);
-        }
-
-        else
-        {
-            DataTable dt = maint.GetAllItems(tbControlNo.Text);
-            if (dt.Rows.Count > 0)
-            {
-                tbWorkFlowID.Text = "1";
-                tbApproverID.Text = "1";
-                BtnRequestChange.Visible = false;
-                BtnReassignTask.Visible = false;
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
-            }
-            else
-            {
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "NoItemsAlert();", true);
-            }
-        }
+        Maintenance maint = new Maintenance();
+        maint.SaveApproval(a);
     }
 
-    protected void BtnConfirm2_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static void UpdateApproval(string ControlNo, string ApproverID, string ApproverUserID, string UserID)
     {
-        tbWorkFlowID.Text = "1";
-        tbApproverID.Text = "2";
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
+        Maintenance maint = new Maintenance();
+        maint.UpdateApproval(ControlNo, ApproverID, ApproverUserID, UserID);
     }
 
-    protected void BtnConfirm3_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static void SaveMirrorApproval(Approval a)
     {
-        tbWorkFlowID.Text = "1";
-        tbApproverID.Text = "3";
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
+        Maintenance maint = new Maintenance();
+        maint.SaveMirrorApproval(a);
     }
 
-    protected void BtnApprove_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static void Approve(Approval a)
     {
-        Approval a = new Approval();
-        a.WorkFlowID = tbWorkFlowID.Text;
-        a.ApproverID = tbApproverID.Text;
-        a.ControlNo = tbControlNo.Text;
-        if (tbApproverID.Text == "1")
-        {
-            a.UserID = ddlRequestedby.SelectedValue;
-        }
-        else if (tbApproverID.Text == "2")
-        {
-            a.UserID = ddlCheckedby.SelectedValue;
-        }
-        else
-        {
-            a.UserID = ddlApprovedby.SelectedValue;
-        }
-        a.Comment = tbComment.Text;
+        Maintenance maint = new Maintenance();
         maint.Approval(a);
-
-        if (tbApproverID.Text == "1")
-        {
-            FarmOutDetails fod = new FarmOutDetails();
-            fod.SupplierID = ddlSupplierName.SelectedValue;
-            fod.Division = ddlDivision.SelectedValue;
-            a.Requestedby = ddlRequestedby.SelectedValue;
-            maint.SendEmailLOALimit(fod, a);
-        }
-
-        EmailDetails ed = new EmailDetails();
-        ed.CONTROLNO = tbControlNo.Text;
-
-        if (tbApproverID.Text == "1")
-        {
-            ed.FROM_EMAIL = ddlRequestedby.SelectedValue;
-            ed.TO_EMAIL = ddlCheckedby.SelectedValue;
-        }
-        else if (tbApproverID.Text == "2")
-        {
-            ed.FROM_EMAIL = ddlCheckedby.SelectedValue;
-            ed.TO_EMAIL = ddlApprovedby.SelectedValue;
-        }
-        else
-        {
-            ed.FROM_EMAIL = ddlApprovedby.SelectedValue;
-            ed.TO_EMAIL = "LCS";
-        }
-
-        ed.EMAILTYPE = "Approval";
-        ed.COMMENT = tbComment.Text;
-        maint.SendEmail(ed);
-
-
-        GetFarmOut();
-        DisableControl();
-
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalConfirm", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ApprovedFarmOutSuccessAlert();", true);
-
-        int day = (int)DateTime.Now.DayOfWeek;
-        TimeSpan time = DateTime.Now.TimeOfDay;
-        if (day == 2 && time > new TimeSpan(16, 00, 00) && time <= new TimeSpan(24, 00, 00))
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalFri').modal('show');", true);
-        }
-        else if (day == 3 && time >= new TimeSpan(16, 00, 00) && time < new TimeSpan(08, 00, 00))
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalFri').modal('show');", true);
-        }
-
-        if (day == 4 && time > new TimeSpan(16, 00, 00) && time <= new TimeSpan(24, 00, 00))
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalMon').modal('show');", true);
-        }
-        else if (day == 5 && time >= new TimeSpan(00, 00, 00) && time < new TimeSpan(08, 00, 00))
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalMon').modal('show');", true);
-        }
-
-        if (day == 5 && time > new TimeSpan(16, 00, 00) && time <= new TimeSpan(24, 00, 00))
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalWed').modal('show');", true);
-        }
-        else if (day == 6 && time >= new TimeSpan(00, 00, 00) && time < new TimeSpan(08, 00, 00))
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalWed').modal('show');", true);
-        }
-
     }
 
-    protected void BtnRequestChange_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static void RequestChange(Approval a)
     {
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalRequestChange').modal('show');", true);
-    }
-
-    protected void BtnSaveRequestChange_OnClick(object sender, EventArgs e)
-    {
-        Approval a = new Approval();
-        a.WorkFlowID = tbWorkFlowID.Text;
-        a.ApproverID = tbApproverID.Text;
-        a.ControlNo = tbControlNo.Text;
-        if (tbApproverID.Text == "2")
-        {
-            a.UserID = ddlCheckedby.SelectedValue;
-        }
-        else if (tbApproverID.Text == "3")
-        {
-            a.UserID = ddlApprovedby.SelectedValue;
-        }
-        a.Comment = tbRequestChangeComment.Text;
+        Maintenance maint = new Maintenance();
         maint.RequestChange(a);
+    }
 
-        EmailDetails ed = new EmailDetails();
-        ed.CONTROLNO = tbControlNo.Text;
+    [WebMethod]
+    public static void ReassignTask(Approval a, string ReassignTo)
+    {
+        Maintenance maint = new Maintenance();
+        maint.ReassignTask(a, ReassignTo);
+    }
 
-        if (tbApproverID.Text == "2")
-        {
-            ed.FROM_EMAIL = ddlCheckedby.SelectedValue;
-            ed.TO_EMAIL = ddlRequestedby.SelectedValue;
-        }
-        else if (tbApproverID.Text == "3")
-        {
-            ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString();
-            ed.TO_EMAIL = ddlRequestedby.SelectedValue;
-        }
+    [WebMethod]
+    public static void CancelRequest(Approval a)
+    {
+        Maintenance maint = new Maintenance();
+        maint.CancelRequest(a);
+    }
 
-        ed.EMAILTYPE = "Request Change";
-        ed.COMMENT = tbRequestChangeComment.Text;
+    [WebMethod]
+    public static void SendEmail(EmailDetails ed)
+    {
+        Maintenance maint = new Maintenance();
         maint.SendEmail(ed);
-
-        //Page.Response.Redirect(Page.Request.Url.ToString(), true);
-        GetFarmOut();
-        DisableControl();
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "RequestChangeFarmOutSuccessAlert();", true);
-    }
-    protected void BtnCancelRequestChange_OnClick(object sender, EventArgs e)
-    {
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalRequestChange", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
     }
 
-    protected void BtnReassignTask_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static string GetItems(string ControlNo)
     {
-        GetReassignto();
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalReassignTask').modal('show');", true);
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetAllItems(ControlNo));
     }
 
-    protected void BtnSaveReassignTask_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static void SaveItem(Items i, string UserID)
     {
-        if (ddlReassignto.SelectedValue == "")
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalReassignTask').modal('show');", true);
-            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ReassignToAlert();", true);
-        }
-        else
-        {
-            Approval a = new Approval();
-            a.WorkFlowID = tbWorkFlowID.Text;
-            a.ApproverID = tbApproverID.Text;
-            a.ControlNo = tbControlNo.Text;
-            if (tbApproverID.Text == "2")
-            {
-                a.UserID = ddlCheckedby.SelectedValue;
-            }
-            else if (tbApproverID.Text == "3")
-            {
-                a.UserID = ddlApprovedby.SelectedValue;
-            }
-            a.Comment = tbReassigntoComment.Text;
-            string strReassignto = ddlReassignto.SelectedValue;
-            maint.ReassignTask(a, strReassignto);
-
-            EmailDetails ed = new EmailDetails();
-            ed.CONTROLNO = tbControlNo.Text;
-
-            if (tbApproverID.Text == "2")
-            {
-                ed.FROM_EMAIL = ddlCheckedby.SelectedValue;
-                ed.TO_EMAIL = ddlReassignto.SelectedValue;
-            }
-            else if (tbApproverID.Text == "3")
-            {
-                ed.FROM_EMAIL = ddlApprovedby.SelectedValue.ToString();
-                ed.TO_EMAIL = ddlReassignto.SelectedValue;
-            }
-
-            ed.EMAILTYPE = "Re-assign";
-            ed.COMMENT = tbReassigntoComment.Text;
-            maint.SendEmail(ed);
-
-            //Page.Response.Redirect(Page.Request.Url.ToString(), true);
-
-            GetFarmOut();
-            DisableControl();
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "ReassignFarmOutSuccessAlert();", true);
-        }
-
-    }
-    protected void BtnCancelReassignTask_OnClick(object sender, EventArgs e)
-    {
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalReassignTask", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalConfirm').modal('show');", true);
+        Maintenance maint = new Maintenance();
+        maint.SaveItem(i, UserID);
     }
 
-    protected void BtnSubmit_OnClick(object sender, EventArgs e)
+    [WebMethod]
+    public static void UpdateItem(Items i, string UserID)
     {
-        if (string.IsNullOrEmpty(tbID.Text))
-        {
-            if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "" || tbAmount.Text == "")
-            {
-                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
-            }
-            else
-            {
-                items.ControlNo = tbControlNo.Text;
-                items.TypeOfItem = ddlItemType.SelectedValue.ToString();
-                items.ItemCode = tbItemNo.Text.ToUpper();
-                items.ItemDescription = tbItemDescription.Text.ToUpper();
-                items.Quantity = tbQuantity.Text;
-                items.UnitOfMeasurement = tbUnitofMeasurement.Text.ToUpper();
-                items.Amount = tbAmount.Text;
-                items.AssetNo = tbAssetNo.Text.ToUpper();
-                items.ODNo = tbOD.Text.ToUpper();
-                items.ContainerNo = tbContainer.Text.ToUpper();
-                items.PEZASeal = tbPEZASeal.Text.ToUpper();
-                items.DSRDRNo = tbDSRDRNo.Text.ToUpper();
-                Message = maint.SaveItem(items, UserID);
-                GetItems();
-                ClearItemDetails();
-
-                if (Message == "")
-                {
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsSuccessAlert();", true);
-                }
-                else
-                {
-                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
-                }
-            }
-        }
-
-        else
-        {
-            try
-            {
-                if (ddlItemType.SelectedItem.ToString() == "Choose..." || tbItemDescription.Text == "" || tbQuantity.Text == "" || tbUnitofMeasurement.Text == "" || tbAmount.Text == "")
-                {
-                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "AddItemsFailedAlert();", true);
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('.modal-backdrop').remove(); $('body').removeClass( 'modal - open' );", true);
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
-                }
-                else
-                {
-                    items.ID = tbID.Text;
-                    items.ControlNo = tbControlNo.Text;
-                    items.TypeOfItem = ddlItemType.SelectedValue.ToString();
-                    items.ItemCode = tbItemNo.Text.ToUpper();
-                    items.ItemDescription = tbItemDescription.Text.ToUpper();
-                    items.Quantity = tbQuantity.Text;
-                    items.UnitOfMeasurement = tbUnitofMeasurement.Text.ToUpper();
-                    items.Amount = tbAmount.Text;
-                    items.AssetNo = tbAssetNo.Text.ToUpper();
-                    items.ODNo = tbOD.Text.ToUpper();
-                    items.ContainerNo = tbContainer.Text.ToUpper();
-                    items.PEZASeal = tbPEZASeal.Text.ToUpper();
-                    items.DSRDRNo = tbDSRDRNo.Text.ToUpper();
-                    maint.UpdateItem(items, UserName);
-                    GetItems();
-                    ClearItemDetails();
-
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "UpdateItemsSuccessAlert();", true);
-                }
-            }
-            catch
-            {
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modal", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
-            }
-        }
+        Maintenance maint = new Maintenance();
+        maint.UpdateItem(i, UserID);
     }
 
-    protected void GrvItems_RowCommand(object sender, GridViewCommandEventArgs g)
+    [WebMethod]
+    public static void DeleteItem(Items i)
     {
-        if (g.CommandName.Equals("EditItem"))
-        {
-            GridViewRow row = (GridViewRow)(((Button)g.CommandSource).NamingContainer);
-            string index = g.CommandArgument.ToString();
-
-            Label lblTypeOfItem = (Label)row.FindControl("lblTypeOfItem");
-            Label lblItemCode = (Label)row.FindControl("lblItemCode");
-            Label lblItemDescription = (Label)row.FindControl("lblItemDescription");
-            Label lblQuantity = (Label)row.FindControl("lblQuantity");
-            Label lblUnitOfMeasurement = (Label)row.FindControl("lblUnitOfMeasurement");
-            Label lblAmount = (Label)row.FindControl("lblAmount");
-            Label lblAssetNo = (Label)row.FindControl("lblAssetNo");
-            Label lblODNo = (Label)row.FindControl("lblODNo");
-            Label lblContainerNo = (Label)row.FindControl("lblContainerNo");
-            Label lblPEZASeal = (Label)row.FindControl("lblPEZASeal");
-            Label lblDSRDRNo = (Label)row.FindControl("lblDSRDRNo");
-
-            tbID.Text = index;
-            ddlItemType.SelectedValue = lblTypeOfItem.Text;
-            tbItemNo.Text = lblItemCode.Text;
-            tbItemDescription.Text = lblItemDescription.Text;
-            tbQuantity.Text = lblQuantity.Text;
-            tbUnitofMeasurement.Text = lblUnitOfMeasurement.Text;
-            tbAmount.Text = lblAmount.Text;
-            tbAssetNo.Text = lblAssetNo.Text;
-            tbOD.Text = lblODNo.Text;
-            tbContainer.Text = lblContainerNo.Text;
-            tbPEZASeal.Text = lblPEZASeal.Text;
-            tbDSRDRNo.Text = lblDSRDRNo.Text;
-
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modal').modal('show');", true);
-        }
-
-        if (g.CommandName.Equals("DeleteItem"))
-        {
-            GridViewRow row = (GridViewRow)(((Button)g.CommandSource).NamingContainer);
-            items.ID = g.CommandArgument.ToString();
-            maint.DeleteItem(items);
-            GetItems();
-        }
+        Maintenance maint = new Maintenance();
+        maint.DeleteItem(i);
     }
 
-    private void GetUserInfo()
+    [WebMethod]
+    public static string GetFiles(string ControlNo)
     {
-        DataSet ds = new DataSet();
-        ds = maint.GetUserInformation(UserID);
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            tbEmployeeName.Text = ds.Tables[0].DefaultView[0]["FullName"].ToString();
-            tbEmployeeNo.Text = ds.Tables[0].DefaultView[0]["EmployeeNo"].ToString();
-            tbSection.Text = ds.Tables[0].DefaultView[0]["SectionName"].ToString();
-
-            if (ddlRequestedby.Items.FindByValue(ds.Tables[0].DefaultView[0]["APOAccount"].ToString()) == null)
-            {
-                ddlRequestedby.Items.Add(new ListItem(ds.Tables[0].DefaultView[0]["FullName"].ToString(), ds.Tables[0].DefaultView[0]["APOAccount"].ToString().ToUpper()));
-            }
-
-            ddlRequestedby.SelectedValue = ds.Tables[0].DefaultView[0]["APOAccount"].ToString().ToUpper();
-        }
+        FarmOutRequestFormMaintenance form = new FarmOutRequestFormMaintenance();
+        return JsonConvert.SerializeObject(form.GetFiles(ControlNo));
     }
 
-    private void AddDivision()
+    [WebMethod]
+    public static void DeleteFile(string ControlNo, int ID)
     {
-        DataTable dt = maint.GetDivision();
-        ddlDivision.DataSource = dt;
-        ddlDivision.DataTextField = "Description";
-        ddlDivision.DataValueField = "Description";
-        ddlDivision.DataBind();
-        ddlDivision.Items.Insert(0, new ListItem("Choose...", ""));
+        FarmOutRequestFormMaintenance form = new FarmOutRequestFormMaintenance();
+        form.DeleteFile(ControlNo, ID);
     }
 
-    private void AddNatureofItem()
+    [WebMethod]
+    public static bool CheckPurposeOfItemIfWithLOA(FarmOutDocumentDetails fdd)
     {
-        DataTable dt = maint.GetNatureOfItem();
-        ddlNatureofItem.DataSource = dt;
-        ddlNatureofItem.DataTextField = "Description";
-        ddlNatureofItem.DataValueField = "Description";
-        ddlNatureofItem.DataBind();
-        ddlNatureofItem.Items.Insert(0, new ListItem("Choose...", ""));
+        Maintenance maint = new Maintenance();
+        return maint.CheckPurposeOfItemIfWithLOA(fdd);
     }
 
-    private void AddTransferto()
+    [WebMethod]
+    public static bool FarmOutRequestFormApprovalChecking(string ControlNo)
     {
-        DataTable dt = maint.GetTransferTo();
-        ddlTransferto.DataSource = dt;
-        ddlTransferto.DataTextField = "Description";
-        ddlTransferto.DataValueField = "Description";
-        ddlTransferto.DataBind();
-        ddlTransferto.Items.Insert(0, new ListItem("Choose...", ""));
+        FarmOutRequestFormMaintenance form = new FarmOutRequestFormMaintenance();
+        return form.FarmOutRequestFormApprovalChecking(ControlNo);
     }
 
-    private void AddTypeofItem()
+    [WebMethod]
+    public static bool CheckAuthorization(string UserID)
     {
-        DataTable dt = maint.GetTypeOfItem();
-        ddlTypeofItem.DataSource = dt;
-        ddlTypeofItem.DataTextField = "Description";
-        ddlTypeofItem.DataValueField = "Description";
-        ddlTypeofItem.DataBind();
+        Maintenance maint = new Maintenance();
+        return maint.CheckAuthorization(UserID);
     }
 
-    private void AddClassificationofItem()
+    [WebMethod]
+    public static bool CheckIfBypassAccount(LoginDetails ld)
     {
-        DataTable dt = maint.GetClassificationOfItem();
-        ddlClassificationofItem.DataSource = dt;
-        ddlClassificationofItem.DataTextField = "Description";
-        ddlClassificationofItem.DataValueField = "Description";
-        ddlClassificationofItem.DataBind();
+        Maintenance maint = new Maintenance();
+        return maint.CheckIfBypassAccount(ld);
     }
 
-    private void AddPurposeofItem()
+    [WebMethod]
+    public static bool CheckIfCancelled(string ControlNo)
     {
-        DataTable dt = maint.GetPurposeOfItem();
-        ddlPurposeofItem.DataSource = dt;
-        ddlPurposeofItem.DataTextField = "Description";
-        ddlPurposeofItem.DataValueField = "Description";
-        ddlPurposeofItem.DataBind();
-        ddlPurposeofItem.Items.Insert(0, new ListItem("Choose...", ""));
+        Maintenance maint = new Maintenance();
+        return maint.CheckIfCancelled(ControlNo);
     }
 
-    private void AddPackagingUsed()
+    [WebMethod]
+    public static bool CheckIfApproveByRequestor(string ControlNo)
     {
-        DataTable dt = maint.GetPackagingUsed();
-        ddlPackagingUsed.DataSource = dt;
-        ddlPackagingUsed.DataTextField = "Description";
-        ddlPackagingUsed.DataValueField = "Description";
-        ddlPackagingUsed.DataBind();
-        ddlPackagingUsed.Items.Insert(0, new ListItem("Choose...", ""));
+        Maintenance maint = new Maintenance();
+        return maint.CheckIfApproveByRequestor(ControlNo);
     }
 
-    private void AddSuppliers()
+    [WebMethod]
+    public static bool CheckIfFinishedRequestor(string ControlNo)
     {
-        DataTable dt = maint.GetSuppliers();
-        ddlSupplierName.DataSource = dt;
-        ddlSupplierName.DataTextField = "SupplierName";
-        ddlSupplierName.DataValueField = "SupplierID";
-        ddlSupplierName.DataBind();
-        ddlSupplierName.Items.Insert(0, new ListItem("Choose...", ""));
-    }
-
-    private void AddModeofTransfer()
-    {
-        DataTable dt = maint.GetModeOfTransfer();
-        ddlModeofTransfer.DataSource = dt;
-        ddlModeofTransfer.DataTextField = "Description";
-        ddlModeofTransfer.DataValueField = "Description";
-        ddlModeofTransfer.DataBind();
-        ddlModeofTransfer.Items.Insert(0, new ListItem("Choose...", ""));
-    }
-
-    private void AddTypeofTransfer()
-    {
-        DataTable dt = maint.GetTypeOfTransfer();
-        ddlTypeofTransfer.DataSource = dt;
-        ddlTypeofTransfer.DataTextField = "Description";
-        ddlTypeofTransfer.DataValueField = "Description";
-        ddlTypeofTransfer.DataBind();
-        ddlTypeofTransfer.Items.Insert(0, new ListItem("Choose...", ""));
-    }
-
-    private void GetRequesteddby()
-    {
-        UserInfo ui = new UserInfo();
-        ui.Section = tbSection.Text;
-        DataTable dt = maint.GetRequestedby(ui);
-        ddlRequestedby.DataSource = dt;
-        ddlRequestedby.DataTextField = "FullName";
-        ddlRequestedby.DataValueField = "APOAccount";
-        ddlRequestedby.DataBind();
-        ddlRequestedby.Items.Insert(0, new ListItem("Choose...", ""));
-    }
-
-    private void GetCheckedby()
-    {
-        UserInfo ui = new UserInfo();
-        ui.Section = tbSection.Text;
-        DataTable dt = maint.GetCheckedby(ui);
-        ddlCheckedby.DataSource = dt;
-        ddlCheckedby.DataTextField = "FullName";
-        ddlCheckedby.DataValueField = "APOAccount";
-        ddlCheckedby.DataBind();
-        ddlCheckedby.Items.Insert(0, new ListItem("Choose...", ""));
-    }
-
-    private void GetApprovedby()
-    {
-        UserInfo ui = new UserInfo();
-        ui.Section = tbSection.Text;
-        DataTable dt = maint.GetApprovedby(ui);
-        ddlApprovedby.DataSource = dt;
-        ddlApprovedby.DataTextField = "FullName";
-        ddlApprovedby.DataValueField = "APOAccount";
-        ddlApprovedby.DataBind();
-        ddlApprovedby.Items.Insert(0, new ListItem("Choose...", ""));
-    }
-
-    private void GetReassignto()
-    {
-        UserInfo ui = new UserInfo();
-        ui.Section = tbSection.Text;
-        Approval a = new Approval();
-        a.Approvedby = ddlApprovedby.SelectedValue;
-        a.ApproverID = tbApproverID.Text;
-        DataTable dt = maint.GetReassignto(ui, a);
-        ddlReassignto.DataSource = dt;
-        ddlReassignto.DataTextField = "FullName";
-        ddlReassignto.DataValueField = "APOAccount";
-        ddlReassignto.DataBind();
-        ddlReassignto.Items.Insert(0, new ListItem("Choose...", ""));
-    }
-
-    private void ClearItemDetails()
-    {
-        tbID.Text = "";
-        tbItemNo.Text = "";
-        tbItemDescription.Text = "";
-        tbQuantity.Text = "";
-        tbUnitofMeasurement.Text = "";
-        tbAmount.Text = "";
-        tbAssetNo.Text = "";
-        tbOD.Text = "";
-        tbContainer.Text = "";
-        tbPEZASeal.Text = "";
-        tbDSRDRNo.Text = "";
-    }
-
-    private void GetFarmOut()
-    {
-        DataSet ds = new DataSet();
-        FarmOutDetails fo = new FarmOutDetails();
-        FarmOutRequestFormMaintenance fom = new FarmOutRequestFormMaintenance();
-        fo.ControlNo = tbControlNo.Text;
-        ds = fom.GetFarmOut(fo);
-
-        if (ds.Tables[0].DefaultView.Count > 0)
-        {
-            ddlDivision.SelectedValue = ds.Tables[0].DefaultView[0]["Division"].ToString();
-            ddlNatureofItem.SelectedValue = ds.Tables[0].DefaultView[0]["NatureOfItem"].ToString();
-            ddlTransferto.SelectedValue = ds.Tables[0].DefaultView[0]["TransferTo"].ToString();
-
-            string selectedTypeOfItem = ds.Tables[0].DefaultView[0]["TypeOfItem"].ToString();
-            string TypeOfItem = selectedTypeOfItem.Replace(" | ", ",");
-            hfTypeofItem.Value = TypeOfItem;
-
-            string selectedClassificationOfItem = ds.Tables[0].DefaultView[0]["ClassificationOfItem"].ToString();
-            string ClassificationOfItem = selectedClassificationOfItem.Replace(" | ", ",");
-            hfClassificationofItem.Value = ClassificationOfItem;
-
-            //string x = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
-            if (ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()) == null)
-            {
-                ddlPurposeofItem.SelectedValue = "Others";
-                tbOthers.Text = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
-                divOthers.Visible = true;
-            }
-            else
-            {
-                ddlPurposeofItem.SelectedValue = ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString();
-                //ddlPurposeofItem.ClearSelection();
-                //ddlPurposeofItem.Items.FindByValue(ds.Tables[0].DefaultView[0]["PurposeOfItem"].ToString()).Selected = true;
-            }
-            tbBearerEmployeeNo.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeNo"].ToString();
-            tbBearerEmployeeName.Text = ds.Tables[0].DefaultView[0]["BearerEmployeeName"].ToString();
-            tbEmployeeNo.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeNo"].ToString();
-            tbEmployeeName.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeName"].ToString();
-            tbSection.Text = ds.Tables[0].DefaultView[0]["Section"].ToString();
-            GetRequesteddby();
-            GetCheckedby();
-            GetApprovedby();
-            tbLocalNo.Text = ds.Tables[0].DefaultView[0]["LocalNo"].ToString();
-            tbDateRequested.Text = ds.Tables[0].DefaultView[0]["DateRequested"].ToString();
-            tbActualDateofTransfer.Text = ds.Tables[0].DefaultView[0]["ActualDateOfTransfer"].ToString();
-            tbTargetDateofReturn.Text = ds.Tables[0].DefaultView[0]["TargetDateOfReturn"].ToString();
-            ddlPackagingUsed.SelectedValue = ds.Tables[0].DefaultView[0]["PackagingUsed"].ToString();
-            if (ddlSupplierName.Items.FindByValue(ds.Tables[0].DefaultView[0]["SupplierID"].ToString()) == null)
-            {
-                ddlSupplierName.Items.Add(new ListItem(ds.Tables[0].DefaultView[0]["SupplierName"].ToString(), ds.Tables[0].DefaultView[0]["SupplierID"].ToString().ToUpper()));
-            }
-            ddlSupplierName.SelectedValue = ds.Tables[0].DefaultView[0]["SupplierID"].ToString();
-            {
-                GetTypeOfItems();
-            }
-            tbDestinationAddress.Text = ds.Tables[0].DefaultView[0]["DestinationAddress"].ToString();
-            tbOriginofItem.Text = ds.Tables[0].DefaultView[0]["OriginOfItem"].ToString();
-            tbDeliveryReceiptNo.Text = ds.Tables[0].DefaultView[0]["DeliveryReceiptNo"].ToString();
-            tbInvoiceNo.Text = ds.Tables[0].DefaultView[0]["InvoiceNo"].ToString();
-            tbContactPerson.Text = ds.Tables[0].DefaultView[0]["ContactPerson"].ToString();
-            tbContactNo.Text = ds.Tables[0].DefaultView[0]["ContactNo"].ToString();
-            tbTelephoneNo.Text = ds.Tables[0].DefaultView[0]["TelephoneNo"].ToString();
-            tbFaxNo.Text = ds.Tables[0].DefaultView[0]["FaxNo"].ToString();
-            ddlModeofTransfer.SelectedValue = ds.Tables[0].DefaultView[0]["ModeOfTransfer"].ToString();
-            ddlTypeofTransfer.SelectedValue = ds.Tables[0].DefaultView[0]["TypeOfTransfer"].ToString();
-            ddlRequestedby.SelectedValue = ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID"].ToString();
-            ddlCheckedby.SelectedValue = ds.Tables[0].DefaultView[1]["ASSIGNEDUSERID"].ToString();
-            ddlApprovedby.SelectedValue = ds.Tables[0].DefaultView[2]["ASSIGNEDUSERID"].ToString();
-            lblStatus1.Text = ds.Tables[0].DefaultView[0]["CURRENTSTATUS"].ToString();
-            lblComment1.Text = ds.Tables[0].DefaultView[0]["COMMENT"].ToString();
-            lblDate1.Text = ds.Tables[0].DefaultView[0]["ACTIONDATE"].ToString();
-            lblStatus2.Text = ds.Tables[0].DefaultView[1]["CURRENTSTATUS"].ToString();
-            lblComment2.Text = ds.Tables[0].DefaultView[1]["COMMENT"].ToString();
-            lblDate2.Text = ds.Tables[0].DefaultView[1]["ACTIONDATE"].ToString();
-            lblStatus3.Text = ds.Tables[0].DefaultView[2]["CURRENTSTATUS"].ToString();
-            lblComment3.Text = ds.Tables[0].DefaultView[2]["COMMENT"].ToString();
-            lblDate3.Text = ds.Tables[0].DefaultView[2]["ACTIONDATE"].ToString();
-            tbAssignedto.Text = ds.Tables[0].DefaultView[0]["RequestorEmployeeName"].ToString();
-
-            if ((ddlRequestedby.SelectedValue != UserID || UserID != ds.Tables[0].DefaultView[0]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) &&
-                (ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "1" ||
-                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "3" ||
-                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "5" ||
-                ds.Tables[0].DefaultView[0]["CURRENTSTATUSID"].ToString() != "7"))
-            {
-                DisableControl();
-            }
-            else
-            {
-                BtnAdd.Enabled = true;
-                BtnConfirm1.Enabled = true;
-            }
-
-            if ((ddlCheckedby.SelectedValue == UserID && ddlCheckedby.SelectedValue == ds.Tables[0].DefaultView[1]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) &&
-                (ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "1" ||
-                ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "3" ||
-                ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "5" ||
-                ds.Tables[0].DefaultView[1]["CURRENTSTATUSID"].ToString() == "7"))
-            {
-                DisableControl();
-                BtnConfirm2.Enabled = true;
-            }
-
-            if ((ddlApprovedby.SelectedValue == UserID && ddlApprovedby.SelectedValue == ds.Tables[0].DefaultView[2]["ASSIGNEDUSERID_CURRENT"].ToString().ToUpper()) &&
-                (ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "1" ||
-                ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "3" ||
-                ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "5" ||
-                ds.Tables[0].DefaultView[2]["CURRENTSTATUSID"].ToString() == "7"))
-            {
-                DisableControl();
-                BtnConfirm3.Enabled = true;
-            }
-
-            GetItems();
-            GetFiles();
-        }
-    }
-
-    private void DisableControl()
-    {
-        ddlDivision.Enabled = false;
-        ddlNatureofItem.Enabled = false;
-        ddlTransferto.Enabled = false;
-        ddlTypeofItem.Enabled = false;
-        ddlClassificationofItem.Enabled = false;
-        ddlPurposeofItem.Enabled = false;
-        tbOthers.Enabled = false;
-        tbBearerEmployeeNo.Enabled = false;
-        tbBearerEmployeeName.Enabled = false;
-        tbLocalNo.Enabled = false;
-        tbDateRequested.Enabled = false;
-        tbActualDateofTransfer.Enabled = false;
-        tbTargetDateofReturn.Enabled = false;
-        ddlPackagingUsed.Enabled = false;
-        fuChooseFile.Enabled = false;
-        BtnUpload.Enabled = false;
-        ddlSupplierName.Enabled = false;
-        tbOriginofItem.Enabled = false;
-        tbDestinationAddress.Enabled = false;
-        tbInvoiceNo.Enabled = false;
-        tbDeliveryReceiptNo.Enabled = false;
-        tbContactPerson.Enabled = false;
-        tbContactNo.Enabled = false;
-        tbTelephoneNo.Enabled = false;
-        tbFaxNo.Enabled = false;
-        ddlModeofTransfer.Enabled = false;
-        ddlTypeofTransfer.Enabled = false;
-        ddlCheckedby.Enabled = false;
-        ddlApprovedby.Enabled = false;
-        BtnAdd.Enabled = false;
-        //BtnSave.Enabled = false;
-        BtnConfirm1.Enabled = false;
-        BtnConfirm2.Enabled = false;
-        BtnConfirm3.Enabled = false;
-        gvItems.Enabled = false;
-        gvFiles.Enabled = true;
-    }
-
-    private void EnableControl()
-    {
-        BtnPrint.Visible = true;
-
-        tbControlNo.Enabled = true;
-        ddlDivision.Enabled = true;
-        ddlNatureofItem.Enabled = true;
-        ddlTransferto.Enabled = true;
-        ddlTypeofItem.Enabled = true;
-        ddlClassificationofItem.Enabled = true;
-        ddlPurposeofItem.Enabled = true;
-        tbBearerEmployeeNo.Enabled = true;
-        tbBearerEmployeeName.Enabled = true;
-        tbEmployeeNo.Enabled = true;
-        tbEmployeeName.Enabled = true;
-        tbSection.Enabled = true;
-        tbLocalNo.Enabled = true;
-        tbDateRequested.Enabled = true;
-        tbActualDateofTransfer.Enabled = true;
-        tbTargetDateofReturn.Enabled = true;
-        ddlPackagingUsed.Enabled = true;
-        fuChooseFile.Enabled = true;
-        BtnUpload.Enabled = true;
-        ddlSupplierName.Enabled = true;
-        tbOriginofItem.Enabled = true;
-        tbDestinationAddress.Enabled = true;
-        tbInvoiceNo.Enabled = true;
-        tbDeliveryReceiptNo.Enabled = true;
-        tbContactPerson.Enabled = true;
-        tbContactNo.Enabled = true;
-        tbTelephoneNo.Enabled = true;
-        tbFaxNo.Enabled = true;
-        ddlModeofTransfer.Enabled = true;
-        ddlTypeofTransfer.Enabled = true;
-        ddlRequestedby.Enabled = true;
-        ddlCheckedby.Enabled = true;
-        ddlApprovedby.Enabled = true;
-        BtnAdd.Enabled = true;
-        //BtnSave.Enabled = true;
-        BtnPrint.Enabled = true;
-        BtnConfirm1.Enabled = true;
-        BtnConfirm2.Enabled = true;
-        BtnConfirm3.Enabled = true;
-        gvItems.Enabled = true;
-        gvFiles.Enabled = true;
-    }
-
-    protected void ddlSupplierName_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (ddlSupplierName.SelectedValue != "")
-        {
-            DataTable dt = frfm.GetSupplierAddress(ddlSupplierName.SelectedValue);
-            tbDestinationAddress.Text = dt.Rows[0]["SupplierAddress"].ToString();
-        }
-        else
-        {
-            tbDestinationAddress.Text = "";
-        }
-    }
-
-    protected void ddlPurposeofItem_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (ddlPurposeofItem.SelectedValue == "Others")
-        {
-            divOthers.Visible = true;
-        }
-        else
-        {
-            divOthers.Visible = false;
-        }
-    }
-
-    protected void tbBearerEmployeeNo_TextChanged(object sender, EventArgs e)
-    {
-        if (tbBearerEmployeeNo.Text != null)
-        {
-            DataTable dt = frfm.GetBearerEmployeeName(tbBearerEmployeeNo.Text);
-            if (dt.Rows.Count > 0)
-            {
-                tbBearerEmployeeName.Text = dt.Rows[0]["FullName"].ToString();
-            }
-        }
-    }
-
-    protected void LnkBtnBack_Click(object sender, EventArgs e)
-    {
-        Response.Redirect("FarmOutDocuments.aspx" + "?controlno=" + tbControlNo.Text);
-    }
-
-    private void GetTypeOfItems()
-    {
-        sd.ID = ddlSupplierName.SelectedValue.ToString();
-        ld.DIVISION = ddlDivision.SelectedValue.ToString();
-        DataTable dt1 = maint.GetItemType(sd, ld);
-        if (dt1.Rows.Count > 0)
-        {
-            ddlItemType.DataSource = dt1;
-            ddlItemType.DataTextField = "DESCRIPTION";
-            ddlItemType.DataValueField = "DESCRIPTION";
-            ddlItemType.DataBind();
-            ddlItemType.Items.Insert(0, new ListItem("Choose...", ""));
-        }
-        else
-        {
-            ddlItemType.Items.Insert(0, new ListItem("N/A", ""));
-        }
-    }
-
-    protected void lblFileName_Click(object sender, EventArgs g)
-    {
-        var TLink = (Control)sender;
-        GridViewRow row = (GridViewRow)TLink.NamingContainer;
-        LinkButton lnk = sender as LinkButton;
-        string FilePath = Server.MapPath("~/RelatedDocu/" + tbControlNo.Text + "/" + lnk.Text);
-        string filePath = "~/RelatedDocu/" + tbControlNo.Text + "/" + lnk.Text;
-
-        if (File.Exists(FilePath))
-        {
-            Response.Redirect(filePath);
-            //string rurl = ResolveUrl(filePath);
-            //string url = rurl.Remove(0, 1);
-            //hrefFile.HRef = url;
-            //hrefFile.InnerText = url;
-            //Session["url"] = url;
-            //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "WindowOpen();", true);
-        }
-        else
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "FileNotExistAlert();", true);
-        }
-    }
-
-    protected void BtnPrint_Click(object sender, EventArgs e)
-    {
-        Response.Redirect("RequestFormPrint.aspx" + "?controlno=" + Request.QueryString["controlno"]);
-    }
-
-    protected void gvFiles_RowCommand(object sender, GridViewCommandEventArgs g)
-    {
-        if (g.CommandName.Equals("Delete"))
-        {
-            GridViewRow row = (GridViewRow)(((Button)g.CommandSource).NamingContainer);
-            string index = g.CommandArgument.ToString();
-            string FilePath = Server.MapPath("~/RelatedDocu/" + tbControlNo.Text + "/" + index);
-
-            FileDetails fd = new FileDetails();
-            fd.ControlNo = tbControlNo.Text;
-            fd.FileName = index;
-
-            FileInfo file = new FileInfo(FilePath);
-            if (file.Exists)
-            {
-                file.Delete();
-                maint.DeleteFile(fd);
-            }
-            else
-            {
-                maint.DeleteFile(fd);
-                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), Guid.NewGuid().ToString(), "ApprovedFarmOutSuccessAlert();", true);
-            }
-        }
-        Page.Response.Redirect(Page.Request.Url.ToString(), true);
-    }
-
-    protected void gvFiles_RowDataBound(object sender, GridViewRowEventArgs e)
-    {
-        DataSet ds = maint.GetUserInformation(Session["UserID"].ToString());
-        string Section = ds.Tables[0].DefaultView[0]["SectionName"].ToString();
-
-        DataSet ds2 = maint.GetUserInformation(ddlRequestedby.SelectedValue);
-        string RequestorSection = Section = ds2.Tables[0].DefaultView[0]["SectionName"].ToString();
-
-        if (e.Row.RowType == DataControlRowType.DataRow)
-        {
-            Button button = (Button)e.Row.FindControl("BtnDelete");
-            if (ddlRequestedby.SelectedValue != Session["UserID"].ToString())
-            {
-                button.Enabled = false;
-            }
-            else
-            {
-                button.Enabled = true;
-            }
-
-            LinkButton link = (LinkButton)e.Row.FindControl("lblFileName");
-            if (maint.CheckAuthorization(Session["UserID"].ToString()) == true ||
-                Section == RequestorSection)
-            {
-                
-                link.Enabled = true;
-            }
-            else
-            {
-                link.Enabled = false;
-            }
-        }
+        Maintenance maint = new Maintenance();
+        return maint.CheckIfFinishedRequestor(ControlNo);
     }
 
     [WebMethod]
     public static string CheckIfLOALimit(LOADetails ld)
     {
+        Maintenance maint = new Maintenance();
         return JsonConvert.SerializeObject(maint.GetLOALimitPercentage(ld));
     }
 
-    protected void BtnCancel_Click(object sender, EventArgs e)
+    [WebMethod]
+    public static string GetLOADescription(SupplierDetails sd, LOADetails ld)
     {
-        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalCancel').modal('show');", true);
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetItemType(sd, ld));
     }
 
-    protected void BtnCancelRequest_Click(object sender, EventArgs e)
+    [WebMethod]
+    public static string GetDivision()
     {
-        if (txtReason.Text != "")
-        {
-            Approval a = new Approval();
-            a.ControlNo = tbControlNo.Text;
-            a.Comment = txtReason.Text;
-            a.UserID = UserID;
-            maint.CancelRequest(a);
-
-            Response.Redirect("FarmOutRequestForm.aspx");
-        }
-        else
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "#modalCancel", "$('body').removeClass('modal-open');$('.modal-backdrop').remove();", true);
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "NoCommentAlert();", true);
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "modal", "$('#modalCancel').modal('show');", true);
-        }
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetDivision());
     }
 
-    protected void BtnSave_Click(object sender, EventArgs e)
+    [WebMethod]
+    public static string GetNatureOfItem()
     {
-        if (ddlDivision.SelectedValue != "" && hfTypeofItem.Value != "" && hfClassificationofItem.Value != "" &&
-            ((ddlPurposeofItem.SelectedValue != "" && ddlPurposeofItem.SelectedValue != "Others") || (ddlPurposeofItem.SelectedValue == "Others" && tbOthers.Text != "")) && tbBearerEmployeeName.Text != "" && tbDateRequested.Text != "" &&
-            tbActualDateofTransfer.Text != "" && ddlSupplierName.SelectedValue != "" && ddlCheckedby.SelectedValue != "" &&
-            ddlApprovedby.SelectedValue != "")
-        {
-            Maintenance maint = new Maintenance();
-            DataSet ds = new DataSet();
-            FarmOutDetails fo = new FarmOutDetails();
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetNatureOfItem());
+    }
 
+    [WebMethod]
+    public static string GetTransferTo()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetTransferTo());
+    }
 
-            fo.ControlNo = tbControlNo.Text;
-            fo.Division = ddlDivision.SelectedValue;
-            fo.NatureOfItem = ddlNatureofItem.SelectedValue;
-            fo.TransferTo = ddlTransferto.SelectedValue;
+    [WebMethod]
+    public static string GetTypeOfItem()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetTypeOfItem());
+    }
 
-            string selectedTypeOfItem = hfTypeofItem.Value;
-            string TypeOfItem = selectedTypeOfItem.Replace(",", " | ");
+    [WebMethod]
+    public static string GetClassificationOfItem()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetClassificationOfItem());
+    }
 
-            fo.TypeOfItem = TypeOfItem;
+    [WebMethod]
+    public static string GetPurposeOfItem()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetPurposeOfItem());
+    }
 
-            string selectedClassificationOfItem = hfClassificationofItem.Value;
-            string ClassificationOfItem = selectedClassificationOfItem.Replace(",", " | ");
+    [WebMethod]
+    public static string GetPackagingUsed()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetPackagingUsed());
+    }
 
-            fo.ClassificationOfItem = ClassificationOfItem;
+    [WebMethod]
+    public static string GetSupplierName()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetSuppliers());
+    }
 
-            if (ddlPurposeofItem.SelectedValue == "Others")
-            {
-                fo.PurposeOfItem = tbOthers.Text;
-            }
-            else
-            {
-                fo.PurposeOfItem = ddlPurposeofItem.SelectedValue;
-            }
-            fo.BearerEmployeeNo = tbBearerEmployeeNo.Text;
-            fo.BearerEmployeeName = tbBearerEmployeeName.Text.ToUpper(); ;
-            fo.RequestorEmployeeNo = tbEmployeeNo.Text;
-            fo.RequestorEmployeeName = tbEmployeeName.Text;
-            fo.Section = tbSection.Text;
-            fo.LocalNo = tbLocalNo.Text;
-            fo.DateRequested = tbDateRequested.Text;
-            fo.ActualDateOfTransfer = tbActualDateofTransfer.Text;
-            fo.TargetDateOfReturn = tbTargetDateofReturn.Text;
-            fo.PackagingUsed = ddlPackagingUsed.SelectedValue;
-            fo.SupplierID = ddlSupplierName.SelectedValue;
-            fo.SupplierName = ddlSupplierName.SelectedItem.ToString();
-            fo.DestinationAddress = tbDestinationAddress.Text;
-            fo.OriginOfItem = tbOriginofItem.Text.ToUpper();
-            fo.DeliveryReceiptNo = tbDeliveryReceiptNo.Text.ToUpper();
-            fo.InvoiceNo = tbInvoiceNo.Text.ToUpper();
-            fo.ContactPerson = tbContactPerson.Text.ToUpper();
-            fo.ContactNo = tbContactNo.Text.ToUpper();
-            fo.TelephoneNo = tbTelephoneNo.Text.ToUpper();
-            fo.FaxNo = tbFaxNo.Text.ToUpper();
-            fo.ModeOfTransfer = ddlModeofTransfer.SelectedValue;
-            fo.TypeOfTransfer = ddlTypeofTransfer.SelectedValue;
-            ds = maint.SaveFarmOutRequestForm(fo, UserID);
-            tbControlNo.Text = ds.Tables[0].DefaultView[0]["CONTROLNO"].ToString();
+    [WebMethod]
+    public static string GetSupplierAddress(string Supplier)
+    {
+        FarmOutRequestFormMaintenance form = new FarmOutRequestFormMaintenance();
+        return JsonConvert.SerializeObject(form.GetSupplierAddress(Supplier));
+    }
 
-            Approval a = new Approval();
-            a.ControlNo = tbControlNo.Text;
-            a.Requestedby = ddlRequestedby.SelectedValue;
-            a.Checkedby = ddlCheckedby.SelectedValue;
-            a.Approvedby = ddlApprovedby.SelectedValue;
-            a.UserID = UserID;
-            maint.SaveApproval(a);
-            maint.SaveMirrorApproval(a);
+    [WebMethod]
+    public static string GetModeOfTransfer()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetModeOfTransfer());
+    }
 
-            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutSuccessAlert();", true);
+    [WebMethod]
+    public static string GetTypeOfTransfer()
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetTypeOfTransfer());
+    }
 
-            BtnAdd.Enabled = true;
-            BtnConfirm1.Enabled = true;
+    [WebMethod]
+    public static string GetRequestedby(UserInfo ui)
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetRequestedby(ui));
+    }
 
-        }
-        else
-        {
-            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "SaveFarmOutFailedAlert();", true);
-        }
+    [WebMethod]
+    public static string GetCheckedBy(UserInfo ui)
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetCheckedby(ui));
+    }
+
+    [WebMethod]
+    public static string GetApprovedby(UserInfo ui)
+    {
+        Maintenance maint = new Maintenance();
+        return JsonConvert.SerializeObject(maint.GetApprovedby(ui));
     }
 }

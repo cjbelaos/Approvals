@@ -44,10 +44,10 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label for="txtControlNo"><i class="far fa-bell"></i>&nbsp;Control No.</label>
                                     </div>
-                                    <div class="col-md-6 text-right">
+                                    <div class="col-md-8 text-right">
                                         <button type="button" id="btnCancel" class="badge badge-pill badge-danger" data-toggle="modal" data-target="#modalCancel" hidden><i class="fas fa-ban"></i>&nbsp;Cancel</button>
                                         <button type="button" id="btnPrint" class="badge badge-pill badge-info" hidden><i class="fas fa-print"></i>&nbsp;Print</button>
                                         <button type="button" id="btnView" class="badge badge-pill badge-primary" hidden><i class="fas fa-eye"></i>&nbsp;View</button>
@@ -229,9 +229,7 @@
                 <!-- /.card-body -->
 
                 <div id="divItems" class="card-body" hidden>
-                    <button type="button" id="btnNew" class="btn btn-primary mb-1" data-toggle="modal" data-target="#modal">
-                        <i class="fas fa-external-link-alt"></i>&nbsp;New
-                    </button>
+                    <button type="button" id="btnNew" class="btn btn-primary mb-1" data-toggle="modal" data-target="#modal"><i class="fas fa-external-link-alt"></i>&nbsp;New</button>
                     <div class="table-responsive">
                         <table id="tableItems" class="table table-bordered table-striped table-hover table-sm" style="white-space: nowrap">
                             <thead id="thead">
@@ -424,7 +422,7 @@
                                         <label for="selectRequestedby">Requested by</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
                                     </div>
                                     <div class="col-md-6 text-right">
-                                        <button type="button" id="btnConfirm1" class="badge badge-pill badge-warning" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
+                                        <button type="button" id="btnConfirm1" class="badge badge-pill badge-success" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -471,7 +469,7 @@
                                         <button type="button" id="btnEditCheckedby" class="badge badge-pill badge-warning" hidden><i class="fas fa-people-arrows"></i>&nbsp;Edit</button>
                                         <button type="button" id="btnSaveCheckedby" class="badge badge-pill badge-primary" hidden><i class="fas fa-user-shield"></i>&nbsp;Save</button>
                                         <button type="button" id="btnCancelEditCheckedby" class="badge badge-pill badge-danger" hidden><i class="fas fa-user-times"></i>&nbsp;Cancel Edit</button>
-                                        <button type="button" id="btnConfirm2" data-toggle="modal" data-target="#modalConfirm" class="badge badge-pill badge-warning" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
+                                        <button type="button" id="btnConfirm2" data-toggle="modal" data-target="#modalConfirm" class="badge badge-pill badge-success" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -519,7 +517,7 @@
                                         <button type="button" id="btnEditApprovedby" class="badge badge-pill badge-warning" hidden><i class="fas fa-people-arrows"></i>&nbsp;Edit</button>
                                         <button type="button" id="btnSaveApprovedby" class="badge badge-pill badge-primary" hidden><i class="fas fa-user-shield"></i>&nbsp;Save</button>
                                         <button type="button" id="btnCancelEditApprovedby" class="badge badge-pill badge-danger" hidden><i class="fas fa-user-times"></i>&nbsp;Cancel Edit</button>
-                                        <button type="button" id="btnConfirm3" data-toggle="modal" data-target="#modalConfirm" class="badge badge-pill badge-warning" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
+                                        <button type="button" id="btnConfirm3" data-toggle="modal" data-target="#modalConfirm" class="badge badge-pill badge-success" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
                                     </div>
                                 </div>
                                 <div class="input-group">
@@ -822,8 +820,9 @@
         var current_approverid;
         var current_assigneduserid;
 
-        var isApproved;
+        //var isApproved;
         var isAuthorized;
+        var isApprovedbyRequestor;
         var isFinishedRequestor;
 
         var tableItems;
@@ -1814,10 +1813,50 @@
             });
         }
 
+        function CheckIfBypassAccount(userid, callback) {
+            var LoginDetails = {};
+            LoginDetails.username = userid;
+            $.ajax({
+                type: "POST",
+                url: "RequestForm.aspx/CheckIfBypassAccount",
+                data: JSON.stringify({ ld: LoginDetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
         function CheckIfCancelled(controlno, callback) {
             $.ajax({
                 type: "POST",
                 url: "RequestForm.aspx/CheckIfCancelled",
+                data: JSON.stringify({ ControlNo: controlno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckIfApproveByRequestor(controlno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "RequestForm.aspx/CheckIfApproveByRequestor",
                 data: JSON.stringify({ ControlNo: controlno }),
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
@@ -1861,14 +1900,12 @@
                 case 2:
                     switch (emailtype) {
                         case 'Approval':
-                            alert('yes');
                             var from = checkedby;
                             var to = approvedby;
                             break;
                         case 'Request Change':
-                            alert('yes');
                             var from = checkedby;
-                            var to = approvedby;
+                            var to = requestedby;
                             break;
                         case 'Re-assign':
                             var from = checkedby;
@@ -1900,31 +1937,102 @@
             EmailDetails.EMAILTYPE = emailtype;
             EmailDetails.COMMENT = comment;
             console.log(EmailDetails);
-            //$.ajax({
-            //    type: "POST",
-            //    url: "RequestForm.aspx/SendEmail",
-            //    data: JSON.stringify({ ed: EmailDetails }),
-            //    datatype: "json",
-            //    contentType: "application/json;charset=utf-8",
-            //    success: function (e) {
-            //        var d = JSON.parse(e.d);
-            //        if (callback !== undefined) {
-            //            callback(d);
-            //        }
-            //    },
-            //    error: function (err) {
-            //        console.log(err);
-            //    }
-            //});
+            $.ajax({
+                type: "POST",
+                url: "RequestForm.aspx/SendEmail",
+                data: JSON.stringify({ ed: EmailDetails }),
+                datatype: "json",
+                contentType: "application/json;charset=utf-8",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
         }
 
-        function DisableForm() {
-            $('#selectDivision').prop('disabled', true);
-            $('#selectNatureofItem').prop('disabled', true);
-            $('#selectTransferto').prop('disabled', true);
-            $('#selectTypeofItem').prop('disabled', true);
-            $('#selectClassificationofItem').prop('disabled', true);
-            $('#selectPurposeofItem').prop('disabled', true);
+        function ClearItems() {
+            $('#txtID').val('');
+            $('#selectLOADescription').val('');
+            $('#txtControlNo').val('');
+            $('#txtItemNo').val('');
+            $('#txtItemDescription').val('');
+            $('#txtQuantity').val('');
+            $('#txtUnitofMeasure').val('');
+            $('#txtAmount').val('');
+            $('#txtAssetNo').val('');
+            $('#txtOD').val('');
+            $('#txtContainer').val('');
+            $('#txtPEZASeal').val('');
+            $('#txtDSRDRNo').val('');
+        }
+
+        function ClearTableItems() {
+            $('#tableItems > thead').remove();
+            $('#tableItems > tbody').remove();
+        }
+
+        function EnableControl() {
+            $('#btnCancel').prop('hidden', false);
+            $('#txtControlNo').prop('disabled', false);
+            $('#txtRequestorEmployeeNo').prop('disabled', false);
+            $('#txtRequestorEmployeeName').prop('disabled', false);
+            $('#txtRequestorSection').prop('disabled', false);
+        }
+
+        function DisableControl() {
+            if ($('#selectNatureofItem').val() === '') {
+                $("#selectNatureofItem").empty();
+                $('#selectNatureofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectDivision').prop('disabled', true);
+            }
+
+            if ($('#selectNatureofItem').val() === '') {
+                $("#selectNatureofItem").empty();
+                $('#selectNatureofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectNatureofItem').prop('disabled', true);
+            }
+
+            if ($('#selectTransferto').val() === '') {
+                $("#selectTransferto").empty();
+                $('#selectTransferto').prop('disabled', true);
+            }
+            else {
+                $('#selectTransferto').prop('disabled', true);
+            }
+
+            if ($('#selectTypeofItem').val() === '') {
+                $("#selectTypeofItem").empty();
+                $('#selectTypeofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectTypeofItem').prop('disabled', true);
+            }
+
+            if ($('#selectClassificationofItem').val() === '') {
+                $("#selectClassificationofItem").empty();
+                $('#selectClassificationofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectClassificationofItem').prop('disabled', true);
+            }
+
+            if ($('#selectPurposeofItem').val() === '') {
+                $("#selectPurposeofItem").empty();
+                $('#selectPurposeofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectPurposeofItem').prop('disabled', true);
+            }
+
             $('#txtOthers').prop('disabled', true);
             $('#txtBearerEmployeeNo').prop('disabled', true);
             $('#txtBearerName').prop('disabled', true);
@@ -1945,8 +2053,23 @@
             $('#txtContactNo').prop('disabled', true);
             $('#txtTelephoneNo').prop('disabled', true);
             $('#txtFaxNo').prop('disabled', true);
-            $('#selectModeofTransfer').prop('disabled', true);
-            $('#selectTypeofTransfer').prop('disabled', true);
+
+            if ($('#selectModeofTransfer').val() === '') {
+                $("#selectModeofTransfer").empty();
+                $('#selectModeofTransfer').prop('disabled', true);
+            }
+            else {
+                $('#selectModeofTransfer').prop('disabled', true);
+            }
+
+            if ($('#selectTypeofTransfer').val() === '') {
+                $("#selectTypeofTransfer").empty();
+                $('#selectTypeofTransfer').prop('disabled', true);
+            }
+            else {
+                $('#selectTypeofTransfer').prop('disabled', true);
+            }
+
             $('#selectRequestedby').prop('disabled', true);
             $('#selectCheckedby').prop('disabled', true);
             $('#selectApprovedby').prop('disabled', true);
@@ -1971,6 +2094,7 @@
             GetSession(function (d) {
                 Session = d;
                 userid = Session["UserID"];
+                console.log(userid);
 
                 GetDivision(function (d) {
                     for (var i in d) {
@@ -2055,6 +2179,7 @@
                                                         controlno = $('#txtControlNo').val();
                                                         if (controlno !== null && controlno !== '') {
                                                             GetUserInformation(userid, function (d) {
+                                                                console.log(d);
                                                                 user_section = d['Table'][0]['SectionName'];
                                                             });
                                                             $('#divItems').prop('hidden', false);
@@ -2218,6 +2343,7 @@
                                                                 }
 
                                                                 GetRequestedby(section, function (d) {
+                                                                    console.log(d);
                                                                     for (var i in d) {
                                                                         $('<option/>', {
                                                                             value: d[i]['APOAccount'],
@@ -2266,82 +2392,99 @@
                                                                                             $('#tbody').append('<tr id="' + d[i]['ID'] + '"><td class="text-center"><button type="button" class="btn btn-info btn-sm btn-view-row"><i class="fas fa-eye"></i>&nbsp;View</button></td><td class="row-index text-center"><p>' + d[i]['FileName'] + '</p></td><td class="text-center"><button type="button" class="btn btn-danger btn-sm btn-remove-row"><i class="fas fa-eraser"></i> Remove</button></td></tr>');
                                                                                         };
                                                                                     };
-                                                                                    switch (current_approverid) {
-                                                                                        case 1:
-                                                                                            if (userid !== $('#selectRequestedby').val() && userid !== current_assigneduserid) {
-                                                                                                DisableForm();
+                                                                                    CheckIfBypassAccount(userid, function (d) {
+                                                                                        isByPassAccount = d;
+                                                                                        if (isByPassAccount === true) {
+                                                                                            EnableControl();
+                                                                                            switch (current_approverid) {
+                                                                                                case 1:
+                                                                                                    $('#btnConfirm1').prop('hidden', false);
+                                                                                                    break;
+                                                                                                case 2:
+                                                                                                    $('#btnConfirm2').prop('hidden', false);
+                                                                                                    break;
+                                                                                                case 3:
+                                                                                                    $('#btnConfirm3').prop('hidden', false);
+                                                                                                    break;
                                                                                             }
-                                                                                            else {
-                                                                                                $('#btnConfirm1').prop('hidden', false);
-                                                                                            }
-                                                                                            break;
-                                                                                        case 2:
-                                                                                            GetCheckedby(section, function (d) {
-                                                                                                for (var i in d) {
-                                                                                                    $('<option/>', {
-                                                                                                        value: d[i]['APOAccount'],
-                                                                                                        text: d[i]['FullName']
-                                                                                                    }).appendTo($("#selectReassign"));
-                                                                                                    $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
-                                                                                                }
-                                                                                            });
-                                                                                            if (userid !== $('#selectCheckedby').val() && userid !== current_assigneduserid) {
-                                                                                                DisableForm();
-                                                                                            }
-                                                                                            else {
-                                                                                                DisableForm();
-                                                                                                $('#btnConfirm2').prop('hidden', false);
-                                                                                            }
-                                                                                            break;
-                                                                                        case 3:
-                                                                                            GetApprovedby(section, function (d) {
-                                                                                                for (var i in d) {
-                                                                                                    $('<option/>', {
-                                                                                                        value: d[i]['APOAccount'],
-                                                                                                        text: d[i]['FullName']
-                                                                                                    }).appendTo($("#selectReassign"));
-                                                                                                    $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
-                                                                                                }
-                                                                                            });
-                                                                                            if (userid !== $('#selectApprovedby').val() && userid !== current_assigneduserid) {
-                                                                                                DisableForm();
-                                                                                            }
-                                                                                            else {
-                                                                                                DisableForm();
-                                                                                                $('#btnConfirm3').prop('hidden', false);
-                                                                                            }
-                                                                                            break;
-                                                                                        case null:
-                                                                                            DisableForm();
-                                                                                            break;
-                                                                                    }
-                                                                                    FarmOutRequestFormApprovalChecking(controlno, function (d) {
-                                                                                        isApproved = d;
-                                                                                        CheckAuthorization(userid, function (d) {
-                                                                                            isAuthorized = d;
-                                                                                            CheckIfCancelled(controlno, function (d) {
-                                                                                                isCancelled = d;
-                                                                                                CheckIfFinishedRequestor(controlno, function (d) {
-                                                                                                    isFinishedRequestor = d;
-                                                                                                    if (isApproved === true && isAuthorized === true) {
-                                                                                                        alert('yes');
-                                                                                                        $('#btnPrint').prop('hidden', false);
-                                                                                                        $('#btnView').prop('hidden', false);
+                                                                                        }
+                                                                                        else {
+                                                                                            switch (current_approverid) {
+                                                                                                case 1:
+                                                                                                    if (userid !== $('#selectRequestedby').val() && userid !== current_assigneduserid) {
+                                                                                                        DisableControl();
                                                                                                     }
-                                                                                                    if (userid === requestedby && isCancelled === false && isFinishedRequestor === false) {
-                                                                                                        $('#btnCancel').prop('hidden', false);
-                                                                                                        $('.btn-view-row').prop('hidden', false);
-                                                                                                        $('.btn-remove-row').prop('hidden', false);
-                                                                                                        if (statusid1 !== 5 && statusid1 !== 7 && statusid2 !== 2) {
-                                                                                                            $('#btnEditCheckedby').prop('hidden', false);
+                                                                                                    else {
+                                                                                                        $('#btnConfirm1').prop('hidden', false);
+                                                                                                    }
+                                                                                                    break;
+                                                                                                case 2:
+                                                                                                    GetCheckedby(section, function (d) {
+                                                                                                        for (var i in d) {
+                                                                                                            $('<option/>', {
+                                                                                                                value: d[i]['APOAccount'],
+                                                                                                                text: d[i]['FullName']
+                                                                                                            }).appendTo($("#selectReassign"));
+                                                                                                            $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
                                                                                                         }
-                                                                                                        if (statusid1 !== 5 && statusid1 !== 7 && statusid3 !== 2) {
-                                                                                                            $('#btnEditApprovedby').prop('hidden', false);
+                                                                                                    });
+                                                                                                    if (userid !== $('#selectCheckedby').val() && userid !== current_assigneduserid) {
+                                                                                                        DisableControl();
+                                                                                                    }
+                                                                                                    else {
+                                                                                                        DisableControl();
+                                                                                                        $('#btnConfirm2').prop('hidden', false);
+                                                                                                    }
+                                                                                                    break;
+                                                                                                case 3:
+                                                                                                    GetApprovedby(section, function (d) {
+                                                                                                        for (var i in d) {
+                                                                                                            $('<option/>', {
+                                                                                                                value: d[i]['APOAccount'],
+                                                                                                                text: d[i]['FullName']
+                                                                                                            }).appendTo($("#selectReassign"));
+                                                                                                            $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
                                                                                                         }
+                                                                                                    });
+                                                                                                    if (userid !== $('#selectApprovedby').val() && userid !== current_assigneduserid) {
+                                                                                                        DisableControl();
                                                                                                     }
-                                                                                                    if (user_section === section) {
-                                                                                                        $('.btn-view-row').prop('hidden', false);
+                                                                                                    else {
+                                                                                                        DisableControl();
+                                                                                                        $('#btnConfirm3').prop('hidden', false);
                                                                                                     }
+                                                                                                    break;
+                                                                                                case null:
+                                                                                                    DisableControl();
+                                                                                                    break;
+                                                                                            }
+                                                                                        }
+                                                                                        CheckIfApproveByRequestor(controlno, function (d) {
+                                                                                            isApprovedbyRequestor = d;
+                                                                                            CheckAuthorization(userid, function (d) {
+                                                                                                isAuthorized = d;
+                                                                                                CheckIfCancelled(controlno, function (d) {
+                                                                                                    isCancelled = d;
+                                                                                                    CheckIfFinishedRequestor(controlno, function (d) {
+                                                                                                        isFinishedRequestor = d;
+                                                                                                        if (isFinishedRequestor === true && isAuthorized === true) {
+                                                                                                            $('#btnPrint').prop('hidden', false);
+                                                                                                            $('#btnView').prop('hidden', false);
+                                                                                                        }
+                                                                                                        if (userid === requestedby && isCancelled === false && isFinishedRequestor === false) {
+                                                                                                            console.log(userid, isCancelled, isFinishedRequestor);
+                                                                                                            $('#btnCancel').prop('hidden', false);
+                                                                                                            if (statusid1 !== 5 && statusid1 !== 7 && statusid2 !== 2) {
+                                                                                                                $('#btnEditCheckedby').prop('hidden', false);
+                                                                                                            }
+                                                                                                            if (statusid1 !== 5 && statusid1 !== 7 && statusid3 !== 2) {
+                                                                                                                $('#btnEditApprovedby').prop('hidden', false);
+                                                                                                            }
+                                                                                                        }
+                                                                                                        if (user_section === section) {
+                                                                                                            $('.btn-view-row').prop('hidden', false);
+                                                                                                        }
+                                                                                                    });
                                                                                                 });
                                                                                             });
                                                                                         });
@@ -2359,8 +2502,9 @@
                                                                 $('#txtRequestorEmployeeNo').val(d['Table'][0]['EmployeeNo']);
                                                                 $('#txtRequestorEmployeeName').val(d['Table'][0]['FirstName'] + ' ' + d['Table'][0]['LastName']);
 
-                                                                var apoaccount = d['Table'][0]['APOAccount'];
+                                                                //var apoaccount = d['Table'][0]['APOAccount'];
                                                                 var section = $('#txtRequestorSection').val();
+                                                                //console.log(apoaccount);
 
                                                                 GetRequestedby(section, function (d) {
                                                                     for (var i in d) {
@@ -2368,7 +2512,7 @@
                                                                             value: d[i]['APOAccount'],
                                                                             text: d[i]['FullName']
                                                                         }).appendTo($("#selectRequestedby"));
-                                                                    } $('#selectRequestedby').val(apoaccount).trigger('change');
+                                                                    } $('#selectRequestedby').val(userid).trigger('change');
                                                                     GetCheckedby(section, function (d) {
                                                                         for (var i in d) {
                                                                             $('<option/>', {
@@ -2637,6 +2781,7 @@
                 $('#btnNew').click(function () {
                     var controlno = $('#txtControlNo').val()
                     CheckPurposeOfItemIfWithLOA(controlno, function (d) {
+                        console.log(d);
                         if (d === true) {
                             $('#selectLOADescription').empty();
                             $('<option/>', {
@@ -2649,15 +2794,24 @@
                             var division = $('#selectDivision').val();
                             var supplier = $('#selectSupplierName').val();
                             GetLOADescription(division, supplier, function (d) {
-                                $('<option/>', {
-                                    value: '',
-                                    text: 'Choose...'
-                                }).appendTo($("#selectLOADescription"));
-
-                                for (var i in d) {
+                                if (d.length > 0) {
                                     $('<option/>', {
-                                        value: d[i]['DESCRIPTION'],
-                                        text: d[i]['DESCRIPTION']
+                                        value: '',
+                                        text: 'Choose...'
+                                    }).appendTo($("#selectLOADescription"));
+
+                                    for (var i in d) {
+                                        $('<option/>', {
+                                            value: d[i]['DESCRIPTION'],
+                                            text: d[i]['DESCRIPTION']
+                                        }).appendTo($("#selectLOADescription"));
+                                    }
+                                }
+                                else {
+                                    $('#selectLOADescription').empty();
+                                    $('<option/>', {
+                                        value: 'N/A',
+                                        text: 'N/A'
                                     }).appendTo($("#selectLOADescription"));
                                 }
                             });
@@ -2667,7 +2821,6 @@
 
                 $('#btnSaveItem').click(function () {
                     if ($("#form1").valid()) {
-
                         var id = $('#txtID').val();
                         var typeofitem = $('#selectLOADescription').val();
                         var controlno = $('#txtControlNo').val();
@@ -2683,11 +2836,15 @@
                         var dsrdrno = $('#txtDSRDRNo').val();
 
                         if (id === null || id === '') {
-                            SaveItem(controlno, typeofitem, itemcode, itemdesc, quantity, uom, amount, assetno, odno, contno, pezaseal, dsrdrno, userid);
+                            SaveItem(controlno, typeofitem, itemcode, itemdesc, quantity, uom, amount, assetno, odno, contno, pezaseal, dsrdrno, userid, function () {
+                                ClearItems();
+                            });
                             location.reload();
                         }
                         else {
-                            UpdateItem(id, controlno, typeofitem, itemcode, itemdesc, quantity, uom, amount, assetno, odno, contno, pezaseal, dsrdrno, userid);
+                            UpdateItem(id, controlno, typeofitem, itemcode, itemdesc, quantity, uom, amount, assetno, odno, contno, pezaseal, dsrdrno, userid, function () {
+                                ClearItems();
+                            });
                             location.reload();
                         }
                     }
@@ -2898,11 +3055,13 @@
                     $('#btnCancelEditCheckedby').prop('hidden', false);
                 });
                 $('#selectCheckedby').change(function (d) {
-                    if ($(this).val() !== checkedby) {
-                        $('#btnSaveCheckedby').prop('hidden', false);
-                    }
-                    else {
-                        $('#btnSaveCheckedby').prop('hidden', true);
+                    if (isApprovedbyRequestor == true) {
+                        if ($(this).val() !== checkedby) {
+                            $('#btnSaveCheckedby').prop('hidden', false);
+                        }
+                        else {
+                            $('#btnSaveCheckedby').prop('hidden', true);
+                        }
                     }
                 });
                 $('#btnCancelEditCheckedby').click(function () {
@@ -2913,8 +3072,9 @@
                     $('#btnEditCheckedby').prop('hidden', false);
                 });
                 $('#btnSaveCheckedby').click(function () {
+                    var approverid = 2;
                     var approveruserid = $('#selectCheckedby').val();
-                    UpdateApproval(controlno, current_approverid, approveruserid, userid, function () {
+                    UpdateApproval(controlno, approverid, approveruserid, userid, function () {
                         $('#btnCancelEditCheckedby').prop('hidden', true);
                         $('#btnSaveCheckedby').prop('hidden', true);
                         $('#selectCheckedby').prop('disabled', true);
@@ -2933,7 +3093,6 @@
                         });
                     });
                 });
-
                 //Editing Approvedby
                 $('#btnEditApprovedby').click(function () {
                     $(this).prop('hidden', true);
@@ -2941,11 +3100,13 @@
                     $('#btnCancelEditApprovedby').prop('hidden', false);
                 });
                 $('#selectApprovedby').change(function (d) {
-                    if ($(this).val() !== approvedby) {
-                        $('#btnSaveApprovedby').prop('hidden', false);
-                    }
-                    else {
-                        $('#btnSaveApprovedby').prop('hidden', true);
+                    if (isApprovedbyRequestor == true) {
+                        if ($(this).val() !== approvedby) {
+                            $('#btnSaveApprovedby').prop('hidden', false);
+                        }
+                        else {
+                            $('#btnSaveApprovedby').prop('hidden', true);
+                        }
                     }
                 });
                 $('#btnCancelEditApprovedby').click(function () {
@@ -2956,9 +3117,11 @@
                     $('#selectApprovedby').prop('disabled', true);
                     $('#btnEditApprovedby').prop('hidden', false);
                 });
-                $('#btnSaveCheckedby').click(function () {
-                    var approveruserid = $('#selectCheckedby').val();
-                    UpdateApproval(controlno, current_approverid, approveruserid, userid, function () {
+                $('#btnSaveApprovedby').click(function () {
+                    var approverid = 3;
+                    var approveruserid = $('#selectApprovedby').val();
+                    console.log(controlno, approverid, approveruserid, userid);
+                    UpdateApproval(controlno, approverid, approveruserid, userid, function () {
                         $('#btnCancelEditApprovedby').prop('hidden', true);
                         $('#btnSaveApprovedby').prop('hidden', true);
                         $('#selectApprovedby').prop('disabled', true);

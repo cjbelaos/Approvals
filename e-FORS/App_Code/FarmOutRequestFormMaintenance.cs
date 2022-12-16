@@ -18,25 +18,23 @@ public class FarmOutRequestFormMaintenance
 
     public DataSet GetFarmOut(FarmOutDetails fo)
     {
-        SqlCommand cmd = new SqlCommand("GET_FARMOUT", conn);
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@CONTROLNO", fo.ControlNo);
-        cmd.CommandTimeout = 360000;
-
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataSet ds = new DataSet();
         try
         {
             conn.Open();
-            da.Fill(ds);
+            using (var cmd = new SqlCommand("GET_FARMOUT", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.AddWithValue("@CONTROLNO", fo.ControlNo);
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(ds);
+                }
+            }
+            conn.Close();
         }
         catch (SqlException sqlex)
         {
             throw sqlex;
-        }
-        catch (Exception ex)
-        {
-            throw ex;
         }
         finally
         {

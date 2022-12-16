@@ -1,1320 +1,882 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="FarmOutRequestForm.aspx.cs" Inherits="FarmOutRequestForm" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="style" runat="Server">
+    <style type="text/css">
+        .hidden-label {
+            color: transparent;
+            text-shadow: none;
+            background-color: transparent;
+            border: 0;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background: rgba(255,255,255,0.8) url("Images/Spinner.gif") center no-repeat;
+        }
+        /* Turn off scrollbar when body element has the loading class */
+        body.loading {
+            overflow: hidden;
+        }
+            /* Make spinner image visible when body element has the loading class */
+            body.loading .overlay {
+                display: block;
+            }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="maincontent" runat="Server">
-    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-    <asp:UpdatePanel ID="upTable" runat="server">
-        <ContentTemplate>
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1>Forms</h1>
-                        </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
-                                <li class="breadcrumb-item active">Farm-out Request Form</li>
-                            </ol>
+    <div class="overlay"></div>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Farm-out Request Form</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="Home.aspx">Home</a></li>
+                        <li class="breadcrumb-item active">Farm-out Request Form</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- SELECT2 EXAMPLE -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Request Form</h3>
+                    <input type="text" id="txtUserID" class="form-control" disabled hidden>
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="txtControlNo"><i class="far fa-bell"></i>&nbsp;Control No.</label>
+                                    </div>
+                                    <div class="col-md-8 text-right">
+                                        <button type="button" id="btnCancel" class="badge badge-pill badge-danger" data-toggle="modal" data-target="#modalCancel" hidden><i class="fas fa-ban"></i>&nbsp;Cancel</button>
+                                        <button type="button" id="btnPrint" class="badge badge-pill badge-info" hidden><i class="fas fa-print"></i>&nbsp;Print</button>
+                                        <button type="button" id="btnView" class="badge badge-pill badge-primary" hidden><i class="fas fa-eye"></i>&nbsp;View</button>
+                                    </div>
+                                </div>
+                                <input type="text" id="txtControlNo" placeholder="[AUTOMATIC]" class="form-control" disabled>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- /.container-fluid -->
-            </section>
-
-            <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Farm-out Request Form</h3>
-                            <asp:TextBox runat="server" ID="inputUserID" CssClass="form-control" Visible="false"></asp:TextBox>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="selectDivision">Division</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <select id="selectDivision" class="form-control select2" name="Division" required="required">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
                         </div>
-                        <!-- /.card-header -->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label for="selectNatureofItem">Nature of Item</label>
+                                <select id="selectNatureofItem" class="form-control select2" style="width: 100%;">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label for="selectTypeofItem">Type of Item</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <select id="selectTypeofItem" class="form-control select2" name="TypeofItem" multiple="multiple" data-placeholder="Choose..." required="required">
+                                </select>
+                                <input type="hidden" id="hiddenTypeofItem" />
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label for="selectPurposeofItem">Purpose of Item</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <select id="selectPurposeofItem" class="form-control select2" name="PurposeofItem" required="required">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="selectTransferto">Transfer to</label>
+                                <select id="selectTransferto" class="form-control select2" style="width: 100%;">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label for="selectClassificationofItem">Classification of Item</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <select id="selectClassificationofItem" class="form-control select2" name="ClassificationofItem" multiple="multiple" data-placeholder="Choose..." required="required">
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                            <div id="divOthers" class="form-group" hidden>
+                                <label for="txtOthers">Others</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <input type="text" id="txtOthers" class="form-control" name="Others" required="required">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.card-body -->
 
-                        <div class="card-body">
+                <div class="card-body">
+                    <h5 class="card-subtitle mb-2 text-danger text-center">For Fixed Assets and Quasi Fixed Assets Only</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Bearer</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtBearerEmployeeNo">Employee No.</label>
+                                <input type="text" name="BearerEmployeeNo" id="txtBearerEmployeeNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtBearerName">Name</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <input type="text" name="BearerEmployeeName" id="txtBearerName" class="form-control" required="required">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Requestor</h6>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtRequestorEmployeeNo">Employee No.</label>
+                                <input type="text" id="txtRequestorEmployeeNo" class="form-control" disabled>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtRequestorEmployeeName">Employee Name</label>
+                                <input type="text" id="txtRequestorEmployeeName" class="form-control" disabled>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtRequestorSection">Section</label>
+                                <input type="text" id="txtRequestorSection" class="form-control" disabled>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtLocalNo">Local No.</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <input type="text" name="LocalNo" id="txtLocalNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <!-- Date -->
+                            <div class="form-group">
+                                <label>Date Requested</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <div class="input-group date" id="DateRequested" data-target-input="nearest">
+                                    <input type="text" name="DateRequested" id="txtDateRequested" class="form-control datetimepicker-input" data-target="#DateRequested" />
+                                    <div class="input-group-append" data-target="#DateRequested" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Date -->
+                            <div class="form-group">
+                                <label>Actual Date of Transfer</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <div class="input-group date" id="ActualDateofTransfer" data-target-input="nearest">
+                                    <input type="text" name="ActualDateofTransfer" id="txtActualDateofTransfer" class="form-control datetimepicker-input" data-target="#ActualDateofTransfer" />
+                                    <div class="input-group-append" data-target="#ActualDateofTransfer" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Date -->
+                            <div class="form-group">
+                                <label>Target Date of Return</label>
+                                <div class="input-group date" id="TargetDateofReturn" data-target-input="nearest">
+                                    <input type="text" name="TargetDateofReturn" id="txtTargetDateofReturn" class="form-control datetimepicker-input" data-target="#TargetDateofReturn" />
+                                    <div class="input-group-append" data-target="#TargetDateofReturn" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.card-body -->
+
+                <div id="divItems" class="card-body" hidden>
+                    <button type="button" id="btnAdd" class="btn btn-primary mb-1"><i class="fas fa-external-link-alt"></i>&nbsp;Add Item</button><span style="color: #ff0000; font-weight: bold">&nbsp;* Only 6 items can be added.</span>
+                    <div class="table-responsive">
+                        <table id="tableItems" class="table table-bordered table-striped table-hover table-sm" style="white-space: nowrap">
+                            <thead id="thead">
+                                <tr>
+                                    <th>LOA Description</th>
+                                    <th>Item/Part Code/Serial No.</th>
+                                    <th>Item Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit of Measurement</th>
+                                    <th>Amount ($)</th>
+                                    <th>Fixed/Quasi Fixed Asset No.	</th>
+                                    <th>OD</th>
+                                    <th>Container</th>
+                                    <th>PEZA Seal</th>
+                                    <th>DS/RDR Number</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Packaging Used</label>
+                                <select id="selectPackagingUsed" class="form-control select2" style="width: 100%;">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.card-body -->
+
+                <div id="divFiles" class="card-body" hidden>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fileUpload">File Uploaded</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="fileUpload">
+                                        <label class="custom-file-label" for="fileUpload">Choose file...</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" id="btnUpload" class="btn btn-primary"><i class="fas fa-upload"></i>&nbsp;Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <table id="tableFiles" class="table table-sm table-borderless">
+                                        <tbody id="tbody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.card-body -->
+
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Supplier Name</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                <select id="selectSupplierName" name="SupplierName" class="form-control select2" required="required">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtDestinationAddress">Destination Address</label>
+                                <input type="text" name="DestinationAddress" id="txtDestinationAddress" class="form-control" disabled required="required">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.form-group -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtOriginofItem">Origin of Item</label>
+                                <input type="text" name="OriginofItem" id="txtOriginofItem" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtInvoiceNo">Invoice No.</label>
+                                <input type="text" name="InvoiceNo" id="txtInvoiceNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtDeliveryReceiptNo">Delivery Receipt No.</label>
+                                <input type="text" name="DeliveryReceiptNo" id="txtDeliveryReceiptNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtContactPerson">Contact Person</label>
+                                <input type="text" name="ContactPerson" id="txtContactPerson" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtContactNo">Contact No.</label>
+                                <input type="text" name="ContactNo" id="txtContactNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtTelephoneNo">Telephone No.</label>
+                                <input type="text" name="TelephoneNo" id="txtTelephoneNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="txtFaxNo">Fax No.</label>
+                                <input type="text" name="FaxNo" id="txtFaxNo" class="form-control">
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Mode of Transfer</label>
+                                <select id="selectModeofTransfer" class="form-control select2" style="width: 100%;">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Type of Transfer</label>
+                                <select id="selectTypeofTransfer" class="form-control select2" style="width: 100%;">
+                                    <option selected value="">Choose...</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="selectRequestedby">Requested by</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    </div>
+                                    <div class="col-md-6 text-right">
+                                        <button type="button" id="btnConfirm1" class="badge badge-pill badge-success" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <select id="selectRequestedby" name="Requestby" class="form-control select2" required="required">
+                                        <option selected value="0">Choose...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="form-group" id="ControlNo">
-                                        <label class="col-form-label" for="tbControlNo"><i class="far fa-bell"></i>&nbsp;Control No.</label>
-                                        <div class="input-group">
-                                            <asp:TextBox runat="server" ID="tbControlNo" CssClass="form-control ControlNo" Enabled="false"></asp:TextBox>
-                                            <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnCancel" CssClass="btn btn-danger" Text="Cancel" OnClick="BtnCancel_Click" Visible="false" />
-                                                <asp:LinkButton runat="server" ID="LnkBtnBack" CssClass="btn btn-info" Text="Back" OnClick="LnkBtnBack_Click" />
-                                            </div>
-                                        </div>
+                                    <div class="form-group text-center">
+                                        <label for="lblStatus1">Status</label>
+                                        <label id="lblStatus1" class="form-control border-0"></label>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>Division</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:DropDownList runat="server" ID="ddlDivision" CssClass="form-control select2" Width="100%" name="division"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Nature of Item</label>
-                                        <asp:DropDownList runat="server" ID="ddlNatureofItem" CssClass="form-control select2" Width="100%" name="natureofitem"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Transfer to</label>
-                                        <asp:DropDownList runat="server" ID="ddlTransferto" CssClass="form-control select2" Width="100%" name="transferto"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Type of Item</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:DropDownList runat="server" ID="ddlTypeofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="typeofitem"></asp:DropDownList>
-                                        <asp:HiddenField runat="server" ID="hfTypeofItem" />
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Classification of Item</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:DropDownList runat="server" ID="ddlClassificationofItem" multiple="multiple" data-placeholder="Choose..." CssClass="form-control select2" Width="100%" name="classificationofitem"></asp:DropDownList>
-                                        <asp:HiddenField runat="server" ID="hfClassificationofItem" />
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Purpose of Item</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:DropDownList runat="server" ID="ddlPurposeofItem" CssClass="form-control select2" Width="100%" name="purposeofitem" OnSelectedIndexChanged="ddlPurposeofItem_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblComment1">Comment</label>
+                                        <label id="lblComment1" class="form-control border-0"></label>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div runat="server" class="form-group" id="divOthers" visible="false">
-                                        <label>Others</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:TextBox runat="server" ID="tbOthers" CssClass="form-control"></asp:TextBox>
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblDate1">Date</label>
+                                        <label id="lblDate1" class="form-control border-0"></label>
                                     </div>
-                                    <!-- /.form-group -->
                                 </div>
                             </div>
                         </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-body">
-                            <h5 class="card-subtitle mb-2 text-danger text-center">For Fixed Assets and Quasi Fixed Assets Only</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Bearer</h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Bearer Employee No.</label>
-                                        <asp:TextBox runat="server" ID="tbBearerEmployeeNo" CssClass="form-control" OnTextChanged="tbBearerEmployeeNo_TextChanged" AutoPostBack="true"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Bearer Name</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:TextBox runat="server" ID="tbBearerEmployeeName" CssClass="form-control"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">Requestor</h6>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>Employee No.</label>
-                                        <asp:TextBox runat="server" ID="tbEmployeeNo" CssClass="form-control" Enabled="false"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Employee Name</label>
-                                        <asp:TextBox runat="server" ID="tbEmployeeName" CssClass="form-control" Enabled="false"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tbSection">Section</label>
-                                        <asp:TextBox runat="server" ID="tbSection" CssClass="form-control" Enabled="false"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbLocalNo">Local No.</label>
-                                        <asp:TextBox runat="server" ID="tbLocalNo" CssClass="form-control" name="localno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <!-- Date -->
-                                    <div class="form-group">
-                                        <label>Date Requested</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <div class="input-group date" id="DateRequested" data-target-input="nearest">
-                                            <asp:TextBox runat="server" ID="tbDateRequested" CssClass="form-control datetimepicker-input" data-target="#DateRequested" name="daterequested"></asp:TextBox>
-                                            <div class="input-group-append" data-target="#DateRequested" data-toggle="datetimepicker">
-                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.row -->
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <!-- Date -->
-                                    <div class="form-group">
-                                        <label>Actual Date of Transfer</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <div class="input-group date" id="ActualDateofTransfer" data-target-input="nearest">
-                                            <asp:TextBox runat="server" ID="tbActualDateofTransfer" CssClass="form-control datetimepicker-input" data-target="#ActualDateofTransfer" name="actualdateoftransfer"></asp:TextBox>
-                                            <div class="input-group-append" data-target="#ActualDateofTransfer" data-toggle="datetimepicker">
-                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <!-- Date -->
-                                    <div class="form-group">
-                                        <label>Target Date of Return</label>
-                                        <div class="input-group date" id="TargetDateofReturn" data-target-input="nearest">
-                                            <asp:TextBox runat="server" ID="tbTargetDateofReturn" CssClass="form-control datetimepicker-input" data-target="#TargetDateofReturn" name="targetdateofreturn"></asp:TextBox>
-                                            <div class="input-group-append" data-target="#TargetDateofReturn" data-toggle="datetimepicker">
-                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-body">
-                            <div class="row mb-1">
-                                <asp:Button runat="server" ID="BtnAdd" Text="Add" CssClass="btn btn-primary BtnAdd" Enabled="false" OnClick="BtnAdd_OnClick" Width="70px" />
-                                <span style="color: #ff0000; font-weight: bold">&nbsp; * Maximum of 6 Items</span>
-                            </div>
-                            <div class="row">
-                                <div class="table-responsive">
-                                    <asp:GridView runat="server" ID="gvItems" CssClass="table table-bordered table-striped table-hover table-sm" ShowHeaderWhenEmpty="true" AutoGenerateColumns="false" OnRowCommand="GrvItems_RowCommand">
-                                        <Columns>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="ID" ItemStyle-VerticalAlign="Middle" Visible="false">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblID" runat="server" Text='<%#Eval("ID") %>' Visible="false"></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="LOA Description" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblTypeOfItem" runat="server" Text='<%#Eval("TypeOfItem") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Item/Part Code/Serial No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblItemCode" runat="server" Text='<%#Eval("ItemCode") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Item Description" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblItemDescription" runat="server" Text='<%#Eval("ItemDescription") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Quantity" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblQuantity" runat="server" Text='<%#Eval("Quantity") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Unit of Measurement" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblUnitOfMeasurement" runat="server" Text='<%#Eval("UnitOfMeasurement") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Amount ($)" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblAmount" runat="server" Text='<%#Eval("Amount") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Fixed/Quasi Fixed Asset No." ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblAssetNo" runat="server" Text='<%#Eval("AssetNo") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="OD" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblODNo" runat="server" Text='<%#Eval("ODNo") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="Container" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblContainerNo" runat="server" Text='<%#Eval("ContainerNo") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="PEZA Seal" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblPEZASeal" runat="server" Text='<%#Eval("PEZASeal") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" HeaderText="DS/RDR Number" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Label ID="lblDSRDRNo" runat="server" Text='<%#Eval("DSRDRNo") %>'></asp:Label>
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Button ID="BtnEdit" runat="server" Text="Edit"
-                                                        CommandName="EditItem"
-                                                        CommandArgument='<%#Eval("ID") %>'
-                                                        CssClass="btn btn-warning btn-sm"
-                                                        Width="70px" />
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                            <asp:TemplateField ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
-                                                <ItemTemplate>
-                                                    <asp:Button ID="BtnDelete" runat="server" Text="Delete"
-                                                        CommandName="DeleteItem"
-                                                        CommandArgument='<%#Eval("ID") %>'
-                                                        OnClientClick="return confirm('Are you sure you want to delete product?')"
-                                                        CssClass="btn btn-danger btn-sm"
-                                                        Width="70px" />
-                                                </ItemTemplate>
-                                            </asp:TemplateField>
-                                        </Columns>
-                                        <HeaderStyle CssClass="thead-light" HorizontalAlign="Center" />
-                                    </asp:GridView>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>Packaging Used</label>
-                                        <asp:DropDownList runat="server" ID="ddlPackagingUsed" CssClass="form-control select2" Width="100%" name="packagingused"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbChooseFile">Choose File</label>
-                                        <div class="input-group">
-                                            <div class="custom-file">
-                                                <asp:FileUpload runat="server" CssClass="custom-file-input" ID="fuChooseFile" name="choosefile" AllowMultiple="true" />
-                                                <label class="custom-file-label" for="fuChooseFile"></label>
-                                            </div>
-                                            <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnUpload" CssClass="btn btn-success" Text="Upload" OnClick="BtnUpload_Click" />
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-body p-0">
-                                                <asp:GridView runat="server" ID="gvFiles" BorderStyle="None" CssClass="table table-sm table-borderless"
-                                                    AutoGenerateColumns="false" OnRowCommand="gvFiles_RowCommand" OnRowDataBound="gvFiles_RowDataBound" Visible="false">
-                                                    <Columns>
-                                                        <asp:TemplateField ItemStyle-VerticalAlign="Middle">
-                                                            <ItemTemplate>
-                                                                <asp:Button ID="BtnDelete" runat="server" Text="Delete"
-                                                                    CommandName="Delete"
-                                                                    CommandArgument='<%#Eval("FileName") %>'
-                                                                    OnClientClick="return confirm('Are you sure you want to delete this file?')"
-                                                                    CssClass="btn btn-danger btn-sm"
-                                                                    Width="70px" />
-                                                            </ItemTemplate>
-                                                        </asp:TemplateField>
-                                                        <asp:TemplateField HeaderText="File Name" ItemStyle-VerticalAlign="Middle">
-                                                            <ItemTemplate>
-                                                                <asp:LinkButton ID="lblFileName" runat="server" Text='<%#Eval("FileName") %>' CommandArgument='<%#Bind("FileName") %>' CommandName="View" OnClick="lblFileName_Click"></asp:LinkButton>
-                                                            </ItemTemplate>
-                                                        </asp:TemplateField>
-                                                    </Columns>
-                                                </asp:GridView>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Supplier Name</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:DropDownList runat="server" ID="ddlSupplierName" CssClass="form-control select2" Width="100%" name="suppliername" OnSelectedIndexChanged="ddlSupplierName_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
-                                        <small id="ddlSupplierHelpBlock" class="form-text text-danger" hidden>Please  choose a supplier.</small>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label for="tbOriginofItem">Origin of Item</label>
-                                        <asp:TextBox runat="server" ID="tbOriginofItem" CssClass="form-control" name="originofitem"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Destination Address</label>
-                                        <asp:TextBox runat="server" ID="tbDestinationAddress" CssClass="form-control" Enabled="false"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbVoiceNo">Invoice No.</label>
-                                        <asp:TextBox runat="server" ID="tbInvoiceNo" CssClass="form-control" name="invoiceno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label for="tbContactPerson">Contact Person</label>
-                                        <asp:TextBox runat="server" ID="tbContactPerson" CssClass="form-control" name="contactperson"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label for="tbTelephoneNo">Telephone No.</label>
-                                        <asp:TextBox runat="server" ID="tbTelephoneNo" CssClass="form-control" name="telephoneno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label>Mode of Transfer</label>
-                                        <asp:DropDownList runat="server" ID="ddlModeofTransfer" CssClass="form-control select2" Width="100%" name="modeoftransfer"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="inputDeliveryReceiptNo">Delivery Receipt No.</label>
-                                        <asp:TextBox runat="server" ID="tbDeliveryReceiptNo" CssClass="form-control" name="receiptno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label for="inputContactNo">Contact No.</label>
-                                        <asp:TextBox runat="server" ID="tbContactNo" CssClass="form-control" name="contactno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label for="inputFaxNo">Fax No.</label>
-                                        <asp:TextBox runat="server" ID="tbFaxNo" CssClass="form-control" name="faxno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <label>Type of Transfer</label>
-                                        <asp:DropDownList runat="server" ID="ddlTypeofTransfer" CssClass="form-control select2" Width="100%" name="typeoftransfer"></asp:DropDownList>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Requested by</label>
-                                        <div class="input-group">
-                                            <asp:DropDownList runat="server" ID="ddlRequestedby" CssClass="form-control select2" Enabled="false"></asp:DropDownList>
-                                            <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm1" CssClass="btn btn-warning" Text="Confirm" OnClick="BtnConfirm1_OnClick" Enabled="false" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group">
-                                        <label>Status</label>
-                                        <asp:Label runat="server" ID="lblStatus1" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>Comment</label>
-                                        <asp:Label runat="server" ID="lblComment1" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>Date</label>
-                                        <asp:Label runat="server" ID="lblDate1" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Checked by</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <div class="input-group">
-                                            <asp:DropDownList runat="server" ID="ddlCheckedby" CssClass="form-control select2"></asp:DropDownList>
-                                            <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm2" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm2_OnClick" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblStatus2" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblComment2" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblDate2" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Approved by</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <div class="input-group">
-                                            <asp:DropDownList runat="server" ID="ddlApprovedby" CssClass="form-control select2"></asp:DropDownList>
-                                            <div class="input-group-append">
-                                                <asp:Button runat="server" ID="BtnConfirm3" CssClass="btn btn-warning" Text="Confirm" Enabled="false" OnClick="BtnConfirm3_OnClick" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblStatus3" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblComment3" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2" style="text-align: center">
-                                    <div class="form-group-row">
-                                        <label>&nbsp; </label>
-                                        <asp:Label runat="server" ID="lblDate3" CssClass="form-control-plaintext"></asp:Label>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <!-- /.card-body -->
-
-                        <div class="card-footer">
-                            <asp:Button runat="server" ID="BtnSave" CssClass="btn btn-primary BtnSave" Text="Save" OnClick="BtnSave_Click" Width="70px" />
-                            <asp:Button runat="server" ID="BtnPrint" CssClass="btn btn-info" Text="Print" OnClick="BtnPrint_Click" Width="70px" Visible="false" />
-                        </div>
+                        <!-- /.col -->
                     </div>
-                    <!-- /.card -->
-                </div>
-            </section>
-
-        </ContentTemplate>
-        <Triggers>
-            <asp:AsyncPostBackTrigger ControlID="ddlSupplierName" EventName="SelectedIndexChanged" />
-            <asp:PostBackTrigger ControlID="BtnUpload" />
-        </Triggers>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="upModalItem" runat="server">
-        <ContentTemplate>
-            <!-- Modal -->
-            <div class="modal fade" id="modal">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary">
-                            <h4 class="modal-title">Item Information</h4>
-                            <asp:Label runat="server" ID="lblMessage"></asp:Label>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Type of Item</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:DropDownList runat="server" ID="ddlItemType" CssClass="form-control select2"></asp:DropDownList>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <label for="selectCheckedby">Checked by</label><span style="color: #ff0000; font-weight: bold">&nbsp;* Don't choose if none.</span>
+                                    </div>
+                                    <div class="col-md-5 text-right">
+                                        <button type="button" id="btnEditCheckedby" class="badge badge-pill badge-warning" hidden><i class="fas fa-people-arrows"></i>&nbsp;Edit</button>
+                                        <button type="button" id="btnSaveCheckedby" class="badge badge-pill badge-primary" hidden><i class="fas fa-user-shield"></i>&nbsp;Save</button>
+                                        <button type="button" id="btnCancelEditCheckedby" class="badge badge-pill badge-danger" hidden><i class="fas fa-user-times"></i>&nbsp;Cancel Edit</button>
+                                        <button type="button" id="btnConfirm2" data-toggle="modal" data-target="#modalConfirm" class="badge badge-pill badge-success" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <asp:TextBox runat="server" ID="tbID" CssClass="form-control" Enabled="false" Visible="false"></asp:TextBox>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbItemNo">Item/Part Code/Serial No.</label>
-                                        <asp:TextBox runat="server" ID="tbItemNo" CssClass="form-control text-uppercase" name="itemno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbItemDescription">Item Description</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:TextBox runat="server" ID="tbItemDescription" CssClass="form-control text-uppercase" name="itemdescription"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbQuantity">Quantity</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:TextBox runat="server" ID="tbQuantity" CssClass="form-control text-uppercase" name="quantity" onkeypress="return isNumberKey(event)"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbUnitofMeasurement">Unit of Measurement</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:TextBox runat="server" ID="tbUnitofMeasurement" CssClass="form-control text-uppercase" name="unitofmeasurement"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbAmount">Amount ($)</label>
-                                        <span style="color: #ff0000; font-weight: bold">*</span>
-                                        <asp:TextBox runat="server" ID="tbAmount" CssClass="form-control text-uppercase" name="amount" onkeypress="return isNumberKey(event)"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbAssetNo">Fixed/Quasi Fixed Asset No.</label>
-                                        <asp:TextBox runat="server" ID="tbAssetNo" CssClass="form-control text-uppercase" name="assetno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbOD">OD</label>
-                                        <asp:TextBox runat="server" ID="tbOD" CssClass="form-control text-uppercase" name="od"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbContainer">Container</label>
-                                        <asp:TextBox runat="server" ID="tbContainer" CssClass="form-control text-uppercase" name="container"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbPEZASeal">PEZA Seal</label>
-                                        <asp:TextBox runat="server" ID="tbPEZASeal" CssClass="form-control text-uppercase" name="peza"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tbDSRDRNo">DS/RDR Number</label>
-                                        <asp:TextBox runat="server" ID="tbDSRDRNo" CssClass="form-control text-uppercase" name="dsrdrno"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <button type="button" id="btnClose" class="btn btn-danger" data-dismiss="modal" style="width: 100px">Close</button>
-                            <asp:Button runat="server" ID="BtnSubmit" CssClass="btn btn-primary" Text="Submit" OnClick="BtnSubmit_OnClick" Width="110px" />
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-
-        </ContentTemplate>
-        <Triggers>
-            <asp:AsyncPostBackTrigger ControlID="BtnSubmit" EventName="Click" />
-        </Triggers>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="upModalConfirm" runat="server">
-        <ContentTemplate>
-            <!-- Modal -->
-            <div class="modal fade" id="modalConfirm" data-backdrop="static">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <div class="row">
-                                <asp:TextBox runat="server" ID="tbWorkFlowID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
-                                <asp:TextBox runat="server" ID="tbApproverID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
-                                <asp:TextBox runat="server" ID="tbAssignedID" CssClass="form-control-sm" Enabled="false" Visible="false"></asp:TextBox>
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="col-form-label-sm">Comment</label>
-                                        <asp:TextBox runat="server" ID="tbComment" CssClass="form-control" TextMode="MultiLine"></asp:TextBox>
-                                    </div>
-                                    <!-- /.form-group -->
-                                </div>
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnApprove" CssClass="btn btn-success btn-sm" Text="Approve" OnClick="BtnApprove_OnClick" Width="120px" />
-                            <asp:Button runat="server" ID="BtnRequestChange" Text="Request Change" CssClass="btn btn-primary btn-sm" OnClick="BtnRequestChange_OnClick" Width="120px" />
-                            <asp:Button runat="server" ID="BtnReassignTask" Text="Reassign Task" CssClass="btn btn-primary btn-sm" OnClick="BtnReassignTask_OnClick" Width="120px" />
-                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 120px">Cancel</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.Modal -->
-
-        </ContentTemplate>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
-        <ContentTemplate>
-
-            <div class="modal fade" id="modalMon">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Attention!</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>This is to notify that your Farm-Out Request will be process on the next processing which is Monday.</p>
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-
-        </ContentTemplate>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="upWed" runat="server">
-        <ContentTemplate>
-
-            <div class="modal fade" id="modalWed">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Attention!</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>This is to notify that your Farm-Out Request will be process on the next processing which is Wednesday.</p>
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-
-        </ContentTemplate>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-        <ContentTemplate>
-
-            <div class="modal fade" id="modalFri">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Attention!</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>This is to notify that your Farm-Out Request will be process on the next processing which is Friday.</p>
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-
-        </ContentTemplate>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="upRequestChange" runat="server">
-        <ContentTemplate>
-            <!-- Modal -->
-            <div class="modal fade" id="modalRequestChange" data-backdrop="static">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Request Change</h5>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="col-sm-12">
                                 <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-sm-3">
-                                            <label class="col-form-label-sm">Assigned</label>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <asp:TextBox runat="server" ID="tbAssignedto" CssClass="form-control-sm" Enabled="false" Width="100%"></asp:TextBox>
-                                        </div>
+                                    <select id="selectCheckedby" name="Checkedby" class="form-control select2">
+                                        <option selected value="">Choose...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblStatus2" class="hidden-label">Status</label>
+                                        <label id="lblStatus2" class="form-control border-0"></label>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <asp:TextBox runat="server" ID="tbRequestChangeComment" CssClass="form-control" TextMode="MultiLine"></asp:TextBox>
-                                        </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblComment2" class="hidden-label">Comment</label>
+                                        <label id="lblComment2" class="form-control border-0"></label>
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblDate2" class="hidden-label">Date</label>
+                                        <label id="lblDate2" class="form-control border-0"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="selectApprovedby">Approved by</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    </div>
+                                    <div class="col-md-6 text-right">
+                                        <button type="button" id="btnEditApprovedby" class="badge badge-pill badge-warning" hidden><i class="fas fa-people-arrows"></i>&nbsp;Edit</button>
+                                        <button type="button" id="btnSaveApprovedby" class="badge badge-pill badge-primary" hidden><i class="fas fa-user-shield"></i>&nbsp;Save</button>
+                                        <button type="button" id="btnCancelEditApprovedby" class="badge badge-pill badge-danger" hidden><i class="fas fa-user-times"></i>&nbsp;Cancel Edit</button>
+                                        <button type="button" id="btnConfirm3" data-toggle="modal" data-target="#modalConfirm" class="badge badge-pill badge-success" hidden><i class="fas fa-exclamation-circle"></i>&nbsp;Confirm</button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <select id="selectApprovedby" name="Approvedby" class="form-control select2" required="required">
+                                        <option selected value="">Choose...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblStatus3" class="hidden-label">Status</label>
+                                        <label id="lblStatus3" class="form-control border-0"></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblComment3" class="hidden-label">Comment</label>
+                                        <label id="lblComment3" class="form-control border-0"></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group text-center">
+                                        <label for="lblDate3" class="hidden-label">Date</label>
+                                        <label id="lblDate3" class="form-control border-0"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.card-body -->
+
+
+                <div class="card-footer">
+                    <button type="submit" id="btnSave" class="btn btn-primary"><i class="fas fa-share-square"></i>&nbsp;Save</button>
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Item Information</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="selectLOADescription">LOA Description</label>
+                                    <span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    <select id="selectLOADescription" name="loadesc" class="form-control select2">
+                                        <option selected value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <input type="text" id="txtID" class="form-control" disabled hidden>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtItemNo">Item/Part Code/Serial No.</label>
+                                    <input type="text" id="txtItemNo" name="itemcode" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtItemDescription">Item Description</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    <input type="text" id="txtItemDescription" name="itemdesc" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtQuantity">Quantity</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    <input type="text" id="txtQuantity" name="qty" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtUnitofMeasure">Unit of Measurement</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    <input type="text" id="txtUnitofMeasure" name="uom" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtAmount">Amount ($)</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    <input type="text" id="txtAmount" name="amt" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtAssetNo">Fixed/Quasi Fixed Asset No.</label>
+                                    <input type="text" id="txtAssetNo" name="asset" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtOD">OD</label>
+                                    <input type="text" id="txtOD" name="od" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtContainer">Container</label>
+                                    <input type="text" id="txtContainer" name="cont" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtPEZASeal">PEZA Seal</label>
+                                    <input type="text" id="txtPEZASeal" name="seal" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtDSRDRNo">DS/RDR Number</label>
+                                    <input type="text" id="txtDSRDRNo" name="drno" class="form-control">
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-chevron-circle-left"></i>&nbsp;Back</button>
+                        <button type="button" id="btnSaveItem" class="btn btn-primary"><i class="fas fa-location-arrow"></i>&nbsp;Save</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalConfirm" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-1">
+                                    <textarea id="txtApproveComment" name="comment" class="form-control" placeholder="Approve Comment" cols="3"></textarea>
                                 </div>
                                 <!-- /.form-group -->
                             </div>
                         </div>
-                        <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveRequestChange" CssClass="btn btn-primary btn-sm" Text="Save" OnClick="BtnSaveRequestChange_OnClick" Width="70px" />
-                            <asp:Button runat="server" ID="BtnCancelRequestChange" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelRequestChange_OnClick" Width="70px" />
-                        </div>
+                        <!-- /.row -->
                     </div>
-                    <!-- /.modal-content -->
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" id="btnApprove" class="btn btn-success btn-sm" style="width: 120px"><i class="fas fa-thumbs-up"></i>&nbsp;Approve</button>
+                        <button type="button" id="btnChange" class="btn btn-primary btn-sm" style="width: 120px"><i class="fas fa-user-edit"></i>&nbsp;Change</button>
+                        <button type="button" id="btnReassign" class="btn btn-primary btn-sm" style="width: 120px"><i class="fas fa-people-arrows"></i>&nbsp;Reassign</button>
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 120px"><i class="fas fa-chevron-circle-left"></i>&nbsp;Back</button>
+                    </div>
                 </div>
-                <!-- /.modal-dialog -->
+                <!-- /.modal-content -->
             </div>
-            <!-- /.Modal -->
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
 
-        </ContentTemplate>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="upReassignTask" runat="server">
-        <ContentTemplate>
-            <!-- Modal -->
-            <div class="modal fade" id="modalReassignTask" data-backdrop="static">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Re-assign Task</h5>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row mb-1">
-                                            <div class="col-sm-1">
-                                                <label class="col-form-label-sm">To</label>
-                                            </div>
-                                            <div class="col-sm-11">
-                                                <asp:DropDownList runat="server" ID="ddlReassignto" CssClass="form-control-sm select2" Width="100%" name="reassignto"></asp:DropDownList>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <asp:TextBox runat="server" ID="tbReassigntoComment" CssClass="form-control" TextMode="MultiLine" placeholder="Comment"></asp:TextBox>
-                                            </div>
-                                        </div>
-                                    </div>
+        <!-- Modal -->
+        <div class="modal fade" id="modalRequestChange" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-1">
+                                    <textarea id="txtRequestChangeComment" name="requestchangecomment" class="form-control" placeholder="Request Change Comment" cols="3"></textarea>
                                 </div>
                             </div>
-
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnSaveReassignTask" CssClass="btn btn-primary btn-sm" Text="Save" OnClick="BtnSaveReassignTask_OnClick" Width="70px" />
-                            <asp:Button runat="server" ID="BtnCancelReassignTask" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="BtnCancelReassignTask_OnClick" Width="70px" />
                         </div>
                     </div>
-                    <!-- /.modal-content -->
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" id="btnSaveRequestChange" class="btn btn-primary btn-sm" style="width: 120px"><i class="fas fa-check-circle"></i>&nbsp;Confirm</button>
+                        <button type="button" id="btnCancelChange" class="btn btn-danger btn-sm" style="width: 120px"><i class="fas fa-chevron-circle-left"></i>&nbsp;Back</button>
+                    </div>
                 </div>
-                <!-- /.modal-dialog -->
+                <!-- /.modal-content -->
             </div>
-            <!-- /.Modal -->
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.Modal -->
 
-        </ContentTemplate>
-    </asp:UpdatePanel>
-
-    <asp:UpdatePanel ID="upCancel" runat="server">
-        <ContentTemplate>
-            <!-- Modal -->
-            <div class="modal fade" id="modalCancel" data-backdrop="static">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-body justify-content-between">
-                            <asp:TextBox runat="server" ID="txtReason" CssClass="form-control" TextMode="MultiLine" placeholder="Reason for cancellation"></asp:TextBox>
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <asp:Button runat="server" ID="BtnCancelRequest" CssClass="btn btn-danger btn-sm" Text="Yes" OnClick="BtnCancelRequest_Click" Width="70px" />
-                            <button type="button" class="btn btn-success btn-sm" data-dismiss="modal" style="width: 70px">No</button>
+        <!-- Modal -->
+        <div class="modal fade" id="modalReassignTask" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-1">
+                                    <label for="selectReassign">Checked by</label><span style="color: #ff0000; font-weight: bold">&nbsp;*</span>
+                                    <select id="selectReassign" class="form-control select2" name="reassign">
+                                        <option selected value="">Choose...</option>
+                                    </select>
+                                </div>
+                                <textarea id="txtReassignComment" name="reassigncomment" class="form-control" placeholder="Re-assign Comment" cols="3"></textarea>
+                            </div>
                         </div>
                     </div>
-                    <!-- /.modal-content -->
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" id="btnSaveReassign" class="btn btn-primary btn-sm" style="width: 120px"><i class="fas fa-check-circle"></i>&nbsp;Confirm</button>
+                        <button type="button" id="btnCancelReassign" class="btn btn-danger btn-sm" style="width: 120px"><i class="fas fa-chevron-circle-left"></i>&nbsp;Back</button>
+                    </div>
                 </div>
-                <!-- /.modal-dialog -->
+                <!-- /.modal-content -->
             </div>
-            <!-- /.Modal -->
-        </ContentTemplate>
-    </asp:UpdatePanel>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.Modal -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalCancel" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body justify-content-between">
+                        <textarea id="txtReason" name="reason" class="form-control" placeholder="Reason for cancellation" cols="3"></textarea>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" id="btnCancelRequest" class="btn btn-primary btn-sm" style="width: 120px"><i class="fas fa-check-circle"></i>&nbsp;Confirm</button>
+                        <button type="button" id="btnCancelCancelRequest" class="btn btn-danger btn-sm" data-dismiss="modal" style="width: 120px"><i class="fas fa-chevron-circle-left"></i>&nbsp;Back</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.Modal -->
+
+    </section>
 </asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="script" runat="Server">
     <script type="text/javascript">
+        //Variables
+        var current_url;
 
-        $(function () {
-            $('#<%=ddlTypeofItem.ClientID%>').on('change', function () {
-                x = $(this).val();
-                array = x + ""
-                $('#<%=hfTypeofItem.ClientID%>').val(array);
-            });
+        var userid;
+        var user_section;
+        var user_department;
 
-            var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
-            $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
+        var controlno;
+        var section;
+        var department;
 
-            $('#<%=ddlClassificationofItem.ClientID%>').on('change', function () {
-                x = $(this).val();
-                array = x + ""
-                $('#<%=hfClassificationofItem.ClientID%>').val(array);
-            });
+        var requestedby;
+        var checkedby;
+        var approvedby;
 
-            var items = ($('#<%=hfClassificationofItem.ClientID%>').val().split(','));
-            $("#<%=ddlClassificationofItem.ClientID%>").val(items).trigger('change');
+        var reassignto;
 
-            $('#<%=ddlItemType.ClientID%>').on('change', function () {
-                x = $(this).val();
-                if (x !== '') {
-                    CheckIfLOALimit(function (e) {
-                        var qtylimit = e[0]["QTYLIMITREACH"];
-                        var amtlimit = e[0]["AMTLIMITREACH"];
+        var current_workflowid;
+        var current_approverid;
+        var current_assigneduserid;
 
-                        if (qtylimit === '1' && amtlimit === '0') {
-                            LOAQTYLimitReachAlert();
-                        }
-                        else if (qtylimit === '0' && amtlimit === '1') {
-                            LOAAMTLimitReachAlert();
-                        }
-                        else if (qtylimit === '1' && amtlimit === '1') {
-                            LOALimitReachAlert();
-                        }
-                        else {
-                            LOALimitReachAlert();
-                        }
-                    });
+        //var isApproved;
+        var isAuthorized;
+        var isApprovedbyRequestor;
+        var isFinishedRequestor;
 
-                }
-            });
+        var tableItems;
 
-            //Initialize Select2 Elements
-            $('.select2').select2()
+        //Initialize Select2 Elements
+        $('.select2').select2()
 
-            //Date picker
-            $('#DateRequested').datetimepicker({
-                format: 'L',
-                defaultDate: new Date()
-            });
-            $('#ActualDateofTransfer').datetimepicker({
-                format: 'L'
-            });
-            $('#TargetDateofReturn').datetimepicker({
-                format: 'L'
-            });
+        //Date picker
+        $('#DateRequested').datetimepicker({
+            format: 'L',
+            defaultDate: new Date()
+        });
+        $('#ActualDateofTransfer').datetimepicker({
+            format: 'L'
+        });
+        $('#TargetDateofReturn').datetimepicker({
+            format: 'L'
+        });
 
-            bsCustomFileInput.init();
+        //FileInput
+        bsCustomFileInput.init();
 
-            if ($(".ControlNo").val() != '[AUTOMATIC]') {
-                $('#tbControlNoHelpBlock').prop('hidden', true);
-                var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
-                $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
-            }
-
-            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
-            function EndRequestHandler(sender, args) {
-
-                $('#<%=ddlTypeofItem.ClientID%>').on('change', function () {
-                    x = $(this).val();
-                    array = x + ""
-                    $('#<%=hfTypeofItem.ClientID%>').val(array);
-                });
-
-                var items = ($('#<%=hfTypeofItem.ClientID%>').val().split(','));
-                $("#<%=ddlTypeofItem.ClientID%>").val(items).trigger('change');
-
-                $('#<%=ddlClassificationofItem.ClientID%>').on('change', function () {
-                    x = $(this).val();
-                    array = x + ""
-                    $('#<%=hfClassificationofItem.ClientID%>').val(array);
-                });
-
-                var items = ($('#<%=hfClassificationofItem.ClientID%>').val().split(','));
-                $("#<%=ddlClassificationofItem.ClientID%>").val(items).trigger('change');
-
-                $('#<%=ddlItemType.ClientID%>').on('change', function () {
-                    x = $(this).val();
-                    if (x !== '') {
-                        CheckIfLOALimit(function (e) {
-                            var qtylimit = e[0]["QTYLIMITREACH"];
-                            var amtlimit = e[0]["AMTLIMITREACH"];
-
-                            if (qtylimit === '1' && amtlimit === '0') {
-                                LOAQTYLimitReachAlert();
-                            }
-                            else if (qtylimit === '0' && amtlimit === '1') {
-                                LOAAMTLimitReachAlert();
-                            }
-                            else if (qtylimit === '1' && amtlimit === '1') {
-                                LOALimitReachAlert();
-                            }
-                            else {
-                                LOALimitReachAlert();
-                            }
-                        });
-
-                    }
-                });
-
-                //Initialize Select2 Elements
-                $('.select2').select2()
-
-                //Date picker
-                $('#DateRequested').datetimepicker({
-                    format: 'L',
-                    defaultDate: new Date()
-                });
-                $('#ActualDateofTransfer').datetimepicker({
-                    format: 'L'
-                });
-                $('#TargetDateofReturn').datetimepicker({
-                    format: 'L'
-                });
-
-                bsCustomFileInput.init();
-            }
-        })
-
-        function InvalidCOntrolNo() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'warning',
-                title: 'Unable to upload. Invalid Control No.'
-            })
-        }
-
-        function UploadFailedAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'warning',
-                title: 'Please choose file(s) to upload!'
-            })
-        }
-
-        function SaveFarmOutSuccessAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'success',
-                title: 'Data has been saved successfully.'
-            })
-        }
-
-        function SaveFarmOutFailedAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'warning',
-                title: 'Unable to save. Please complete the details.'
-            })
-        }
-
-        function AddItemsSuccessAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'success',
-                title: 'Items has been saved successfully.'
-            })
-        }
-
-        function AddItemsFailedAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'warning',
-                title: 'Please complete the required item information.'
-            })
-        }
-
-        function UpdateItemsSuccessAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'success',
-                title: 'Items has been updated successfully.'
-            })
-        }
-
-        function ReassignToAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'warning',
-                title: 'Please select re-assign to.'
-            })
-        }
-
-        function MaxNoItemsAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'warning',
-                title: 'Cannot Add more than 6 Items!'
-            })
-        }
-
-        function FileNotExistAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'error',
-                title: 'File not exist! Maybe it is remove or replace.'
-            })
-        }
-
-        function NoCommentAlert() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: 'warning',
-                title: 'Please state your reason for cancellation.'
-            })
-        }
-
-        function LOAQTYLimitReachAlert() {
-            toastr.warning('Please be inform that the LOA that you are going to use only have 20% quantity left. Thank you.')
-        }
-
-        function LOAAmtLimitReachAlert() {
-            toastr.warning('Please be inform that the LOA that you are going to use only have 20% amount left. Thank you.')
-        }
-
-        function LOALimitReachAlert() {
-            toastr.warning('Please be inform that the LOA that you are going to use only have 20% quantity and amount left. Thank you.')
-        }
-
-        function ApprovedFarmOutSuccessAlert() {
-            toastr.success('Task successfully approve!')
-        }
-
-        function RequestChangeFarmOutSuccessAlert() {
-            toastr.success('Successfully Request Change!')
-        }
-
-        function ReassignFarmOutSuccessAlert() {
-            toastr.success('Task successfully reassigned!')
-        }
-
-        function FailedAlert() {
-            toastr.error('Please save Farm-Out First!')
-        }
-
-        function NoItemsAlert() {
-            toastr.error('No items added, Please add items first!')
-        }
-
-        //Function to allow only Decimal values to textbox
-        function isNumberKey(key) {
-            //getting key code of pressed key
-            var keycode = (key.which) ? key.which : key.keyCode;
-            //comparing pressed keycodes
-            if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
-                return false;
-            }
-            else {
-                var parts = key.srcElement.value.split('.');
-                if (parts.length > 1 && keycode == 46)
-                    return false;
-                return true;
-            }
-        }
-
-        function ModalErrorPrevention() {
-            $("#modalRequestChange").modal({ backdrop: "static ", keyboard: false });
-        }
-
-        function CheckIfLOALimit(callback) {
-            var LOADetails = {};
-            LOADetails.SUPPLIERID = $("#<%=ddlSupplierName.ClientID%>").val();
-            LOADetails.DIVISION = $("#<%=ddlDivision.ClientID%>").val();
-            LOADetails.DESCRIPTION = $("#<%=ddlItemType.ClientID%>").val();
+        function GetSession(callback) {
             $.ajax({
-                type: "post",
-                url: "FarmoutRequestForm.aspx/CheckIfLOALimit",
-                method: "post",
-                data: JSON.stringify({ ld: LOADetails }),
-                contentType: "application/json;charset=utf-8",
+                type: "POST",
+                url: "SharedService.asmx/GetSession",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (e) {
                     var d = JSON.parse(e.d);
-                    console.log(d);
+                    Session = d;
                     if (callback !== undefined) {
                         callback(d);
                     }
@@ -1324,6 +886,2528 @@
                 }
             });
         }
+
+        function GetUserInformation(userid, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetUserInformation",
+                data: JSON.stringify({ UserID: userid }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetSectionDepartment(section, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetSectionDepartment",
+                data: JSON.stringify({ Section: section }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetBearerEmployeeName(empno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetBearerEmployeeName",
+                data: JSON.stringify({ EmployeeNo: empno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetDivision(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetDivision",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetNatureOfItem(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetNatureOfItem",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetTransferTo(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetTransferTo",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetTypeOfItem(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetTypeOfItem",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetClassificationOfItem(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetClassificationOfItem",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetPurposeOfItem(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetPurposeOfItem",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetPackagingUsed(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetPackagingUsed",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetSupplierName(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetSupplierName",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetSupplierAddress(supplier, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetSupplierAddress",
+                data: JSON.stringify({ Supplier: supplier }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetModeOfTransfer(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetModeOfTransfer",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetTypeOfTransfer(callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetTypeOfTransfer",
+                data: "{}",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetRequestedby(section, callback) {
+            var UserInfo = {};
+            UserInfo.Section = section;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetRequestedby",
+                data: JSON.stringify({ ui: UserInfo }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetCheckedby(section, callback) {
+            var UserInfo = {};
+            UserInfo.Section = section;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetCheckedby",
+                data: JSON.stringify({ ui: UserInfo }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetApprovedby(section, callback) {
+            var UserInfo = {};
+            UserInfo.Section = section;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetApprovedby",
+                data: JSON.stringify({ ui: UserInfo }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetFarmOut(controlno, callback) {
+            var FarmOutDetails = {};
+            FarmOutDetails.ControlNo = controlno;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetFarmOut",
+                data: JSON.stringify({ fo: FarmOutDetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetItems(controlno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetItems",
+                data: JSON.stringify({ ControlNo: controlno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                    if (d.length > 0) {
+                        $("#tableItems").empty();
+                        if (tableItems !== undefined) {
+                            tableItems.clear().destroy();
+                        }
+                        var btnUpdate = '<button type="button" data-toggle="modal" data-target="#modal" class="btn btn-sm btn-primary btn-update-row" title="Update"><i class="fas fa-edit"></i>&nbsp;Edit</button>';
+                        var btnDelete = '<button type="button" class="btn btn-sm btn-danger btn-delete-row" title="Delete"><i class="fas fa-eraser"></i>&nbsp;Delete</button>';
+                        var tableItems = $('#tableItems').DataTable({
+                            paging: false,
+                            filtering: false,
+                            info: false,
+                            searching: false,
+                            data: d,
+                            columns: [
+                                {
+                                    data: 'ID', title: '', render: function (e) {
+                                        return btnDelete;
+                                    }
+                                },
+                                {
+                                    data: 'ID', title: '', render: function (e) {
+                                        return btnUpdate;
+                                    }
+                                },
+                                { data: 'ID', title: 'ID', visible: false, searchable: false },
+                                { data: 'TypeOfItem', title: 'LOA Description' },
+                                { data: 'ItemCode', title: 'Item/Part Code/Serial No.' },
+                                { data: 'ItemDescription', title: 'Item Description' },
+                                { data: 'Quantity', title: 'Quantity', render: $.fn.dataTable.render.number('\,', '.', 0) },
+                                { data: 'UnitOfMeasurement', title: 'Unit of Measurement' },
+                                { data: 'Amount', title: 'Amount ($)', render: $.fn.dataTable.render.number('\,', '.', 2, '$') },
+                                { data: 'AssetNo', title: 'Fixed/Quasi Fixed Asset No.' },
+                                { data: 'ODNo', title: 'OD' },
+                                { data: 'ContainerNo', title: 'Container' },
+                                { data: 'PEZASeal', title: 'PEZA Seal' },
+                                { data: 'DSRDRNo', title: 'DS/RDR Number' },
+                            ],
+                            columnDefs: [
+                                { className: "dt-nowrap", targets: "_all" }
+                            ]
+                        });
+
+                    }
+                    else {
+                        tableItems = $('#tableItems').DataTable({
+                            paging: false,
+                            filtering: false,
+                            info: false,
+                            searching: false,
+                            columnDefs: [
+                                { className: "dt-head-nowrap", targets: "_all" }
+                            ]
+                        });
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                },
+
+            });
+        }
+
+        function SaveFarmOut(
+            controlno,
+            division,
+            natureofitem,
+            transferto,
+            typeofitem,
+            classificationofitem,
+            purposeofitem,
+            beareremployeeno,
+            beareremployeename,
+            requestoremployeeno,
+            requestoremployeename,
+            requestorsection,
+            localno,
+            daterequested,
+            dateoftransfer,
+            dateofreturn,
+            packagingused,
+            supplierid,
+            suppliername,
+            address,
+            origin,
+            invoice,
+            receipt,
+            contactperson,
+            contactno,
+            telephoneno,
+            faxno,
+            modeoftransfer,
+            typeoftransfer,
+            userid, callback) {
+
+            var FarmOutDetails = {};
+            FarmOutDetails.ControlNo = controlno;
+            FarmOutDetails.Division = division;
+            FarmOutDetails.NatureOfItem = natureofitem;
+            FarmOutDetails.TransferTo = transferto;
+            FarmOutDetails.TypeOfItem = typeofitem;
+            FarmOutDetails.ClassificationOfItem = classificationofitem;
+            FarmOutDetails.PurposeOfItem = purposeofitem;
+            FarmOutDetails.BearerEmployeeNo = beareremployeeno;
+            FarmOutDetails.BearerEmployeeName = beareremployeename;
+            FarmOutDetails.RequestorEmployeeNo = requestoremployeeno;
+            FarmOutDetails.RequestorEmployeeName = requestoremployeename;
+            FarmOutDetails.Section = requestorsection;
+            FarmOutDetails.LocalNo = localno;
+            FarmOutDetails.DateRequested = daterequested;
+            FarmOutDetails.ActualDateOfTransfer = dateoftransfer;
+            FarmOutDetails.TargetDateOfReturn = dateofreturn;
+            FarmOutDetails.PackagingUsed = packagingused;
+            FarmOutDetails.SupplierID = supplierid;
+            FarmOutDetails.SupplierName = suppliername;
+            FarmOutDetails.DestinationAddress = address;
+            FarmOutDetails.OriginOfItem = origin;
+            FarmOutDetails.InvoiceNo = invoice;
+            FarmOutDetails.DeliveryReceiptNo = receipt;
+            FarmOutDetails.ContactPerson = contactperson;
+            FarmOutDetails.ContactNo = contactno;
+            FarmOutDetails.TelephoneNo = telephoneno;
+            FarmOutDetails.FaxNo = faxno;
+            FarmOutDetails.ModeOfTransfer = modeoftransfer;
+            FarmOutDetails.TypeOfTransfer = typeoftransfer;
+            $.ajax({
+                url: "FarmOutRequestForm.aspx/SaveFarmOut",
+                type: "POST",
+                data: JSON.stringify({ fo: FarmOutDetails, UserID: userid }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                    alert('Data has been saved successfully!');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CancelFarmOut(controlno, comment, userid) {
+            var Approval = {};
+            Approval.ControlNo = controlno;
+            Approval.Comment = comment;
+            Approval.UserID = userid;
+            $.ajax({
+                url: "FarmOutRequestForm.aspx/CancelRequest",
+                type: "POST",
+                data: JSON.stringify({ a: Approval }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    alert('Request has been cancelled successfully!');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function SaveItem(
+            controlno,
+            typeofitem,
+            itemcode,
+            itemdesc,
+            quantity,
+            uom,
+            amount,
+            assetno,
+            odno,
+            contno,
+            pezaseal,
+            dsrdrno,
+            userid) {
+
+            var Items = {};
+            Items.ControlNo = controlno;
+            Items.TypeOfItem = typeofitem;
+            Items.ItemCode = itemcode;
+            Items.ItemDescription = itemdesc;
+            Items.Quantity = quantity;
+            Items.UnitOfMeasurement = uom;
+            Items.Amount = amount;
+            Items.AssetNo = assetno;
+            Items.ODNo = odno;
+            Items.ContainerNo = contno;
+            Items.PEZASeal = pezaseal;
+            Items.DSRDRNo = dsrdrno;
+            $.ajax({
+                url: "FarmOutRequestForm.aspx/SaveItem",
+                type: "POST",
+                data: JSON.stringify({ i: Items, UserID: userid }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    GetItems();
+                    alert('Item has been saved successfully!');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function DeleteItem(id) {
+            var Items = {};
+            Items.ID = id;
+            $.ajax({
+                url: "FarmOutRequestForm.aspx/DeleteItem",
+                type: "POST",
+                data: JSON.stringify({ i: Items }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    alert('Item has been deleted successfully!');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function UpdateItem(id, controlno, typeofitem, itemcode, itemdesc, quantity, uom, amount, assetno, odno, contno, pezaseal, dsrdrno, userid) {
+            var Items = {};
+            Items.ID = id;
+            Items.ControlNo = controlno;
+            Items.TypeOfItem = typeofitem;
+            Items.ItemCode = itemcode;
+            Items.ItemDescription = itemdesc;
+            Items.Quantity = quantity;
+            Items.UnitOfMeasurement = uom;
+            Items.Amount = amount;
+            Items.AssetNo = assetno;
+            Items.ODNo = odno;
+            Items.ContainerNo = contno;
+            Items.PEZASeal = pezaseal;
+            Items.DSRDRNo = dsrdrno;
+            $.ajax({
+                url: "FarmOutRequestForm.aspx/UpdateItem",
+                type: "POST",
+                data: JSON.stringify({ i: Items, UserID: userid }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    alert('Item has been updated successfully!');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function UploadFile(formData, controlno, userid) {
+            $.ajax({
+                type: 'post',
+                url: 'hn_FileUpload.ashx?controlno=' + controlno + '&userid=' + userid,
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    if (e != 'error') {
+                        alert("File uploaded successfully!")
+                        GetFiles(controlno, function (d) {
+                            $('#tbody').empty();
+                            if (d.length === 0) {
+                                $('#tbody').append('<tr><td class="row-index text-center"><p>No file(s) uploaded.</p></td></tr>');
+                            }
+                            else {
+                                for (var i in d) {
+                                    $('#tbody').append('<tr id="' + d[i]['ID'] + '"><td class="text-center"><button type="button" class="btn btn-info btn-sm btn-view-row"><i class="fas fa-eye"></i>&nbsp;View</button></td><td class="row-index text-center"><p>' + d[i]['FileName'] + '</p></td><td class="text-center"><button type="button" class="btn btn-danger btn-sm btn-remove-row"><i class="fas fa-eraser"></i> Remove</button></td></tr>');
+                                };
+                            };
+                            $('#fileUpload').val('');
+                            $('.custom-file-label').text('Choose file...');
+                        });
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetFiles(controlno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetFiles",
+                data: JSON.stringify({ ControlNo: controlno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function DeleteFile(controlno, filename, callback) {
+            $.ajax({
+                type: 'post',
+                url: 'hn_DeleteFile.ashx?controlno=' + controlno + '&filename=' + filename,
+                data: '{}',
+                cache: false,
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (data, textStatus) {
+                    if (textStatus === 'success') {
+                        alert("File deleted successfully!")
+                        GetFiles(controlno, function (d) {
+                            $('#tbody').empty();
+                            if (d.length === 0) {
+                                $('#tbody').append('<tr><td class="row-index text-center"><p>No file(s) uploaded.</p></td></tr>');
+                            }
+                            else {
+                                for (var i in d) {
+                                    $('#tbody').append('<tr id="' + d[i]['ID'] + '"><td class="text-center"><button type="button" class="btn btn-info btn-sm btn-view-row"><i class="fas fa-eye"></i>&nbsp;View</button></td><td class="row-index text-center"><p>' + d[i]['FileName'] + '</p></td><td class="text-center"><button type="button" class="btn btn-danger btn-sm btn-remove-row"><i class="fas fa-eraser"></i> Remove</button></td></tr>');
+                                };
+                            };
+                        });
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+
+        function SaveApproval(controlno, requestedby, checkedby, approvedby, userid, callback) {
+
+            var Approval = {};
+
+            Approval.ControlNo = controlno;
+            Approval.Requestedby = requestedby;
+            Approval.Checkedby = checkedby;
+            Approval.Approvedby = approvedby;
+            Approval.UserID = userid;
+
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/SaveApproval",
+                data: JSON.stringify({ a: Approval }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function UpdateApproval(controlno, approverid, approveruserid, userid, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/UpdateApproval",
+                data: JSON.stringify({ ControlNo: controlno, ApproverID: approverid, ApproverUserID: approveruserid, UserID: userid }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                    alert('Assigned approver successfully updated!')
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetApproval(apoaccount, section) {
+            GetRequestedby(section, function (d) {
+                for (var i in d) {
+                    $('<option/>', {
+                        value: d[i]['APOAccount'],
+                        text: d[i]['FullName']
+                    }).appendTo($("#selectRequestedby"));
+                } $('#selectRequestedby').val(apoaccount).trigger('change');
+                GetCheckedby(section, function (d) {
+                    for (var i in d) {
+                        $('<option/>', {
+                            value: d[i]['APOAccount'],
+                            text: d[i]['FullName']
+                        }).appendTo($("#selectCheckedby"));
+                    }
+                    GetApprovedby(section, function (d) {
+                        for (var i in d) {
+                            $('<option/>', {
+                                value: d[i]['APOAccount'],
+                                text: d[i]['FullName']
+                            }).appendTo($("#selectApprovedby"));
+                        }
+                    });
+                });
+            });
+        }
+
+        function SaveMirrorApproval(controlno, userid, callback) {
+
+            var Approval = {};
+
+            Approval.ControlNo = controlno;
+            Approval.UserID = userid;
+
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/SaveMirrorApproval",
+                data: JSON.stringify({ a: Approval }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function Approve(controlno, workflowid, approverid, comment, userid, callback) {
+            var Approval = {};
+
+            Approval.ControlNo = controlno;
+            Approval.WorkFlowID = workflowid;
+            Approval.ApproverID = approverid;
+            Approval.Comment = comment;
+            Approval.UserID = userid;
+
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/Approve",
+                data: JSON.stringify({ a: Approval }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                    alert('Request successfully approved!')
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function RequestChange(controlno, current_workflowid, current_approverid, comment, current_assigneduserid, callback) {
+            var Approval = {};
+            Approval.ControlNo = controlno;
+            Approval.WorkFlowID = current_workflowid;
+            Approval.ApproverID = current_approverid;
+            Approval.Comment = comment;
+            Approval.UserID = current_assigneduserid;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/RequestChange",
+                data: JSON.stringify({ a: Approval }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                    alert('Request successfully send back to requestor for revision!')
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function ReassignTask(controlno, current_workflowid, current_approverid, reassignto, comment, current_assigneduserid, callback) {
+            var Approval = {};
+
+            Approval.ControlNo = controlno;
+            Approval.WorkFlowID = current_workflowid;
+            Approval.ApproverID = current_approverid;
+            Approval.Comment = comment;
+            Approval.UserID = current_assigneduserid;
+
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/ReassignTask",
+                data: JSON.stringify({ a: Approval, ReassignTo: reassignto }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                    alert('Request successfully reassigned!')
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckPurposeOfItemIfWithLOA(controlno, callback) {
+            var FarmOutDocumentDetails = {};
+            FarmOutDocumentDetails.CONTROLNO = controlno;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/CheckPurposeOfItemIfWithLOA",
+                data: JSON.stringify({ fdd: FarmOutDocumentDetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckIfLOALimit(callback) {
+            var LOADetails = {};
+            LOADetails.SUPPLIERID = $('#selectSupplierName').val();
+            LOADetails.DIVISION = $('#selectDivision').val();
+            LOADetails.DESCRIPTION = $('#selectLOADescription').val();
+            $.ajax({
+                type: "post",
+                url: "FarmoutRequestForm.aspx/CheckIfLOALimit",
+                method: "post",
+                data: JSON.stringify({ ld: LOADetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function GetLOADescription(division, supplier, callback) {
+            var SupplierDetails = {};
+            var LOADetails = {};
+            SupplierDetails.ID = supplier;
+            LOADetails.DIVISION = division;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/GetLOADescription",
+                data: JSON.stringify({ sd: SupplierDetails, ld: LOADetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function FarmOutRequestFormApprovalChecking(controlno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/FarmOutRequestFormApprovalChecking",
+                data: JSON.stringify({ ControlNo: controlno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckAuthorization(userid, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/CheckAuthorization",
+                data: JSON.stringify({ UserID: userid }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckIfBypassAccount(userid, callback) {
+            var LoginDetails = {};
+            LoginDetails.username = userid;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/CheckIfBypassAccount",
+                data: JSON.stringify({ ld: LoginDetails }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckIfCancelled(controlno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/CheckIfCancelled",
+                data: JSON.stringify({ ControlNo: controlno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckIfApproveByRequestor(controlno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/CheckIfApproveByRequestor",
+                data: JSON.stringify({ ControlNo: controlno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function CheckIfFinishedRequestor(controlno, callback) {
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/CheckIfFinishedRequestor",
+                data: JSON.stringify({ ControlNo: controlno }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function SendEmail(controlno, emailtype, comment, callback) {
+            switch (current_approverid) {
+                case 1:
+                    var from = requestedby;
+                    var to = checkedby;
+                    if (to === '') {
+                        to = approvedby;
+                    }
+                    break;
+                case 2:
+                    switch (emailtype) {
+                        case 'Approval':
+                            var from = checkedby;
+                            var to = approvedby;
+                            break;
+                        case 'Request Change':
+                            var from = checkedby;
+                            var to = requestedby;
+                            break;
+                        case 'Re-assign':
+                            var from = checkedby;
+                            var to = reassignto;
+                    }
+                    break;
+                case 3:
+                    switch (emailtype) {
+                        case 'Approval':
+                            var from = '';
+                            var to = 'LCS';
+                            break;
+                        case 'Request Change':
+                            var from = '';
+                            var to = requestedby;
+                            break;
+                        case 'Re-assign':
+                            var from = '';
+                            var to = reassignto;
+                    }
+                    break;
+            }
+            var EmailDetails = {};
+            EmailDetails.CONTROLNO = controlno;
+            EmailDetails.FROM_EMAIL = from;
+            EmailDetails.TO_EMAIL = to;
+            EmailDetails.EMAILTYPE = emailtype;
+            EmailDetails.COMMENT = comment;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/SendEmail",
+                data: JSON.stringify({ ed: EmailDetails }),
+                datatype: "json",
+                contentType: "application/json;charset=utf-8",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function SendEmailReassignUpdate(controlno, from, to, emailtype, comment, callback) {
+            var EmailDetails = {};
+            EmailDetails.CONTROLNO = controlno;
+            EmailDetails.FROM_EMAIL = from;
+            EmailDetails.TO_EMAIL = to;
+            EmailDetails.EMAILTYPE = emailtype;
+            EmailDetails.COMMENT = comment;
+            $.ajax({
+                type: "POST",
+                url: "FarmOutRequestForm.aspx/SendEmail",
+                data: JSON.stringify({ ed: EmailDetails }),
+                datatype: "json",
+                contentType: "application/json;charset=utf-8",
+                beforeSend: function () {
+                    $('.overlay').show();
+                },
+                complete: function () {
+                    $('.overlay').hide();
+                },
+                success: function (e) {
+                    var d = JSON.parse(e.d);
+                    if (callback !== undefined) {
+                        callback(d);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function ClearItems() {
+            $('#txtID').val('');
+            $('#selectLOADescription').val('');
+            $('#txtControlNo').val('');
+            $('#txtItemNo').val('');
+            $('#txtItemDescription').val('');
+            $('#txtQuantity').val('');
+            $('#txtUnitofMeasure').val('');
+            $('#txtAmount').val('');
+            $('#txtAssetNo').val('');
+            $('#txtOD').val('');
+            $('#txtContainer').val('');
+            $('#txtPEZASeal').val('');
+            $('#txtDSRDRNo').val('');
+        }
+
+        function ClearTableItems() {
+            $('#tableItems > thead').remove();
+            $('#tableItems > tbody').remove();
+        }
+
+        function EnableControl() {
+            $('#btnCancel').prop('hidden', false);
+            $('#txtControlNo').prop('disabled', false);
+            $('#txtRequestorEmployeeNo').prop('disabled', false);
+            $('#txtRequestorEmployeeName').prop('disabled', false);
+            $('#txtRequestorSection').prop('disabled', false);
+            $('#txtDestinationAddress').prop('disabled', false);
+        }
+
+        function DisableControl() {
+            if ($('#selectDivision').val() === '') {
+                $("#selectDivision").empty();
+                $('#selectDivision').prop('disabled', true);
+            }
+            else {
+                $('#selectDivision').prop('disabled', true);
+            }
+
+            if ($('#selectNatureofItem').val() === '') {
+                $("#selectNatureofItem").empty();
+                $('#selectNatureofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectNatureofItem').prop('disabled', true);
+            }
+
+            if ($('#selectTransferto').val() === '') {
+                $("#selectTransferto").empty();
+                $('#selectTransferto').prop('disabled', true);
+            }
+            else {
+                $('#selectTransferto').prop('disabled', true);
+            }
+
+            if ($('#selectTypeofItem').val() === '') {
+                $("#selectTypeofItem").empty();
+                $('#selectTypeofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectTypeofItem').prop('disabled', true);
+            }
+
+            if ($('#selectClassificationofItem').val() === '') {
+                $("#selectClassificationofItem").empty();
+                $('#selectClassificationofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectClassificationofItem').prop('disabled', true);
+            }
+
+            if ($('#selectPurposeofItem').val() === '') {
+                $("#selectPurposeofItem").empty();
+                $('#selectPurposeofItem').prop('disabled', true);
+            }
+            else {
+                $('#selectPurposeofItem').prop('disabled', true);
+            }
+
+            $('#txtOthers').prop('disabled', true);
+            $('#txtBearerEmployeeNo').prop('disabled', true);
+            $('#txtBearerName').prop('disabled', true);
+            $('#txtRequestorEmployeeNo').prop('disabled', true);
+            $('#txtRequestorEmployeeName').prop('disabled', true);
+            $('#txtRequestorSection').prop('disabled', true);
+            $('#txtLocalNo').prop('disabled', true);
+            $('#txtDateRequested').prop('disabled', true);
+            $('#txtActualDateofTransfer').prop('disabled', true);
+            $('#txtTargetDateofReturn').prop('disabled', true);
+            $('#selectPackagingUsed').prop('disabled', true);
+            $('#selectSupplierName').prop('disabled', true);
+            $('#txtDestinationAddress').prop('disabled', true);
+            $('#txtOriginofItem').prop('disabled', true);
+            $('#txtInvoiceNo').prop('disabled', true);
+            $('#txtDeliveryReceiptNo').prop('disabled', true);
+            $('#txtContactPerson').prop('disabled', true);
+            $('#txtContactNo').prop('disabled', true);
+            $('#txtTelephoneNo').prop('disabled', true);
+            $('#txtFaxNo').prop('disabled', true);
+
+            if ($('#selectModeofTransfer').val() === '') {
+                $("#selectModeofTransfer").empty();
+                $('#selectModeofTransfer').prop('disabled', true);
+            }
+            else {
+                $('#selectModeofTransfer').prop('disabled', true);
+            }
+
+            if ($('#selectTypeofTransfer').val() === '') {
+                $("#selectTypeofTransfer").empty();
+                $('#selectTypeofTransfer').prop('disabled', true);
+            }
+            else {
+                $('#selectTypeofTransfer').prop('disabled', true);
+            }
+
+            $('#selectRequestedby').prop('disabled', true);
+            $('#selectCheckedby').prop('disabled', true);
+            $('#selectApprovedby').prop('disabled', true);
+            $('#btnCancel').prop('hidden', true);
+            $('#btnPrint').prop('hidden', true);
+            $('#btnView').prop('hidden', true);
+            $('#btnAdd').prop('hidden', true);
+
+            for (i = 1; i <= 2; i++) {
+                $('#tableItems tr').find('td:eq(0),th:eq(0)').remove();
+            }
+
+            $('#btnUpload').prop('hidden', true);
+            $('.custom-file').prop('hidden', true);
+            $('.btn-remove-row').attr('hidden', true);
+            $('.btn-view-row').attr('hidden', true);
+            $('#btnSave').prop('hidden', true);
+        }
+
+        $(function () {
+            current_url = location.href.replace(location.search, '');
+            GetSession(function (d) {
+                Session = d;
+                userid = Session["UserID"];
+                console.log(userid);
+
+                if (userid !== null) {
+                    GetDivision(function (d) {
+                        for (var i in d) {
+                            $('<option/>', {
+                                value: d[i]['Description'],
+                                text: d[i]['Description']
+                            }).appendTo($("#selectDivision"));
+                        }
+                        GetNatureOfItem(function (d) {
+                            for (var i in d) {
+                                $('<option/>', {
+                                    value: d[i]['Description'],
+                                    text: d[i]['Description']
+                                }).appendTo($("#selectNatureofItem"));
+                            }
+                            GetTransferTo(function (d) {
+                                for (var i in d) {
+                                    $('<option/>', {
+                                        value: d[i]['Description'],
+                                        text: d[i]['Description']
+                                    }).appendTo($("#selectTransferto"));
+                                }
+                                GetTypeOfItem(function (d) {
+                                    for (var i in d) {
+                                        $('<option/>', {
+                                            value: d[i]['Description'],
+                                            text: d[i]['Description']
+                                        }).appendTo($("#selectTypeofItem"));
+                                    }
+                                    GetClassificationOfItem(function (d) {
+                                        for (var i in d) {
+                                            $('<option/>', {
+                                                value: d[i]['Description'],
+                                                text: d[i]['Description']
+                                            }).appendTo($("#selectClassificationofItem"));
+                                        }
+                                        GetPurposeOfItem(function (d) {
+                                            for (var i in d) {
+                                                $('<option/>', {
+                                                    value: d[i]['Description'],
+                                                    text: d[i]['Description']
+                                                }).appendTo($("#selectPurposeofItem"));
+                                            }
+                                            GetPackagingUsed(function (d) {
+                                                for (var i in d) {
+                                                    $('<option/>', {
+                                                        value: d[i]['Description'],
+                                                        text: d[i]['Description']
+                                                    }).appendTo($("#selectPackagingUsed"));
+                                                }
+                                                GetSupplierName(function (d) {
+                                                    for (var i in d) {
+                                                        $('<option/>', {
+                                                            value: d[i]['SUPPLIERID'],
+                                                            text: d[i]['SUPPLIERNAME']
+                                                        }).appendTo($("#selectSupplierName"));
+                                                    }
+                                                    GetModeOfTransfer(function (d) {
+                                                        for (var i in d) {
+                                                            $('<option/>', {
+                                                                value: d[i]['Description'],
+                                                                text: d[i]['Description']
+                                                            }).appendTo($("#selectModeofTransfer"));
+                                                        }
+                                                        GetTypeOfTransfer(function (d) {
+                                                            for (var i in d) {
+                                                                $('<option/>', {
+                                                                    value: d[i]['Description'],
+                                                                    text: d[i]['Description']
+                                                                }).appendTo($("#selectTypeofTransfer"));
+                                                            }
+
+                                                            var url = location.search;
+                                                            var ctrlno = url.split("=");
+
+                                                            if (ctrlno.length > 1) {
+                                                                ctrlno = (ctrlno[1].replace(/%20/g, ' '));
+                                                            }
+
+                                                            $('#txtControlNo').val(ctrlno);
+
+                                                            controlno = $('#txtControlNo').val();
+                                                            if (controlno !== null && controlno !== '') {
+                                                                GetUserInformation(userid, function (d) {
+                                                                    user_section = d['Table'][0]['SectionName'];
+                                                                    user_department = d['Table'][0]['DepartmentName'];
+                                                                });
+                                                                $('#divItems').prop('hidden', false);
+                                                                $('#divFiles').prop('hidden', false);
+
+                                                                var status_color1;
+                                                                var status_color2;
+                                                                var status_color3;
+
+                                                                GetFarmOut(controlno, function (d) {
+                                                                    $('#selectDivision').val(d['Table'][0]['Division']).trigger('change');
+                                                                    $('#selectNatureofItem').val(d['Table'][0]['NatureOfItem']).trigger('change');
+                                                                    $('#selectTransferto').val(d['Table'][0]['TransferTo']).trigger('change');
+
+                                                                    var typeofitem = d['Table'][0]['TypeOfItem'].replace(' | ', ',').split(',');
+                                                                    $('#selectTypeofItem').val(typeofitem).trigger('change');
+
+                                                                    var classificationofitem = d['Table'][0]['ClassificationOfItem'].replace(' | ', ',').split(',');
+                                                                    $('#selectClassificationofItem').val(classificationofitem).trigger('change');
+
+                                                                    var exists = 0 != $('#selectPurposeofItem option[value="' + d['Table'][0]['PurposeOfItem'] + '"]').length;
+                                                                    if (exists === true) {
+                                                                        $('#selectPurposeofItem').val(d['Table'][0]['PurposeOfItem']).trigger('change');
+                                                                    }
+                                                                    else {
+                                                                        $('#selectPurposeofItem').val('Others').trigger('change');
+                                                                        $('#divOthers').prop('hidden', false);
+                                                                        $('#txtOthers').val(d['Table'][0]['PurposeOfItem']);
+                                                                        //$('#selectPurposeofItem').val('Return to Supplier').trigger('change');
+                                                                    }
+
+                                                                    $('#txtBearerEmployeeNo').val(d['Table'][0]['BearerEmployeeNo']);
+                                                                    $('#txtBearerName').val(d['Table'][0]['BearerEmployeeName']);
+                                                                    $('#txtRequestorEmployeeNo').val(d['Table'][0]['RequestorEmployeeNo']);
+                                                                    $('#txtRequestorEmployeeName').val(d['Table'][0]['RequestorEmployeeName']);
+                                                                    $('#txtRequestorSection').val(d['Table'][0]['Section']);
+                                                                    $('#txtLocalNo').val(d['Table'][0]['LocalNo']);
+
+                                                                    if (d['Table'][0]['DateRequested'] !== null && d['Table'][0]['DateRequested'] !== '') {
+                                                                        $('#txtDateRequested').val(moment(d['Table'][0]['DateRequested']).format("L"));
+                                                                    }
+                                                                    else {
+                                                                        $('#txtDateRequested').val('');
+                                                                    }
+
+                                                                    if (d['Table'][0]['ActualDateOfTransfer'] !== null && d['Table'][0]['ActualDateOfTransfer'] !== '') {
+                                                                        $('#txtActualDateofTransfer').val(moment(d['Table'][0]['ActualDateOfTransfer']).format("L"));
+                                                                    }
+                                                                    else {
+                                                                        $('#txtActualDateofTransfer').val('');
+                                                                    }
+
+                                                                    if (d['Table'][0]['TargetDateOfReturn'] !== null && d['Table'][0]['TargetDateOfReturn'] !== '') {
+                                                                        $('#txtTargetDateofReturn').val(moment(d['Table'][0]['TargetDateOfReturn']).format("L"));
+                                                                    }
+                                                                    else {
+                                                                        $('#txtTargetDateofReturn').val('');
+                                                                    }
+
+                                                                    $('#selectPackagingUsed').val(d['Table'][0]['PackagingUsed']).trigger('change');
+                                                                    $('#selectSupplierName').val(d['Table'][0]['SupplierID']).trigger('change');
+                                                                    $('#txtDestinationAddress').val(d['Table'][0]['DestinationAddress']);
+                                                                    $('#txtOriginofItem').val(d['Table'][0]['OriginOfItem']);
+                                                                    $('#txtInvoiceNo').val(d['Table'][0]['InvoiceNo']);
+                                                                    $('#txtDeliveryReceiptNo').val(d['Table'][0]['DeliveryReceiptNo']);
+                                                                    $('#txtContactPerson').val(d['Table'][0]['ContactPerson']);
+                                                                    $('#txtContactNo').val(d['Table'][0]['ContactNo']);
+                                                                    $('#txtTelephoneNo').val(d['Table'][0]['TelephoneNo']);
+                                                                    $('#txtFaxNo').val(d['Table'][0]['FaxNo']);
+                                                                    $('#selectModeofTransfer').val(d['Table'][0]['ModeOfTransfer']).trigger('change');
+                                                                    $('#selectTypeofTransfer').val(d['Table'][0]['TypeOfTransfer']).trigger('change');
+
+                                                                    section = d['Table'][0]['Section'];
+                                                                    requestedby = d['Table'][0]['ASSIGNEDUSERID'];
+                                                                    checkedby = d['Table'][1]['ASSIGNEDUSERID'];
+                                                                    approvedby = d['Table'][2]['ASSIGNEDUSERID'];
+                                                                    current_approverid = d['Table'][0]['APPROVERID_CURRENT'];
+                                                                    current_assigneduserid = d['Table'][0]['ASSIGNEDUSERID_CURRENT'];
+                                                                    current_workflowid = d['Table'][0]['WORKFLOWID_CURRENT'];
+                                                                    statusid1 = d['Table'][0]['CURRENTSTATUSID'];
+                                                                    statusid2 = d['Table'][1]['CURRENTSTATUSID'];
+                                                                    statusid3 = d['Table'][2]['CURRENTSTATUSID'];
+
+                                                                    switch (statusid1) {
+                                                                        case 0:
+                                                                            status_color1 = 'bg-secondary';
+                                                                            break;
+                                                                        case 1:
+                                                                        case 3:
+                                                                        case 5:
+                                                                        case 7:
+                                                                            status_color1 = 'bg-warning';
+                                                                            break;
+                                                                        case 2:
+                                                                        case 4:
+                                                                        case 6:
+                                                                        case 8:
+                                                                            status_color1 = 'bg-success';
+                                                                            break;
+                                                                    }
+
+                                                                    switch (statusid2) {
+                                                                        case 0:
+                                                                            status_color2 = 'bg-secondary';
+                                                                            break;
+                                                                        case 1:
+                                                                        case 3:
+                                                                        case 5:
+                                                                        case 7:
+                                                                            status_color2 = 'bg-warning';
+                                                                            break;
+                                                                        case 2:
+                                                                        case 4:
+                                                                        case 6:
+                                                                        case 8:
+                                                                            status_color2 = 'bg-success';
+                                                                            break;
+                                                                    }
+
+                                                                    switch (statusid3) {
+                                                                        case 0:
+                                                                            status_color3 = 'bg-secondary';
+                                                                            break;
+                                                                        case 1:
+                                                                        case 3:
+                                                                        case 5:
+                                                                        case 7:
+                                                                            status_color3 = 'bg-warning';
+                                                                            break;
+                                                                        case 2:
+                                                                        case 4:
+                                                                        case 6:
+                                                                        case 8:
+                                                                            status_color3 = 'bg-success';
+                                                                            break;
+                                                                    }
+
+                                                                    status1 = d['Table'][0]['CURRENTSTATUS'] || ' ';
+                                                                    comment1 = d['Table'][0]['COMMENT'] || ' ';
+                                                                    date1 = d['Table'][0]['ACTIONDATE'] || ' ';
+                                                                    if (date1 !== ' ') {
+                                                                        date1 = moment(d['Table'][0]['ACTIONDATE']).format("L" + " " + "LTS");
+                                                                    }
+
+                                                                    status2 = d['Table'][1]['CURRENTSTATUS'];
+                                                                    comment2 = d['Table'][1]['COMMENT'] || ' ';
+                                                                    if (d['Table'][1]['ACTIONDATE'] !== null) {
+                                                                        date2 = moment(d['Table'][1]['ACTIONDATE']).format("L" + " " + "LTS")
+                                                                    }
+                                                                    else {
+                                                                        date2 = ' ';
+                                                                    }
+
+                                                                    status3 = d['Table'][2]['CURRENTSTATUS'] || ' ';
+                                                                    comment3 = d['Table'][2]['COMMENT'] || ' ';
+                                                                    if (d['Table'][2]['ACTIONDATE'] !== null) {
+                                                                        date3 = moment(d['Table'][2]['ACTIONDATE']).format("L" + " " + "LTS")
+                                                                    }
+                                                                    else {
+                                                                        date3 = ' ';
+                                                                    }
+
+                                                                    GetRequestedby(section, function (d) {
+                                                                        for (var i in d) {
+                                                                            $('<option/>', {
+                                                                                value: d[i]['APOAccount'],
+                                                                                text: d[i]['FullName']
+                                                                            }).appendTo($("#selectRequestedby"));
+                                                                        }
+                                                                        $('#selectRequestedby').val(requestedby).trigger('change');
+                                                                        $('#lblStatus1').append('<span class="badge ' + status_color1 + '">' + status1 + '</span>');
+                                                                        $('#lblComment1').append('<span class="badge bg-info">' + comment1 + '</span>');
+                                                                        $('#lblDate1').append('<span class="badge bg-info">' + date1 + '</span>');
+                                                                        GetCheckedby(section, function (d) {
+                                                                            for (var i in d) {
+                                                                                $('<option/>', {
+                                                                                    value: d[i]['APOAccount'],
+                                                                                    text: d[i]['FullName']
+                                                                                }).appendTo($("#selectCheckedby"));
+                                                                                //$('<option/>', {
+                                                                                //    value: d[i]['APOAccount'],
+                                                                                //    text: d[i]['FullName']
+                                                                                //}).appendTo($("#selectReassign"));
+                                                                                //$('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
+                                                                            }
+                                                                            $('#selectCheckedby').val(checkedby).trigger('change');
+                                                                            $('#lblStatus2').append('<span class="badge ' + status_color2 + '">' + status2 + '</span>');
+                                                                            $('#lblComment2').append('<span class="badge bg-info">' + comment2 + '</span>');
+                                                                            $('#lblDate2').append('<span class="badge bg-info">' + date2 + '</span>');
+                                                                            GetApprovedby(section, function (d) {
+                                                                                for (var i in d) {
+                                                                                    $('<option/>', {
+                                                                                        value: d[i]['APOAccount'],
+                                                                                        text: d[i]['FullName']
+                                                                                    }).appendTo($("#selectApprovedby"));
+                                                                                }
+                                                                                $('#selectApprovedby').val(approvedby).trigger('change');
+                                                                                $('#lblStatus3').append('<span class="badge ' + status_color3 + '">' + status3 + '</span>');
+                                                                                $('#lblComment3').append('<span class="badge bg-info">' + comment3 + '</span>');
+                                                                                $('#lblDate3').append('<span class="badge bg-info">' + date3 + '</span>');
+
+                                                                                GetItems(controlno, function (d) {
+                                                                                    GetFiles(controlno, function (d) {
+                                                                                        if (d.length === 0) {
+                                                                                            $('#tbody').append('<tr><td class="row-index text-center"><p>No file(s) uploaded.</p></td></tr>');
+                                                                                        }
+                                                                                        else {
+                                                                                            for (var i in d) {
+                                                                                                $('#tbody').append('<tr id="' + d[i]['ID'] + '"><td class="text-center"><button type="button" class="btn btn-info btn-sm btn-view-row"><i class="fas fa-eye"></i>&nbsp;View</button></td><td class="row-index text-center"><p>' + d[i]['FileName'] + '</p></td><td class="text-center"><button type="button" class="btn btn-danger btn-sm btn-remove-row"><i class="fas fa-eraser"></i> Remove</button></td></tr>');
+                                                                                            };
+                                                                                        };
+                                                                                        CheckIfBypassAccount(userid, function (d) {
+                                                                                            isByPassAccount = d;
+                                                                                            if (isByPassAccount === true) {
+                                                                                                EnableControl();
+                                                                                                switch (current_approverid) {
+                                                                                                    case 1:
+                                                                                                        $('#btnConfirm1').prop('hidden', false);
+                                                                                                        break;
+                                                                                                    case 2:
+                                                                                                        $('#btnConfirm2').prop('hidden', false);
+                                                                                                        GetCheckedby(section, function (d) {
+                                                                                                            for (var i in d) {
+                                                                                                                $('<option/>', {
+                                                                                                                    value: d[i]['APOAccount'],
+                                                                                                                    text: d[i]['FullName']
+                                                                                                                }).appendTo($("#selectReassign"));
+                                                                                                                $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
+                                                                                                            }
+                                                                                                        });
+                                                                                                        break;
+                                                                                                    case 3:
+                                                                                                        $('#btnConfirm3').prop('hidden', false);
+                                                                                                        GetApprovedby(section, function (d) {
+                                                                                                            for (var i in d) {
+                                                                                                                $('<option/>', {
+                                                                                                                    value: d[i]['APOAccount'],
+                                                                                                                    text: d[i]['FullName']
+                                                                                                                }).appendTo($("#selectReassign"));
+                                                                                                                $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
+                                                                                                            }
+                                                                                                        });
+                                                                                                        break;
+                                                                                                }
+                                                                                            }
+                                                                                            else {
+                                                                                                switch (current_approverid) {
+                                                                                                    case 1:
+                                                                                                        if (userid !== $('#selectRequestedby').val() && userid !== current_assigneduserid) {
+                                                                                                            DisableControl();
+                                                                                                        }
+                                                                                                        else {
+                                                                                                            $('#btnConfirm1').prop('hidden', false);
+                                                                                                        }
+                                                                                                        break;
+                                                                                                    case 2:
+                                                                                                        GetCheckedby(section, function (d) {
+                                                                                                            for (var i in d) {
+                                                                                                                $('<option/>', {
+                                                                                                                    value: d[i]['APOAccount'],
+                                                                                                                    text: d[i]['FullName']
+                                                                                                                }).appendTo($("#selectReassign"));
+                                                                                                                $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
+                                                                                                            }
+                                                                                                        });
+                                                                                                        if (userid !== $('#selectCheckedby').val() && userid !== current_assigneduserid) {
+                                                                                                            DisableControl();
+                                                                                                        }
+                                                                                                        else {
+                                                                                                            DisableControl();
+                                                                                                            $('#btnConfirm2').prop('hidden', false);
+                                                                                                        }
+                                                                                                        break;
+                                                                                                    case 3:
+                                                                                                        GetApprovedby(section, function (d) {
+                                                                                                            for (var i in d) {
+                                                                                                                $('<option/>', {
+                                                                                                                    value: d[i]['APOAccount'],
+                                                                                                                    text: d[i]['FullName']
+                                                                                                                }).appendTo($("#selectReassign"));
+                                                                                                                $('#selectReassign option[value="' + current_assigneduserid + '"]').remove();
+                                                                                                            }
+                                                                                                        });
+                                                                                                        if (userid !== $('#selectApprovedby').val() && userid !== current_assigneduserid) {
+                                                                                                            DisableControl();
+                                                                                                        }
+                                                                                                        else {
+                                                                                                            DisableControl();
+                                                                                                            $('#btnConfirm3').prop('hidden', false);
+                                                                                                        }
+                                                                                                        break;
+                                                                                                    case null:
+                                                                                                        DisableControl();
+                                                                                                        break;
+                                                                                                }
+                                                                                            }
+                                                                                            CheckIfApproveByRequestor(controlno, function (d) {
+                                                                                                isApprovedbyRequestor = d;
+                                                                                                CheckAuthorization(userid, function (d) {
+                                                                                                    isAuthorized = d;
+                                                                                                    CheckIfCancelled(controlno, function (d) {
+                                                                                                        isCancelled = d;
+                                                                                                        CheckIfFinishedRequestor(controlno, function (d) {
+                                                                                                            isFinishedRequestor = d;
+                                                                                                            GetSectionDepartment(section, function (d) {
+                                                                                                                department = d;
+                                                                                                                if (isFinishedRequestor === true && isAuthorized === true) {
+                                                                                                                    $('#btnPrint').prop('hidden', false);
+                                                                                                                    $('#btnView').prop('hidden', false);
+                                                                                                                    $('.btn-view-row').prop('hidden', false);
+                                                                                                                }
+                                                                                                                if (userid === requestedby && isCancelled === false && isFinishedRequestor === false) {
+                                                                                                                    $('#btnCancel').prop('hidden', false);
+                                                                                                                    if (statusid1 !== 5 && statusid1 !== 7 && statusid2 !== 2) {
+                                                                                                                        $('#btnEditCheckedby').prop('hidden', false);
+                                                                                                                    }
+                                                                                                                    if (statusid1 !== 5 && statusid1 !== 7 && statusid3 !== 2) {
+                                                                                                                        $('#btnEditApprovedby').prop('hidden', false);
+                                                                                                                    }
+                                                                                                                }
+                                                                                                                if (user_section === section || user_department === department || isAuthorized === true || current_assigneduserid === requestedby || current_assigneduserid === checkedby || current_assigneduserid === approvedby || user_department === department) {
+                                                                                                                    $('.btn-view-row').prop('hidden', false);
+                                                                                                                }
+                                                                                                            });
+                                                                                                        });
+                                                                                                    });
+                                                                                                });
+                                                                                            });
+                                                                                        });
+                                                                                    });
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            }
+                                                            else {
+                                                                if (userid !== 'LCADMIN' && userid !== 'LCADMIN2' && userid !== 'ADMIN') {
+                                                                    GetUserInformation(userid, function (d) {
+                                                                        console.log(d);
+                                                                        $('#txtRequestorSection').val(d['Table'][0]['SectionName']);
+                                                                        $('#txtRequestorEmployeeNo').val(d['Table'][0]['EmployeeNo']);
+                                                                        $('#txtRequestorEmployeeName').val(d['Table'][0]['FirstName'] + ' ' + d['Table'][0]['LastName']);
+
+                                                                        var section = $('#txtRequestorSection').val();
+
+                                                                        GetRequestedby(section, function (d) {
+                                                                            for (var i in d) {
+                                                                                $('<option/>', {
+                                                                                    value: d[i]['APOAccount'],
+                                                                                    text: d[i]['FullName']
+                                                                                }).appendTo($("#selectRequestedby"));
+                                                                            } $('#selectRequestedby').val(userid).trigger('change');
+                                                                            GetCheckedby(section, function (d) {
+                                                                                for (var i in d) {
+                                                                                    $('<option/>', {
+                                                                                        value: d[i]['APOAccount'],
+                                                                                        text: d[i]['FullName']
+                                                                                    }).appendTo($("#selectCheckedby"));
+                                                                                }
+                                                                                GetApprovedby(section, function (d) {
+                                                                                    for (var i in d) {
+                                                                                        $('<option/>', {
+                                                                                            value: d[i]['APOAccount'],
+                                                                                            text: d[i]['FullName']
+                                                                                        }).appendTo($("#selectApprovedby"));
+                                                                                    }
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                    $('#btnCancel').prop('hidden', true);
+                                                                    $('#btnPrint').prop('hidden', true);
+                                                                    $('#btnView').prop('hidden', true);
+                                                                    tableItems = $('#tableItems').DataTable({
+                                                                        paging: false,
+                                                                        filtering: false,
+                                                                        info: false,
+                                                                        searching: false,
+                                                                        columnDefs: [
+                                                                            { className: "dt-head-nowrap", targets: "_all" }
+                                                                        ]
+                                                                    });
+                                                                }
+                                                                else {
+                                                                    EnableControl();
+                                                                }
+
+                                                            };
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                }
+                else {
+                    alert('Your session has expired!');
+                    location.replace('Login.aspx?expired=1');
+                }
+
+                $('#selectPurposeofItem').on('change', function () {
+                    var selected = $(this).val();
+                    if (selected === 'Others') {
+                        $('#divOthers').prop('hidden', false);
+                    }
+                    else {
+                        $('#divOthers').prop('hidden', true);
+                    }
+                });
+
+                $('#txtBearerEmployeeNo').change(function () {
+                    var empno = $(this).val();
+                    if (empno !== '') {
+                        GetBearerEmployeeName(empno, function (d) {
+                            var empname = d[0]['FullName'];
+                            $('#txtBearerName').val(empname);
+                        });
+                    }
+                });
+
+                $.validator.addMethod("unselected", function (value, element, arg) {
+                    return arg !== value;
+                });
+                $('#form1').validate({
+                    onfocusout: false,
+                    invalidHandler: function (form, validator) {
+                        var errors = validator.numberOfInvalids();
+                        if (errors) {
+                            validator.errorList[0].element.focus();
+                        }
+                    },
+                    rules: {
+                        //for request form
+                        Division: {
+                            unselected: ""
+                        },
+                        TypeofItem: {
+                            unselected: ""
+                        },
+                        ClassificationofItem: {
+                            unselected: ""
+                        },
+                        PurposeofItem: {
+                            unselected: ""
+                        },
+                        Others: {
+                            required: true
+                        },
+                        BearerEmployeeName: {
+                            required: true
+                        },
+                        LocalNo: {
+                            required: true
+                        },
+                        DateRequested: {
+                            required: true
+                        },
+                        ActualDateofTransfer: {
+                            required: true
+                        },
+                        SupplierName: {
+                            unselected: ""
+                        },
+                        Requestedby: {
+                            unselected: ""
+                        },
+                        //Checkedby: {
+                        //    unselected: ""
+                        //},
+                        Approvedby: {
+                            unselected: ""
+                        },
+
+                        //for items form
+                        loadesc: {
+                            unselected: ""
+                        },
+                        itemdesc: {
+                            required: true
+                        },
+                        qty: {
+                            required: true,
+                            number: true
+                        },
+                        uom: {
+                            required: true,
+                            lettersonly: true
+                        },
+                        amt: {
+                            required: true,
+                            number: true
+                        },
+
+
+                    },
+                    messages: {
+                        Division: {
+                            unselected: "Please select division."
+                        },
+                        TypeofItem: {
+                            unselected: "Please select type of item."
+                        },
+                        ClassificationofItem: {
+                            unselected: "Please select classification of item."
+                        },
+                        PurposeofItem: {
+                            unselected: "Please select purpose of item."
+                        },
+                        Others: {
+                            required: "Please provide other purpose of item."
+                        },
+                        LocalNo: {
+                            required: "Please provide a local number."
+                        },
+                        DateRequested: {
+                            required: "Please provide a date."
+                        },
+                        ActualDateofTransfer: {
+                            required: "Please provide a date."
+                        },
+                        SupplierName: {
+                            unselected: "Please select a supplier."
+                        },
+                        Requestedby: {
+                            unselected: "Please select requested by."
+                        },
+                        //Checkedby: {
+                        //    unselected: "Please select checked by."
+                        //},
+                        Approvedby: {
+                            unselected: "Please select approved by."
+                        },
+
+                        //for items form
+                        loadesc: {
+                            unselected: "Please select loa description."
+                        },
+                    },
+                    errorElement: 'span',
+                    errorPlacement: function (error, element) {
+                        error.addClass('invalid-feedback');
+                        element.closest('.form-group').append(error);
+                    },
+                    highlight: function (element, errorClass, validClass) {
+                        $(element).addClass('is-invalid');
+                    },
+                    unhighlight: function (element, errorClass, validClass) {
+                        $(element).removeClass('is-invalid');
+                    }
+                });
+
+                //$('#selectTypeofItem').on('change', function () {
+                //    var selected = $.map($("#selectTypeofItem option:selected"), function (e) {
+                //        return $(e).text();
+                //    });
+                //});
+
+                $('#btnSave').on('click', function () {
+                    if ($("#form1").valid()) {
+                        var controlno = $('#txtControlNo').val();
+                        if (controlno === '') {
+                            controlno = '[AUTOMATIC]'
+                        }
+                        var division = $('#selectDivision').val();
+                        var natureofitem = $('#selectNatureofItem').val();
+                        var transferto = $('#selectTransferto').val();
+
+                        var typeofitem = $.map($("#selectTypeofItem option:selected"), function (e) {
+                            return $(e).text();
+                        });
+                        typeofitem = typeofitem.toString().replace(',', ' | ');
+
+                        var classificationofitem = $.map($("#selectClassificationofItem option:selected"), function (e) {
+                            return $(e).text();
+                        });
+                        classificationofitem = classificationofitem.toString().replace(',', ' | ');
+
+                        if ($('#selectPurposeofItem').val() !== 'Others') {
+                            var purposeofitem = $('#selectPurposeofItem').val();
+                        }
+                        else {
+                            var purposeofitem = $('#txtOthers').val();
+                        }
+
+                        var beareremployeeno = $('#txtBearerEmployeeNo').val();
+                        var beareremployeename = $('#txtBearerName').val();
+                        var requestoremployeeno = $('#txtRequestorEmployeeNo').val();
+                        var requestoremployeename = $('#txtRequestorEmployeeName').val();
+                        var requestorsection = $('#txtRequestorSection').val();
+                        var localno = $('#txtLocalNo').val();
+                        var daterequested = $('#txtDateRequested').val();
+                        var dateoftransfer = $('#txtActualDateofTransfer').val();
+                        var dateofreturn = $('#txtTargetDateofReturn').val();
+                        var packagingused = $('#selectPackagingUsed').val();
+                        var supplierid = $('#selectSupplierName').val()
+                        var suppliername = $('#selectSupplierName option:selected').text();
+                        var address = $('#txtDestinationAddress').val();
+                        var origin = $('#txtOriginofItem').val();
+                        var invoice = $('#txtInvoiceNo').val();
+                        var receipt = $('#txtDeliveryReceiptNo').val();
+                        var contactperson = $('#txtContactPerson').val();
+                        var contactno = $('#txtContactNo').val();
+                        var telephoneno = $('#txtTelephoneNo').val();
+                        var faxno = $('#txtFaxNo').val();
+                        var modeoftransfer = $('#selectModeofTransfer').val();
+                        var typeoftransfer = $('#selectTypeofTransfer').val();
+                        var requestedby = $('#selectRequestedby').val();
+                        var checkedby = $('#selectCheckedby').val();
+                        var approvedby = $('#selectApprovedby').val();
+
+                        SaveFarmOut(
+                            controlno, division, natureofitem, transferto,
+                            typeofitem, classificationofitem, purposeofitem, beareremployeeno,
+                            beareremployeename, requestoremployeeno, requestoremployeename,
+                            requestorsection, localno, daterequested, dateoftransfer, dateofreturn,
+                            packagingused, supplierid, suppliername, address, origin, invoice, receipt,
+                            contactperson, contactno, telephoneno, faxno, modeoftransfer, typeoftransfer,
+                            userid, function (d) {
+                                controlno = d['Table'][0]['CONTROLNO'];
+                                $('#txtControlNo').val(controlno);
+                                SaveApproval(controlno, requestedby, checkedby, approvedby, userid);
+                                SaveMirrorApproval(controlno, userid);
+                                location.replace(current_url + '?controlno=' + controlno);
+                            });
+                    };
+                });
+
+                $('#btnAdd').click(function () {
+                    var table = $('#tableItems').DataTable();
+                    var info = table.page.info();
+
+                    if (info.recordsDisplay === 6) {
+                        alert('You have reached maximum items added!')
+                    }
+                    else {
+                        $('#modal').modal('show');
+                        var controlno = $('#txtControlNo').val()
+                        CheckPurposeOfItemIfWithLOA(controlno, function (d) {
+                            if (d === true) {
+                                $('#selectLOADescription').empty();
+                                $('<option/>', {
+                                    value: 'N/A',
+                                    text: 'N/A'
+                                }).appendTo($("#selectLOADescription"));
+                            }
+                            else {
+                                $('#selectLOADescription').empty();
+                                var division = $('#selectDivision').val();
+                                var supplier = $('#selectSupplierName').val();
+                                GetLOADescription(division, supplier, function (d) {
+                                    if (d.length > 0) {
+                                        $('<option/>', {
+                                            value: '',
+                                            text: 'Choose...'
+                                        }).appendTo($("#selectLOADescription"));
+
+                                        for (var i in d) {
+                                            $('<option/>', {
+                                                value: d[i]['DESCRIPTION'],
+                                                text: d[i]['DESCRIPTION']
+                                            }).appendTo($("#selectLOADescription"));
+                                        }
+                                    }
+                                    else {
+                                        $('#selectLOADescription').empty();
+                                        $('<option/>', {
+                                            value: 'N/A',
+                                            text: 'N/A'
+                                        }).appendTo($("#selectLOADescription"));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+                $('#selectLOADescription').change(function () {
+                    var loadescription = $(this).val();
+                    if (loadescription !== '') {
+                        CheckIfLOALimit(function (e) {
+                            var qtylimit = e[0]["QTYLIMITREACH"];
+                            var amtlimit = e[0]["AMTLIMITREACH"];
+
+                            if (qtylimit === '1' && amtlimit === '0') {
+                                alert('Please be inform that the LOA that you are going to use only have 20% quantity left. Thank you.');
+                            }
+                            else if (qtylimit === '0' && amtlimit === '1') {
+                                alert('Please be inform that the LOA that you are going to use only have 20% amount left. Thank you.');
+                            }
+                            else if (qtylimit === '1' && amtlimit === '1') {
+                                alert('Please be inform that the LOA that you are going to use only have 20% quantity and amount left. Thank you.');
+                            }
+                        });
+                    }
+                });
+
+                $('#btnSaveItem').click(function () {
+                    if ($("#form1").valid()) {
+                        var id = $('#txtID').val();
+                        var typeofitem = $('#selectLOADescription').val();
+                        var controlno = $('#txtControlNo').val();
+                        var itemcode = $('#txtItemNo').val();
+                        var itemdesc = $('#txtItemDescription').val();
+                        var quantity = $('#txtQuantity').val().replace(/\$|,/g, '');
+                        var uom = $('#txtUnitofMeasure').val();
+                        var amount = $('#txtAmount').val().replace(/\$|,/g, '');
+                        var assetno = $('#txtAssetNo').val();
+                        var odno = $('#txtOD').val();
+                        var contno = $('#txtContainer').val();
+                        var pezaseal = $('#txtPEZASeal').val();
+                        var dsrdrno = $('#txtDSRDRNo').val();
+
+                        if (id === null || id === '') {
+                            SaveItem(controlno, typeofitem, itemcode, itemdesc, quantity, uom, amount, assetno, odno, contno, pezaseal, dsrdrno, userid, function () {
+                                ClearItems();
+                            });
+                            location.reload();
+                        }
+                        else {
+                            UpdateItem(id, controlno, typeofitem, itemcode, itemdesc, quantity, uom, amount, assetno, odno, contno, pezaseal, dsrdrno, userid, function () {
+                                ClearItems();
+                            });
+                            location.reload();
+                        }
+                    }
+                });
+
+                $('#btnApprove').click(function () {
+                    var comment = $('#txtApproveComment').val();
+                    var emailtype = 'Approval';
+                    Approve(controlno, current_workflowid, current_approverid, comment, current_assigneduserid, function () {
+                        //SendEmail(controlno, emailtype, comment);
+                        location.reload();
+                    });
+                });
+
+                $('#btnSaveRequestChange').click(function () {
+                    var comment = $('#txtRequestChangeComment').val();
+                    var emailtype = 'Request Change';
+                    RequestChange(controlno, current_workflowid, current_approverid, comment, current_assigneduserid, function () {
+                        SendEmail(controlno, emailtype, comment);
+                    });
+                    location.reload();
+                });
+
+                $('#btnSaveReassign').click(function () {
+                    var comment = $('#txtReassignComment').val();
+                    var emailtype = 'Re-assign';
+                    reassignto = $('#selectReassign').val();
+                    ReassignTask(controlno, current_workflowid, current_approverid, reassignto, comment, current_assigneduserid, function () {
+                        SendEmail(controlno, emailtype, comment);
+                    });
+                    location.reload();
+                });
+                $('#btnCancelRequest').click(function () {
+                    var comment = $('#txtReason').val();
+                    CancelFarmOut(controlno, comment, userid);
+                    location.replace('FarmOutRequestForm.aspx');
+                });
+                $(document).on('click', 'button', function (e) {
+                    var elem = $(this);
+                    tableItems = $("#tableItems").DataTable();
+                    if (elem.hasClass('btn-delete-row')) {
+                        var controlno = $('txtControlNo').val();
+                        var data = tableItems.row(elem.parents('tr')).data();
+                        var id = data[Object.keys(data)[0]];
+                        if (confirm("Are you sure you want to delete this item?")) {
+                            tableItems.row(elem.parents('tr')).remove().draw();
+                            DeleteItem(id);
+                        }
+                    }
+                    if (elem.hasClass('btn-update-row')) {
+                        var data = tableItems.row(elem.parents('tr')).data();
+
+                        var id = data[Object.keys(data)[0]];
+                        var controlno = data[Object.keys(data)[1]];
+                        var typeofitem = data[Object.keys(data)[2]];
+                        var itemcode = data[Object.keys(data)[3]];
+                        var itemdesc = data[Object.keys(data)[4]];
+                        var quantity = data[Object.keys(data)[5]];
+                        var uom = data[Object.keys(data)[6]];
+                        var amount = data[Object.keys(data)[7]];
+                        var assetno = data[Object.keys(data)[8]];
+                        var odno = data[Object.keys(data)[9]];
+                        var contno = data[Object.keys(data)[10]];
+                        var pezaseal = data[Object.keys(data)[11]];
+                        var dsrdrno = data[Object.keys(data)[12]];
+
+                        CheckPurposeOfItemIfWithLOA(controlno, function (d) {
+                            if (d === true) {
+                                $('#selectLOADescription').empty();
+                                $('<option/>', {
+                                    value: 'N/A',
+                                    text: 'N/A'
+                                }).appendTo($("#selectLOADescription"));
+                            }
+                            else {
+                                $('#selectLOADescription').empty();
+                                var division = $('#selectDivision').val();
+                                var supplier = $('#selectSupplierName').val();
+                                GetLOADescription(division, supplier, function (d) {
+                                    $('<option/>', {
+                                        value: '',
+                                        text: 'Choose...'
+                                    }).appendTo($("#selectLOADescription"));
+
+                                    for (var i in d) {
+                                        $('<option/>', {
+                                            value: d[i]['DESCRIPTION'],
+                                            text: d[i]['DESCRIPTION']
+                                        }).appendTo($("#selectLOADescription"));
+                                    }
+                                    $('#selectLOADescription').val(typeofitem).trigger('change');
+                                });
+                            }
+                        });
+                        $('#txtID').val(id);
+                        $('#txtControlNo').val(controlno);
+                        $('#txtItemNo').val(itemcode);
+                        $('#txtItemDescription').val(itemdesc);
+                        $('#txtQuantity').val(quantity);
+                        $('#txtUnitofMeasure').val(uom);
+                        $('#txtAmount').val(amount);
+                        $('#txtAssetNo').val(assetno);
+                        $('#txtOD').val(odno);
+                        $('#txtContainer').val(contno);
+                        $('#txtPEZASeal').val(pezaseal);
+                        $('#txtDSRDRNo').val(dsrdrno);
+                    }
+                    if (elem.hasClass('btn-remove-row')) {
+                        var controlno = $('#txtControlNo').val();
+                        var filename = $(this).closest('tr').find('.row-index').text();
+                        DeleteFile(controlno, filename, function (textStatus) {
+                        });
+                    }
+                    if (elem.hasClass('btn-view-row')) {
+                        var controlno = $('#txtControlNo').val();
+                        var filename = $(this).closest('tr').find('.row-index').text().replace(/#/g, '%23');
+                        e.preventDefault();
+                        window.open('/RelatedDocu/' + controlno + '/' + filename + '', '_blank');
+                    }
+                });
+
+                $('#selectSupplierName').change(function () {
+                    supplier = $(this).val();
+                    GetSupplierAddress(supplier, function (d) {
+                        $('#txtDestinationAddress').val(d[0]['SupplierAddress']);
+                    });
+                });
+
+                $("#fileUpload").on('change', function () {
+                    var filename = this.files[0]['name'];
+                    filename = filename.substr(0, filename.lastIndexOf('.'));
+                    console.log(filename);
+                    if (this.files[0]['type'] !== 'application/pdf') {
+                        alert('Only pdf file can be uploaded!');
+                        $('#fileUpload').val('');
+                        $('.custom-file-label').text('Choose file...');
+                    }
+                    else if (this.files[0]['size'] > 5000000) {
+                        alert('5mb is the maximum file size that can be uploaded!');
+                        $('#fileUpload').val('');
+                        $('.custom-file-label').text('Choose file...');
+                    }
+                    else if (filename.match(/[<>'\s+\"\/;`%]/) > 0) {
+                        alert('Please upload the file without special characters or spaces!');
+                        $('#fileUpload').val('');
+                        $('.custom-file-label').text('Choose file...');
+                    }
+                });
+
+                $('#btnUpload').click(function () {
+                    if ($("#fileUpload").val() !== '') {
+                        var controlno = $('#txtControlNo').val();
+                        var formData = new FormData();
+                        formData.append("file", $("#fileUpload")[0].files[0]);
+                        UploadFile(formData, controlno, userid);
+                    }
+                    else {
+                        alert('Please choose file to upload!');
+                    }
+                });
+                $('#btnConfirm1').click(function () {
+                    var table = $('#tableItems').DataTable();
+                    var info = table.page.info();
+
+                    if (info.recordsDisplay > 0) {
+                        $('#btnChange').prop('hidden', true);
+                        $('#btnReassign').prop('hidden', true);
+                        $('#modalConfirm').modal('show');
+                    }
+                    else {
+                        alert('No items added!');
+                        $('#btnAdd').focus();
+                    }
+
+                });
+                $('#btnConfirm2').click(function () {
+                    $('#btnChange').prop('hidden', false);
+                    $('#btnReassign').prop('hidden', false);
+                });
+                $('#btnConfirm3').click(function () {
+                    $('#btnChange').prop('hidden', false);
+                    $('#btnReassign').prop('hidden', false);
+                });
+                $('#btnChange').click(function () {
+                    $('#txtAssignedto').val($('#selectRequestedby option:selected').text());
+                    $('#modalConfirm').modal('hide');
+                    $('#modalRequestChange').modal('toggle');
+                });
+                $('#btnReassign').click(function () {
+                    $('#modalConfirm').modal('hide');
+                    $('#modalReassignTask').modal('toggle');
+                });
+                $('#btnCancelChange').click(function () {
+                    $('#modalRequestChange').modal('hide');
+                    $('#modalConfirm').modal('toggle');
+                });
+                $('#btnCancelReassign').click(function () {
+                    $('#modalReassignTask').modal('hide');
+                    $('#modalConfirm').modal('toggle');
+                });
+                $('#btnPrint').click(function () {
+                    open('RequestFormPrint.aspx?controlno=' + controlno);
+                });
+                $('#btnView').click(function () {
+                    location.href = 'FarmOutDocuments.aspx?controlno=' + controlno;
+                });
+
+                //Editing Checkedby
+                $('#btnEditCheckedby').click(function () {
+                    $(this).prop('hidden', true);
+                    $('#selectCheckedby').prop('disabled', false);
+                    $('#btnCancelEditCheckedby').prop('hidden', false);
+                });
+                $('#selectCheckedby').change(function (d) {
+                    if (isApprovedbyRequestor == true) {
+                        if ($(this).val() !== checkedby) {
+                            $('#btnSaveCheckedby').prop('hidden', false);
+                        }
+                        else {
+                            $('#btnSaveCheckedby').prop('hidden', true);
+                        }
+                    }
+                });
+                $('#btnCancelEditCheckedby').click(function () {
+                    $('#selectCheckedby').val(checkedby).trigger('change');
+                    $(this).prop('hidden', true);
+                    $('#btnSaveCheckedby').prop('hidden', true);
+                    $('#selectCheckedby').prop('disabled', true);
+                    $('#btnEditCheckedby').prop('hidden', false);
+                });
+                $('#btnSaveCheckedby').click(function () {
+                    var approverid = 2;
+                    var approveruserid = $('#selectCheckedby').val();
+                    UpdateApproval(controlno, approverid, approveruserid, userid, function () {
+                        $('#btnCancelEditCheckedby').prop('hidden', true);
+                        $('#btnSaveCheckedby').prop('hidden', true);
+                        $('#selectCheckedby').prop('disabled', true);
+                        $('#btnEditCheckedby').prop('hidden', false);
+                        GetFarmOut(controlno, function (d) {
+                            requestedby = d['Table'][0]['ASSIGNEDUSERID'];
+                            checkedby = d['Table'][1]['ASSIGNEDUSERID'];
+                            approvedby = d['Table'][2]['ASSIGNEDUSERID'];
+                            current_approverid = d['Table'][0]['APPROVERID_CURRENT'];
+                            current_assigneduserid = d['Table'][0]['ASSIGNEDUSERID_CURRENT'];
+                            current_workflowid = d['Table'][0]['WORKFLOWID_CURRENT'];
+
+                            statusid1 = d['Table'][0]['CURRENTSTATUSID'];
+                            statusid2 = d['Table'][1]['CURRENTSTATUSID'];
+                            statusid3 = d['Table'][2]['CURRENTSTATUSID'];
+
+                            var from = requestedby;
+                            var to = approveruserid;
+                            var emailtype = 'Re-assign'
+                            comment = d['Table'][0]['COMMENT'];
+                            SendEmailReassignUpdate(controlno, from, to, emailtype, comment);
+                        });
+                    });
+                });
+                //Editing Approvedby
+                $('#btnEditApprovedby').click(function () {
+                    $(this).prop('hidden', true);
+                    $('#selectApprovedby').prop('disabled', false);
+                    $('#btnCancelEditApprovedby').prop('hidden', false);
+                });
+                $('#selectApprovedby').change(function (d) {
+                    if (isApprovedbyRequestor == true) {
+                        if ($(this).val() !== approvedby) {
+                            $('#btnSaveApprovedby').prop('hidden', false);
+                        }
+                        else {
+                            $('#btnSaveApprovedby').prop('hidden', true);
+                        }
+                    }
+                });
+                $('#btnCancelEditApprovedby').click(function () {
+                    $('#selectApprovedby').val(approvedby).trigger('change');
+                    $(this).prop('hidden', true);
+                    $('#btnSaveApprovedby').prop('hidden', true);
+                    $('#selectApprovedby').prop('disabled', true);
+                    $('#btnEditApprovedby').prop('hidden', false);
+                });
+                $('#btnSaveApprovedby').click(function () {
+                    var approverid = 3;
+                    var approveruserid = $('#selectApprovedby').val();
+                    UpdateApproval(controlno, approverid, approveruserid, userid, function () {
+                        $('#btnCancelEditApprovedby').prop('hidden', true);
+                        $('#btnSaveApprovedby').prop('hidden', true);
+                        $('#selectApprovedby').prop('disabled', true);
+                        $('#btnEditApprovedby').prop('hidden', false);
+                        GetFarmOut(controlno, function (d) {
+                            requestedby = d['Table'][0]['ASSIGNEDUSERID'];
+                            checkedby = d['Table'][1]['ASSIGNEDUSERID'];
+                            approvedby = d['Table'][2]['ASSIGNEDUSERID'];
+                            current_approverid = d['Table'][0]['APPROVERID_CURRENT'];
+                            current_assigneduserid = d['Table'][0]['ASSIGNEDUSERID_CURRENT'];
+                            current_workflowid = d['Table'][0]['WORKFLOWID_CURRENT'];
+
+                            statusid1 = d['Table'][0]['CURRENTSTATUSID'];
+                            statusid2 = d['Table'][1]['CURRENTSTATUSID'];
+                            statusid3 = d['Table'][2]['CURRENTSTATUSID'];
+
+                            var from = requestedby;
+                            var to = approveruserid;
+                            var emailtype = 'Re-assign'
+                            comment = d['Table'][1]['COMMENT'];
+                            SendEmailReassignUpdate(controlno, from, to, emailtype, comment);
+                        });
+                    });
+                });
+            });
+        });
     </script>
 </asp:Content>
 

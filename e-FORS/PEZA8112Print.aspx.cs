@@ -12,29 +12,29 @@ public partial class PEZA8112Print : System.Web.UI.Page
         {
             if (!Page.IsPostBack)
             {
-                //string ControlNo = Session["ControlNo"].ToString();
+                string ControlNo = Session["ControlNo"].ToString();
                 string ControlNos = Session["ControlNos"].ToString();
                 string Date = Session["Date"].ToString();
                 string Dates = Session["Dates"].ToString();
-                string LOANO = Session["LOANo"].ToString();
-                //string AuthorizedOfficial = Session["AuthorizedOffical"].ToString();
+                //string LOANO = Session["LOANo"].ToString();
+                string AuthorizedOfficial = Session["AuthorizedOffical"].ToString();
 
                 using (var reportDocument = new ReportDocument())
                 {
                     dsEFORS eFORS = new dsEFORS();
 
-                    string reportPath = Server.MapPath("~/crPEZA8112 - Copy.rpt");
+                    string reportPath = Server.MapPath("~/crPEZA8112.rpt");
 
                     reportDocument.Load(reportPath);
 
                     reportDocument.SetDataSource(eFORS);
-                    //reportDocument.SetParameterValue("@ControlNo", ControlNo);
+                    reportDocument.SetParameterValue("@ControlNo", ControlNo);
                     reportDocument.SetParameterValue("@CONTROLNOS", ControlNos);
                     reportDocument.SetParameterValue("@Date", Date);
                     reportDocument.SetParameterValue("@Dates", Dates);
-                    reportDocument.SetParameterValue("@LOANO", LOANO);
-                    //reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
-                    reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
+                    //reportDocument.SetParameterValue("@LOANO", LOANO);
+                    reportDocument.SetParameterValue("@AuthorizedOfficial", AuthorizedOfficial);
+                    reportDocument.SetDatabaseLogon("sa", "Sql@dmin2015", "172.16.52.193", "db_eFORS");
 
                     //Load the report by setting the report source
                     CrystalReportViewer1.ReportSource = reportDocument;

@@ -50,7 +50,7 @@ public partial class GatepassPrint : System.Web.UI.Page
                     reportDocument.SetParameterValue("@Approvedby", Approvedby);
                     reportDocument.SetParameterValue("@ContainerNo", ContainerNo);
                     reportDocument.SetParameterValue("@SealNo", SealNo);
-                    reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
+                    reportDocument.SetDatabaseLogon("sa", "Sql@dmin2015", "172.16.52.193", "db_eFORS");
 
                     //Load the report by setting the report source
                     CrystalReportViewer1.ReportSource = reportDocument;

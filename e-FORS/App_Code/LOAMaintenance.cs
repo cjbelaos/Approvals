@@ -15,14 +15,14 @@ public class LOAMaintenance
         conn = new SqlConnection(EFORS);
     }
 
-    public DataTable GetLOA(ReportDetails rd)
+    public DataTable GetLOA()
     {
         SqlCommand cmd = new SqlCommand("GetLOA", conn);
         cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@Section", rd.Section);
-        cmd.Parameters.AddWithValue("@Supplier", rd.Supplier);
-        cmd.Parameters.AddWithValue("@DateFrom", rd.DateFrom);
-        cmd.Parameters.AddWithValue("@DateTo", rd.DateTo);
+        //cmd.Parameters.AddWithValue("@Section", rd.Section);
+        //cmd.Parameters.AddWithValue("@Supplier", rd.Supplier);
+        //cmd.Parameters.AddWithValue("@DateFrom", rd.DateFrom);
+        //cmd.Parameters.AddWithValue("@DateTo", rd.DateTo);
 
         SqlDataAdapter da = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();

@@ -143,9 +143,21 @@ public partial class RequestForm : System.Web.UI.Page
     }
 
     [WebMethod]
+    public static bool CheckIfBypassAccount(LoginDetails ld)
+    {
+        return maint.CheckIfBypassAccount(ld);
+    }
+
+    [WebMethod]
     public static bool CheckIfCancelled(string ControlNo)
     {
         return maint.CheckIfCancelled(ControlNo);
+    }
+
+    [WebMethod]
+    public static bool CheckIfApproveByRequestor(string ControlNo)
+    {
+        return maint.CheckIfApproveByRequestor(ControlNo);
     }
 
     [WebMethod]

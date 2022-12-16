@@ -8,6 +8,7 @@ using System.IO;
 using System.Globalization;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using System.Net;
 
 public partial class LOA : System.Web.UI.Page
 {
@@ -110,7 +111,7 @@ public partial class LOA : System.Web.UI.Page
             rd.Section = tbSection.Text;
             rd.DateFrom = tbDateFrom.Text;
             rd.DateTo = tbDateTo.Text;
-            rd.LOANo = ddlLOANo.SelectedValue;
+            rd.LOANo = ddlLOANo.SelectedValue.Trim();
             DataSet ds = maint.GetLOAReport(rd);
 
             DataTable dt = ds.Tables[0];
@@ -135,7 +136,7 @@ public partial class LOA : System.Web.UI.Page
                 Directory.CreateDirectory(FilePath);
             }
 
-            createExcelFile(ds1, Server.MapPath(Path));
+            createExcelFile(ds1, Server.MapPath(Path), FileName);
             Response.Redirect(Path);
         }
         else
@@ -144,7 +145,7 @@ public partial class LOA : System.Web.UI.Page
         }
     }
 
-    public Boolean createExcelFile(DataSet ds1, String FullFilePathName)
+    public Boolean createExcelFile(DataSet ds1, String FullFilePathName, String FileName)
     {
         Boolean IsDone = false;
         try
@@ -155,40 +156,60 @@ public partial class LOA : System.Web.UI.Page
             {
                 ISNew = true;
             }
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            using (var pck = new ExcelPackage(CreatedFile))
+            else
             {
-                ExcelWorksheet ws;
+                CreatedFile.Delete();
+            }
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage(CreatedFile))
+            {
+                //ExcelWorksheet ws;
                 foreach (DataTable Table in ds1.Tables)
                 {
-                    if (ISNew == true)
-                    {
-                        ws = pck.Workbook.Worksheets.Add(Table.Rows[0]["TYPEOFITEM"].ToString());
+                    string sheetName = Table.Rows[0]["TYPEOFITEM"].ToString();
+                    //ws = package.Workbook.Worksheets.Add(Table.Rows[0]["TYPEOFITEM"].ToString());
+                    //Add a worksheet
+                    var sheet = package.Workbook.Worksheets.Add(sheetName);
 
-                        if (System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.IsRightToLeft)// Right to Left for Arabic lang
-                        {
-                            ExcelWorksheetView wv = ws.View;
-                            wv.RightToLeft = true;
-                            ws.PrinterSettings.Orientation = eOrientation.Landscape;
-                        }
-                        else
-                        {
-                            ExcelWorksheetView wv = ws.View;
-                            wv.RightToLeft = false;
-                            ws.PrinterSettings.Orientation = eOrientation.Landscape;
-                        }
-                        ws.Cells.AutoFitColumns();
-                        ws.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                        ws.Cells[1, 1].LoadFromDataTable(Table, ISNew, OfficeOpenXml.Table.TableStyles.Light8);
-                        ws.Column(1).Style.Numberformat.Format = DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
-                    }
-                    else
+                    //Load the datatable into the worksheet...
+                    sheet.Cells["A1"].LoadFromDataTable(Table, PrintHeaders: true/*, TableStyles.Light1*/);
+
+                    sheet.Cells[1, 1, 1, sheet.Dimension.End.Column].Style.Font.Bold = true;
+                    //if (System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.IsRightToLeft)// Right to Left for Arabic lang
+                    //{
+                    //    ExcelWorksheetView wv = ws.View;
+                    //    wv.RightToLeft = true;
+                    //    ws.PrinterSettings.Orientation = eOrientation.Landscape;
+                    //}
+                    //else
+                    //{
+                    //    ExcelWorksheetView wv = ws.View;
+                    //    wv.RightToLeft = false;
+                    //    ws.PrinterSettings.Orientation = eOrientation.Landscape;
+                    //}
+                    //ws.Cells.AutoFitColumns();
+                    //ws.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    //ws.Cells[1, 1].LoadFromDataTable(Table, ISNew, OfficeOpenXml.Table.TableStyles.Light8);
+                    //ws.Column(1).Style.Numberformat.Format = DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
+                    //else
+                    //{
+                    //    ws = package.Workbook.Worksheets.FirstOrDefault();
+                    //    ws.Cells[2, 1].LoadFromDataTable(Table, ISNew);
+                    //}
+                    for (int j = 1; j <= Table.Columns.Count; j++)
                     {
-                        ws = pck.Workbook.Worksheets.FirstOrDefault();
-                        ws.Cells[2, 1].LoadFromDataTable(Table, ISNew);
+                        sheet.Column(j).AutoFit();
                     }
                 }
-                pck.Save();
+
+                //Response.Clear();
+                //Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                //Response.AddHeader("content-disposition", "attachment;  filename=" + FileName);
+                //Response.BinaryWrite(package.GetAsByteArray());
+                //Response.End();
+
+                package.Save();
                 IsDone = true;
             }
         }

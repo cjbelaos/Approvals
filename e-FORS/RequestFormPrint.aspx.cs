@@ -9,48 +9,96 @@ public partial class RequestFormPrint : System.Web.UI.Page
     {
         string ControlNo = Request.QueryString["controlno"];
 
-        ReportDocument reportDocument = new ReportDocument();
-        dsEFORS eFORS = new dsEFORS();
+        using (var reportDocument = new ReportDocument())
+        {
+            dsEFORS eFORS = new dsEFORS();
 
-        reportDocument.Load(Server.MapPath("~/crRequestForm.rpt"));
-        reportDocument.SetDataSource(eFORS);
-        reportDocument.SetParameterValue("@ControlNo", ControlNo);
-        reportDocument.SetDatabaseLogon("sa", "sqladmin", "172.16.53.149", "db_EFORS");
-
-        //Load the report by setting the report source
-        CrystalReportViewer1.ReportSource = reportDocument;
-
-        ExportOptions options = new ExportOptions();
-
-        options.ExportFormatType = ExportFormatType.PortableDocFormat;
-
-        options.FormatOptions = new PdfRtfWordFormatOptions();
-
-        ExportRequestContext req = new ExportRequestContext();
-
-        req.ExportInfo = options;
+            reportDocument.Load(Server.MapPath("~/crRequestForm.rpt"));
+            reportDocument.SetDataSource(eFORS);
+            reportDocument.SetParameterValue("@ControlNo", ControlNo);
+            reportDocument.SetDatabaseLogon("sa", "Sql@dmin2015", "172.16.52.193", "db_eFORS");
 
 
-        Stream s = reportDocument.FormatEngine.ExportToStream(req);
+            //Load the report by setting the report source
+            CrystalReportViewer1.ReportSource = reportDocument;
 
-        Response.ClearHeaders();
+            ExportOptions options = new ExportOptions();
 
-        Response.ClearContent();
+            options.ExportFormatType = ExportFormatType.PortableDocFormat;
 
-        Response.ContentType = "application/pdf";
+            options.FormatOptions = new PdfRtfWordFormatOptions();
+
+            ExportRequestContext req = new ExportRequestContext();
+
+            req.ExportInfo = options;
 
 
-        s.Seek(0, SeekOrigin.Begin);
+            Stream s = reportDocument.FormatEngine.ExportToStream(req);
 
-        byte[] buffer = new byte[s.Length];
+            reportDocument.Close();
+            reportDocument.Dispose();
 
-        s.Read(buffer, 0, (int)s.Length);
+            Response.ClearHeaders();
 
-        Response.BinaryWrite(buffer);
+            Response.ClearContent();
 
-        Response.End();
+            Response.ContentType = "application/pdf";
 
-        reportDocument.Close();
-        reportDocument.Dispose();
+
+            s.Seek(0, SeekOrigin.Begin);
+
+            byte[] buffer = new byte[s.Length];
+
+            s.Read(buffer, 0, (int)s.Length);
+
+            Response.BinaryWrite(buffer);
+
+            Response.End();
+
+        }
+        //    ReportDocument reportDocument = new ReportDocument();
+        //dsEFORS eFORS = new dsEFORS();
+
+        //reportDocument.Load(Server.MapPath("~/crRequestForm.rpt"));
+        //reportDocument.SetDataSource(eFORS);
+        //reportDocument.SetParameterValue("@ControlNo", ControlNo);
+        //reportDocument.SetDatabaseLogon("sa", "Sql@dmin2015", "172.16.52.193", "db_eFORS");
+        
+
+        ////Load the report by setting the report source
+        //CrystalReportViewer1.ReportSource = reportDocument;
+
+        //ExportOptions options = new ExportOptions();
+
+        //options.ExportFormatType = ExportFormatType.PortableDocFormat;
+
+        //options.FormatOptions = new PdfRtfWordFormatOptions();
+
+        //ExportRequestContext req = new ExportRequestContext();
+
+        //req.ExportInfo = options;
+
+
+        //Stream s = reportDocument.FormatEngine.ExportToStream(req);
+
+        //Response.ClearHeaders();
+
+        //Response.ClearContent();
+
+        //Response.ContentType = "application/pdf";
+
+
+        //s.Seek(0, SeekOrigin.Begin);
+
+        //byte[] buffer = new byte[s.Length];
+
+        //s.Read(buffer, 0, (int)s.Length);
+
+        //Response.BinaryWrite(buffer);
+
+        //Response.End();
+
+        //reportDocument.Close();
+        //reportDocument.Dispose();
     }
 }

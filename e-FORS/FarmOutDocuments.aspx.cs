@@ -660,10 +660,22 @@ public partial class FarmOutDocuments : System.Web.UI.Page
             {
                 Names[i] = Names[i].Substring(0, 1);
             }
+            int p = Names.Length - 1 ;
+            Names[p] = " " + Names[p];
             FullName = string.Join(".", Names);
 
+            string FullName2 = ddlApprovedby.SelectedItem.ToString();
+            string[] Names2 = FullName2.Split(' ');
+            for (int i = 0; i < Names2.Length - 1; i++)
+            {
+                Names2[i] = Names2[i].Substring(0, 1);
+            }
+            int a = Names2.Length - 1;
+            Names2[a] = " " + Names2[a];
+            FullName2 = string.Join(".", Names2);
+
             Session["PreparedBy"] = FullName;
-            Session["ApprovedBy"] = ddlApprovedby.SelectedItem.ToString();
+            Session["ApprovedBy"] = FullName2;
 
             FarmOutDetails fo = new FarmOutDetails();
             fo.ControlNo = ControlNo;
@@ -842,6 +854,7 @@ public partial class FarmOutDocuments : System.Web.UI.Page
 
         else if (lblPrintTitle.Text == "Print PEZA Form 8112")
         {
+            Session["ControlNo"] = tbFarmOutControlNo.Text;
             Session["ControlNo"] = tbFarmOutControlNo.Text;
 
             string ControlNos;

@@ -26,9 +26,39 @@ public class SharedService : System.Web.Services.WebService
     public string GetSession()
     {
         Dictionary<string, object> dic = new Dictionary<string, object>();
-        dic.Add("UserID", Session["UserID"].ToString());
-        dic.Add("UserName", Session["UserName"].ToString());
-        dic.Add("Link", Session["Link"].ToString());
+        string userid = "";
+        string username = ""; 
+        string link = ""; 
+        if (Session["UserID"] == null)
+        {
+            userid = "";
+        }
+        else
+        {
+            userid = Session["UserID"].ToString();
+        }
+        if (Session["UserName"] == null)
+        {
+            username = "";
+        }
+        else
+        {
+            username = Session["UserName"].ToString();
+        }
+        if (Session["Link"] == null)
+        {
+            link = "";
+        }
+        else
+        {
+            link = Session["Link"].ToString();
+        }
+
+        dic.Add("UserID", userid);
+        dic.Add("UserName", username);
+        dic.Add("Link", link);
+        //dic.Add("UserName", Session["UserName"].ToString());
+        //dic.Add("Link", Session["Link"].ToString());
 
         return JsonConvert.SerializeObject(dic);
     }
@@ -44,4 +74,11 @@ public class SharedService : System.Web.Services.WebService
         Session.Abandon();
     }
 
+    [WebMethod(EnableSession = true)]
+    public void SetSession(string link, string userid, string username)
+    {
+        Session["Link"] = link;
+        Session["UserID"] = userid;
+        Session["UserName"] = username;
+    }
 }
