@@ -2,6 +2,7 @@
 using OfficeOpenXml;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Web;
 using System.Web.Services;
@@ -31,173 +32,44 @@ public partial class TasksJS : System.Web.UI.Page
                 UserID = Session["UserID"].ToString();
                 UserName = Session["UserName"].ToString();
                 Session["Link"] = "";
-
-                GetLOANos();
             }
         }
     }
 
     [WebMethod]
-    public static string GetLiquidationLedger(ReportDetails rd)
+    public static string GetCtrlNos()
     {
-        return JsonConvert.SerializeObject(maint.GetLiquidationLedger(rd));
-    }
-
-    [WebMethod]
-    public static string GetLiquidInfo(LiquidationLedgerDetails ll)
-    {
-        return JsonConvert.SerializeObject(maint.GetLiquidationLedgerInfo(ll));
-    }
-
-    public void GetLOANos()
-    {
-        ReportDetails rd = new ReportDetails();
-        rd.LOANo = ddlLOANo.SelectedValue;
-        DataSet ds = maint.GetLiquidationLedger(rd);
-
-        if (ds.Tables[1].Rows.Count > 0)
-        {
-            ddlLOANo.DataSource = ds.Tables[1];
-            ddlLOANo.DataTextField = "LOANO";
-            ddlLOANo.DataValueField = "LOANO";
-            ddlLOANo.DataBind();
-            ddlLOANo.Items.Insert(0, new ListItem("Choose...", ""));
-        }
-    }
-
-    public void CreateExcelFile(DataTable dt, String TemplatePath, String CopyPath, string strFileName)
-    {
+        DataTable dt = new DataTable();
+        string eFORS = System.Configuration.ConfigurationManager.AppSettings["EFORS"];
+        SqlConnection conn = new SqlConnection(eFORS);
         try
         {
-            int ccc2 = 13; //excel row start    
-            int i = 1; //
-            int lastRowCount = 1;
-
-            if (File.Exists(TemplatePath))
+            if (conn.State == ConnectionState.Open)
             {
-                File.Copy(TemplatePath, CopyPath);
-                FileInfo file = new FileInfo(CopyPath);
-
-                using (ExcelPackage excel = new ExcelPackage(file))
+                conn.Close();
+            }
+            conn.Open();
+            using (var cmd = new SqlCommand("GetCtrlNos", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                using (var da = new SqlDataAdapter(cmd))
                 {
-                    //iterate through dataset tables
-                    //for row data
-
-                    int currentWorkSheet = 0;
-                    int nextWorkSheet = 0;
-                    string currentSheet = "";
-                    string nextSheet = "";
-
-                    //for row data
-                    for (var row = 1; row <= dt.Rows.Count; row++)
-                    {
-                        //setting the values
-                        var Supplier = dt.Rows[row - 1]["SUPPLIER"].ToString().ToUpper().Trim();
-                        var TypeOfItem = dt.Rows[row - 1]["TYPEOFITEM"].ToString().ToUpper().Trim();
-
-                        string PEZADOCUMENTNO = dt.Rows[row - 1]["PEZADOCUMENTNO"].ToString().ToUpper().Trim();
-                        if (PEZADOCUMENTNO == "")
-                        {
-                            PEZADOCUMENTNO = "0";
-                        }
-                        var DocumentNo = Convert.ToInt64(PEZADOCUMENTNO);
-                        var Date = DateTime.Parse(dt.Rows[row - 1]["DATEOFTRANSFER"].ToString().Trim());
-                        var Qty = Convert.ToDouble(dt.Rows[row - 1]["TOTALQUANTITY"].ToString().Trim());
-                        var Amt = Convert.ToDecimal(dt.Rows[row - 1]["TOTALAMOUNT"].ToString().Trim());
-
-                        //int cs = currentWorkSheet + 1;
-                        //currentSheet = cs.ToString();
-
-                        if ((lastRowCount == 19) || (row == 1))
-                        {
-                            nextWorkSheet = currentWorkSheet + 1;
-                            nextSheet = nextWorkSheet.ToString();
-
-                            ExcelWorksheet worksheet = excel.Workbook.Worksheets["Sheet1"];
-                            excel.Workbook.Worksheets.Add(nextSheet, worksheet);
-
-                            ccc2 = 13;
-
-                            lastRowCount = 0;
-                            currentSheet = nextSheet;
-                            currentWorkSheet++;
-                        }
-
-                        //plotting the values
-                        excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 2].Value = Supplier;
-                        excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 3].Value = TypeOfItem;
-                        excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 4].Value = DocumentNo;
-                        excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 5].Value = Date;
-                        excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 6].Value = Qty;
-                        excel.Workbook.Worksheets[currentSheet].Cells[ccc2, 7].Value = Amt;
-
-                        ccc2++;
-                        i++;
-                        lastRowCount++;
-
-
-                    }
-
-                    excel.Workbook.Worksheets["Sheet1"].Hidden = OfficeOpenXml.eWorkSheetHidden.VeryHidden;
-
-                    excel.Save();
-
-
-                
+                    da.Fill(dt);
                 }
             }
+            conn.Close();
+        }
+        catch (SqlException sqlex)
+        {
+            throw sqlex;
         }
         catch (Exception ex)
         {
             throw ex;
         }
-    }
-
-    protected void LnkDownload_Click(object sender, EventArgs e)
-    {
-        if (ddlLOANo.SelectedValue != "")
+        finally
         {
-            ReportDetails rd = new ReportDetails();
-            rd.LOANo = ddlLOANo.SelectedValue;
-            DataSet ds = maint.GetLiquidationLedger(rd);
-            DataTable dt = ds.Tables[0];
-
-            string LOANo = ddlLOANo.SelectedValue;
-            string FileName = LOANo.Replace("/", "-") + DateTime.Now.ToString("(yyyyMMddHHmmss)");
-            string strFileName = LOANo.Replace("/", "-") + DateTime.Now.ToString("(yyyyMMddHHmmss)")+".xlsx";
-            string FilePath = Server.MapPath(@"~\UploadedExcel\Temp\");
-            string Path = @"~\UploadedExcel\Temp\" + FileName + ".xlsx";
-            string TemplatePath = Server.MapPath(@"~\UploadedExcel\Template\Liquidation_Ledger_Template.xlsx");
-            string CopyPath = Server.MapPath(@"~\UploadedExcel\Temp\" + FileName + ".xlsx");
-
-            if (!Directory.Exists(FilePath))
-            {
-                Directory.CreateDirectory(FilePath);
-            }
-
-            CreateExcelFile(dt, TemplatePath, CopyPath, strFileName);
-
-
-            //Session["OUTPUTFILE"] = strFileName;
-            //Session["OUTPUTFILEFOLDER"] = "~/UploadedExcel/Temp/";
-            //Session["OUTPUTDELETE"] = "YES"; //always create template when donwload
-            //iframe1.Attributes.Add("src", "DownloadFile.aspx");
-
-            Response.Clear();
-            Response.AddHeader("content-disposition", "attachment;filename=" + strFileName);
-            Response.WriteFile(Server.MapPath("~/UploadedExcel/Temp/" + strFileName));
-            Response.Flush();
-            Response.Close();
-
-
-
-            //Response.Redirect(Path);
-
-            //File.Delete(Path);
+            conn.Close();
         }
-        else
-        {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Popup", "SelectLOAAlert();", true);
-        }
+        return JsonConvert.SerializeObject(dt);
     }
 }

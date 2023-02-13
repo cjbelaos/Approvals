@@ -3051,6 +3051,10 @@
                     }
                 });
 
+                $('#modal').on('shown.bs.modal', function () {
+                    $('#txtItemNo').focus();
+                });
+
                 $('#selectLOADescription').change(function () {
                     var loadescription = $(this).val();
                     if (loadescription !== '') {

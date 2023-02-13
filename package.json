@@ -2,6 +2,9 @@
   "dependencies": {
     "blueimp-file-upload": "^10.32.0",
     "exceljs": "^4.3.0",
-    "upload-js": "^1.48.21"
+    "jsreport": "^2.11.0",
+    "pdfmake": "^0.2.7",
+    "upload-js": "^1.48.21",
+    "xlsx": "^0.18.5"
   }
 }

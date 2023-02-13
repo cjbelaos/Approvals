@@ -29,6 +29,7 @@
     <link href="AdminLTE-3.2.0/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" />
     <link href="AdminLTE-3.2.0/plugins/datatables-checkboxes/css/dataTables.checkboxes.css" rel="stylesheet" />
     <!-- Theme style -->
+
     <link rel="stylesheet" href="AdminLTE-3.2.0/dist/css/adminlte.min.css">
 
     <link rel="shortcut icon" href="Images/e.ico" type="image/x-icon" />
